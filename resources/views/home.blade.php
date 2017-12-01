@@ -68,16 +68,6 @@
                                 <td>30%</td>
                             </tr>
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td> за члена команды первого ряда</td>
-                                <td>5%</td>
-                            </tr>
-                            <tr>
-                                <td> за члена команды 2ого ряда</td>
-                                <td>2%</td>
-                            </tr>
-                        </tfoot>
                     </table>
 
                     <table class="table">

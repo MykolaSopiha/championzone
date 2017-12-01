@@ -45,7 +45,7 @@
 
                 <div class="form__item{{ $errors->has('birthday') ? ' form__item--error' : '' }}">
                     <label for="birthday">Дата рождения</label>
-                    <input id="birthday" class="pick_date" type="text" name="birthday" value="{{ $data->birthday }}" placeholder="Введите дату">
+                    <input id="birthday" class="pick_birthday" type="text" name="birthday" value="{{ $data->birthday }}" placeholder="Введите дату">
                     @if ($errors->has('date'))
                         <p>{{ $errors->first('date') }}</p>
                     @endif

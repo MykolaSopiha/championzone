@@ -90,7 +90,6 @@ class TokenController extends Controller
     {
 
         $this->validate($request, [
-            'date'  => 'required|date',
             'card'  => 'required|numeric|min:1'
         ]);
 
@@ -99,7 +98,7 @@ class TokenController extends Controller
 
         $token = new Token();
         $token->fill([
-            'date'      => date("Y-m-d", strtotime($request["date"]) ),
+            'date'      => date("Y-m-d"),
             'user_id'   => intval(Auth::user()->id),
             'card_id'   => $request["card"],
             'card_code' => $token_card->code,

@@ -71,7 +71,7 @@ class CardController extends Controller
         $request['date'] = $request["date"]."/1";
 
         $this->validate($request, [
-            'name' => 'required|max:255|unique:cards',
+            'name' => 'max:255|unique:cards',
             'code' => 'required|numeric|digits:16',
             'cw2'  => 'required|numeric|digits:3',
             'date' => 'required|date',

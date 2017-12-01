@@ -51,6 +51,7 @@ $(document).ready(function () {
 			dateFormat: "yy/mm",
 			changeMonth: true,
 			changeYear: true,
+			yearRange: "-5:+5",
 			showButtonPanel: true,
 			onClose: function(dateText, inst) {
 				function isDonePressed(){
@@ -80,7 +81,16 @@ $(document).ready(function () {
 			changeDay: true,
 			changeMonth: true,
 			changeYear: true,
-			yearRange: "-100:+10",
+			yearRange: "-5:+5",
+			showButtonPanel: false
+		});
+
+		$('.pick_birthday').datepicker({
+			dateFormat: "yy-mm-dd",
+			changeDay: true,
+			changeMonth: true,
+			changeYear: true,
+			yearRange: "-70:+0",
 			showButtonPanel: false
 		});
 

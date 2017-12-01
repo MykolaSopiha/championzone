@@ -20,6 +20,7 @@ Route::auth();
 Route::get('/home', 			'HomeController@index');
 Route::get('/home/users', 		'HomeController@users');
 Route::get('/home/statistics', 	'HomeController@statistics');
+Route::post('/home/statistics', 'HomeController@date_range');
 Route::get('/home/balance', 	'HomeController@balance');
 Route::get('/home/motivation',  'HomeController@motivation');
 Route::get('/home/wiki', 		'HomeController@wiki');

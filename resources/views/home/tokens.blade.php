@@ -27,13 +27,13 @@
                             <h2>Добавить токен</h2>
                         </header>
 
-                        <div class="form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
+<!--                         <div class="form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
                             <label for="date">Дата</label>
                             <input id="date" class="pick_date" type="text" name="date" placeholder="Введите дату" pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])" required>
                             @if ($errors->has('date'))
                                 <p>{{ $errors->first('date') }}</p>
                             @endif
-                        </div>
+                        </div> -->
 
                         <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
                             <label for="card">Карта</label>

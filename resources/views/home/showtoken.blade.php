@@ -87,7 +87,7 @@
                 </div>
                 @else
                 <div class="form__item">
-                    <label for="status">Account Status: {{Auth::user()->status}}</label>
+                    <label for="status">Статус: {{$token->status}}</label>
                 </div>
                 @endif
 

@@ -46,6 +46,7 @@ class HomeController extends Controller
         $total = 0;
 
         $user_costs = DB::table('costs')->where( 'user_id', Auth::user()->id )->get();
+        $users = DB::table('users')->get();
         
         foreach ($user_costs as $u_cost) {
             $stat[ $u_cost->date ] = [];
@@ -62,47 +63,50 @@ class HomeController extends Controller
             $total += $s['cost'];
         }
 
-        // return dd($stat);
-        // return dd($user_costs);
-        return view('home/statistics', compact('stat', 'total') );
+        return view('home/statistics', compact('stat', 'total', 'users') );
     }
     
-    // public function statistics2(Request $request)
-    // {
-    //     $stat = [];
-    //     $total = 0;
+    public function date_range(Request $request)
+    {
 
-    //     $user_costs = DB::table('costs')->where([
-    //         ['user_id', Auth::user()->id],
-    //         ['date', '>=', date( "Y/m/d", strtotime($request["from"]) ) ],
-    //         ['date', '>=', date( "Y/m/d", strtotime($request["to"]) ) ],
-    //     ])->get();
+        if ($request['from'] === '')
+            $request['from'] = '0000-00-00';
 
-    //             $user_costs = DB::table('costs')->where([
-    //         ['user_id', Auth::user()->id],
-    //         ['date', '>=', date( "Y/m/d", strtotime($request["from"]) ) ],
-    //         ['date', '>=', date( "Y/m/d", strtotime($request["to"]) ) ],
-    //     ])->get();
+        if ($request['to'] === '') {
+            $request['to'] = date( "Y-m-d" );
+        }
+
+        $users = DB::table('users')->get();
+
+        $stat = [];
+        $total = 0;
+
+        $user_costs = DB::table('costs')->where([
+            [ 'date', '<=', $request['to']   ],
+            [ 'date', '>=', $request['from'] ],
+            [ 'user_id', $request['user'] ]
+        ])->get();
+
+        foreach ($user_costs as $u_cost) {
+            $stat[ $u_cost->date ] = [];
+            $stat[ $u_cost->date ]['day']  = '';
+            $stat[ $u_cost->date ]['cost'] = 0;
+        }
         
-    //     foreach ($user_costs as $u_cost) {
-    //         $stat[ $u_cost->date ] = [];
-    //         $stat[ $u_cost->date ]['day']  = '';
-    //         $stat[ $u_cost->date ]['cost'] = 0;
-    //     }
-        
-    //     foreach ($user_costs as $u_cost) {
-    //         $stat[ $u_cost->date ]['day'] = $u_cost->date;
-    //         $stat[ $u_cost->date ]['cost'] += $u_cost->value*$u_cost->rate/100;
-    //     }
+        foreach ($user_costs as $u_cost) {
+            $stat[ $u_cost->date ]['day'] = $u_cost->date;
+            $stat[ $u_cost->date ]['cost'] += $u_cost->value*$u_cost->rate/100;
+        }
 
-    //     foreach ($stat as $s) {
-    //         $total += $s['cost'];
-    //     }
+        foreach ($stat as $s) {
+            $total += $s['cost'];
+        }
 
-    //     // return dd($stat);
-    //     // return dd($user_costs);
-    //     return view('home/statistics', compact('stat', 'total') );
-    // }
+        $prev = $request;
+
+        return view('home/statistics', compact('stat', 'total', 'prev', 'users') );
+
+    }
 
     public function balance()
     {
