@@ -74,7 +74,7 @@
 
                 @if ( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' )
                 <div class="form__item">
-                    <label for="status">Token Status</label>
+                    <label for="status">Статус</label>
                     <select name="status" id="status">
                         @foreach ($statuses as $status)
                             @if ($status == $token->status)

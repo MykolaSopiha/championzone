@@ -26,7 +26,7 @@ class CardController extends Controller
 
     public function index()
     {
-        if (Auth::user()->status == 'admin') {
+        if ( Auth::user()->status == 'admin' || Auth::user()->status == 'accountant' ) {
             $cards = DB::table('cards')->where('status', 'active')->orWhere('status', 'disable')->get();
             $users = DB::table('users')->get();
             foreach ($cards as $card) {

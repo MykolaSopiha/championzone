@@ -96,6 +96,14 @@ class TokenController extends Controller
         $token_card = DB::table('cards')->where('id', $request["card"])->limit(1)->get();
         $token_card = $token_card[0];
 
+        if ( !isset($request['ask']) ) {
+            $request['ask'] = '';
+        }
+
+        if ( !isset($request['ans']) ) {
+            $request['ans'] = '';
+        }
+
         $token = new Token();
         $token->fill([
             'date'      => date("Y-m-d"),
@@ -106,6 +114,7 @@ class TokenController extends Controller
             'currency'  => $token_card->currency,
             'action'    => $request['action'],
             'ask'       => $request['ask'],
+            'ans'       => $request['ans'],
             'status'    => 'active'
         ]);
         $token->save();

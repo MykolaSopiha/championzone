@@ -10,8 +10,10 @@
             <nav class="account-nav" role="navigation">
                 <h2 class="account-nav__page">@yield('page-name')</h2>
                 <ul class="account-nav__list">
-                    @if ( Auth::user()->status === 'admin' )
+                    @if ( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' )
                     <li><a href="{{url('home/cards')}}">Карты</a></li>
+                    @endif
+                    @if ( Auth::user()->status === 'admin' )
                     <li><a href="{{url('home/users')}}">Пользователи</a></li>
                     <li><a href="{{url('home/statistics')}}">Статистика</a></li>
                     @endif
