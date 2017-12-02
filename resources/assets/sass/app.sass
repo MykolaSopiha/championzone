@@ -298,7 +298,7 @@ input
 	button[type='submit']
 		display: block
 		padding: 0 25px
-		margin: 0 auto
+		margin: 20px auto
 		width: auto
 		min-width: 196px
 		height: 56px
@@ -336,21 +336,17 @@ input
 	text-align: center
 	thead, tfoot
 		background-color: $merino
-		td
-			padding: 17px 0
-			text-align: center
-	tbody
-		tr
-			+hover
-				background-color: $merino
-			&:nth-child(even)
-				background-color: #fdfbf8
-		td
-			padding-top: 12px
-			padding-bottom: 12px
+	tr
+		&:nth-child(even)
+			background-color: #fdfbf8
+		+hover
+			background-color: $merino
 	td
+		padding-top: 12px
+		padding-bottom: 12px
 		padding-right: 10px
 		padding-left: 10px
+		text-align: center
 
 //------------- TABLE END -------------
 

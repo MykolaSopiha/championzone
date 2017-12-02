@@ -30,9 +30,9 @@ elixir(function(mix) {
 		.scripts([
 			'libs/jquery-3.2.1.min.js',
 			'libs/jquery-ui.js',
-			'libs/jquery.inputmask.bundle.js',
-			'app.js',
-			'libs/datepicker-ru.js'
+			'libs/jquery.dataTables.min.js',
+			'libs/datepicker-ru.js',
+			'app.js'
 		], 'public/js/app.js')
 		.svgstore('resources/assets/svg', 'public/img/', 'sprite.svg', svgminPlugins)
 		.livereload();

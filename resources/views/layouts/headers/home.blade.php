@@ -10,7 +10,7 @@
             <nav class="account-nav" role="navigation">
                 <h2 class="account-nav__page">@yield('page-name')</h2>
                 <ul class="account-nav__list">
-                    @if ( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' )
+                    @if ( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->status === 'farmer' )
                     <li><a href="{{url('home/cards')}}">Карты</a></li>
                     @endif
                     @if ( Auth::user()->status === 'admin' )

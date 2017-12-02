@@ -381,7 +381,7 @@ input:focus:-moz-placeholder {
   .form button[type='submit'] {
     display: block;
     padding: 0 25px;
-    margin: 0 auto;
+    margin: 20px auto;
     width: auto;
     min-width: 196px;
     height: 56px;
@@ -414,19 +414,16 @@ input:focus:-moz-placeholder {
   text-align: center; }
   .table thead, .table tfoot {
     background-color: #F7F2E8; }
-    .table thead td, .table tfoot td {
-      padding: 17px 0;
-      text-align: center; }
-  .no-touch .table tbody tr:hover {
-    background-color: #F7F2E8; }
-  .table tbody tr:nth-child(even) {
+  .table tr:nth-child(even) {
     background-color: #fdfbf8; }
-  .table tbody td {
-    padding-top: 12px;
-    padding-bottom: 12px; }
+  .no-touch .table tr:hover {
+    background-color: #F7F2E8; }
   .table td {
+    padding-top: 12px;
+    padding-bottom: 12px;
     padding-right: 10px;
-    padding-left: 10px; }
+    padding-left: 10px;
+    text-align: center; }
 
 .items:after {
   content: " ";

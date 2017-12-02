@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
-@section('head')
+@section('styles')
     <style>
         .ui-datepicker-calendar, .ui-datepicker-current {
             display: none !important;
         }
     </style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 @endsection
 
 @section('content')
@@ -33,7 +34,7 @@
 
                         <header class="form__header">
                             <h2>Добавить карту</h2>
-                            <!-- <a href="{{url('home/cards/multiple')}}">Добавить карты</a> -->
+                            <a href="{{url('home/multiple')}}">Добавить несколько карт</a>
                         </header>
 
                         <div class="form__item{{ $errors->has('name') ? ' form__item--error' : '' }}">
@@ -109,56 +110,78 @@
                 <!-- begin items__list -->
                 <div class="items__list">
                     <h2>Список карт</h2>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <td>id</td>
-                                <td>Название</td>
-                                <td>Код</td>
-                                <td>Валюта</td>
-                                <td>Дата</td>
-                                <td>Статус</td>
-                                <td>Пользователь</td>
-                                <td>Действия</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($cards as $card)
+                    <form action="{{url('/home/cards/multiple')}}" method="post">
+
+                        <!-- begin table -->
+                        <table class="table js-table">
+                            <thead>
                                 <tr>
-                                    <td>{{ $card->id }}</td>
-                                    <td>{{ $card->name }}</td>
-                                    <td>{{ $card->code }}</td>
-                                    <td>{{ $card->currency }}</td>
-                                    <td>{{ substr($card->date, 0, 7) }}</td>
-                                    <td>{{ $card->status }}</td>
-                                    <td class="card_user">
-                                        <form action="{{ url('/home/cards/') }}/{{ $card->id }}"  method='get'>
-                                            <button type="submit">
-                                                <span>{{ $card->user_name }}</span>
-                                                <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
-                                            </button>
-                                        </form>
+                                    <td>
+                                        <input type="checkbox" class="all_select">
                                     </td>
-                                    <td class="card-actions">
-                                        <a href="{{ url('/home/cards/') }}/{{ $card->id }}/edit">
-                                            @if ($card->status === 'active')
-                                            <i class="switch fa fa-toggle-on fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>
-                                            @else
-                                            <i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>
-                                            @endif
-                                        </a>
-                                        <form method="post" action="{{ url('/home/cards/') }}/{{ $card->id }}">
-                                            <input type="hidden" name="_method" value="delete">
-                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <button type="submit">
-                                                <i class="remove fa fa-times fa-lg" title="Удалить"  aria-hidden="true"></i>
-                                            </button>
-                                        </form>
-                                    </td>
+                                    <!-- <td>id</td> -->
+                                    <td>Название</td>
+                                    <td>Код</td>
+                                    <td>Валюта</td>
+                                    <td>Дата</td>
+                                    <td>Статус</td>
+                                    <td>Пользователь</td>
+                                    <td>Действия</td>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($cards as $card)
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="shift_select" name='card[{{ $card->id }}]'>
+                                        </td>
+                                        <!-- <td>{{ $card->id }}</td> -->
+                                        <td>{{ $card->name }}</td>
+                                        <td>{{ $card->code }}</td>
+                                        <td>{{ $card->currency }}</td>
+                                        <td>{{ substr($card->date, 0, 7) }}</td>
+                                        <td>{{ $card->status }}</td>
+                                        <td class="card_user">
+                                            <a href="{{ url('/home/cards/') }}/{{ $card->id }}">
+                                                <button>
+                                                    <span>{{ $card->user_name }}</span>
+                                                    <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
+                                                </button>
+                                            </a>
+                                        </td>
+                                        <td class="card-actions">
+                                            <a href="{{ url('/home/cards/') }}/{{ $card->id }}/edit">
+                                                @if ($card->status === 'active')
+                                                <i class="switch fa fa-toggle-on fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>
+                                                @else
+                                                <i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>
+                                                @endif
+                                            </a>
+                                            <form method="post" action="{{ url('/home/cards/') }}/{{ $card->id }}">
+                                                <input type="hidden" name="_method" value="delete">
+                                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                <button type="submit">
+                                                    <i class="remove fa fa-times fa-lg" title="Удалить"  aria-hidden="true"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <!-- end table -->
+
+                        <!-- begin select-action -->
+                        <span>Действие:</span>
+                        <select name="" id="">
+                            <option value="1">Назначить пользователя</option>
+                            <option value="2">Изменить статус</option>
+                            <option value="3">Удалить</option>
+                        </select>
+                        <button type="submit">Выполнить</button>
+                        <!-- end select-action -->
+
+                    </form>
                 </div>
                 <!-- end items__list -->
 

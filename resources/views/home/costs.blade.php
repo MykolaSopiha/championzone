@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@section('head')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
-@endsection
-
 @section('content')
 
     <!-- begin header -->
@@ -43,7 +39,7 @@
                             <select name="card" id="card">
                                 @foreach ($cards as $card)
                                     @if ($card->status === 'active')
-                                    <option value="{{ $card->id }}" title="{{ $card->currency }}">{{ $card->name }} ({{ $card->currency }}) *{{ substr(decrypt($card->code), -4) }} </option>
+                                    <option value="{{ $card->id }}" title="{{ $card->currency }}">{{ $card->name }} ({{ $card->currency }}) *{{ substr(decrypt($card->code), -8, -4).' '.substr(decrypt($card->code), -4) }} </option>
                                     @endif
                                 @endforeach
                             </select>

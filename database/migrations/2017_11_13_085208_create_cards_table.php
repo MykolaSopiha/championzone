@@ -19,9 +19,10 @@ class CreateCardsTable extends Migration
             $table->string('cw2');
             $table->date('date');
             $table->bigInteger('balance')->unsigned()->default(0);
-            $table->string('currency')->default('USD');
+            $table->string('currency')->default('RUB');
             $table->integer('user_id')->unsigned();
             $table->string('status')->default('active');
+            $table->text('info');
             $table->timestamps();
         });
     }

@@ -98,14 +98,14 @@ $(document).ready(function () {
 	// END Initialization of datepicker END
 
 
-
+	// BEGIN Make 2 decimals for money value BEGIN
 	$('.money_input').on('blur', function () {
 		let money = $(this).val();
 		money = Number.parseFloat(money);
 		money = (money).toFixed(2);
 		$(this).val(money);
 	});
-
+	// END Make 2 decimals for money value END
 
 
 	// BEGIN Current exchange rate BEGIN
@@ -160,7 +160,49 @@ $(document).ready(function () {
 
 		}
 	});
-
-
 	// END Current exchange rate END
+
+
+
+	// BEGIN Multiple checkbox selection BEGIN
+    let $chkboxes = $('.shift_select');
+    let lastChecked = null;
+
+    $chkboxes.click(function(e) {
+        if(!lastChecked) {
+            lastChecked = this;
+            return;
+        }
+
+        if(e.shiftKey) {
+            let start = $chkboxes.index(this);
+            let end = $chkboxes.index(lastChecked);
+
+            $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
+
+        }
+
+        lastChecked = this;
+    });
+	// END Multiple checkbox selection END
+
+
+	// BEGIN Select all checkboxes in table BEGIN
+	$('.table').on('click', '.all_select', function () {
+		let form = $(this).closest('form');
+		let all_checkbxs = form.find("input[type='checkbox']");
+		if ( $(this).prop('checked') === false ) {
+			all_checkbxs.prop('checked', false);
+		} else {
+			all_checkbxs.prop('checked', true);
+		}
+	});
+	// END Select all checkboxes in table END
+
+
+
+	// BEGIN Select all checkboxes in table BEGIN
+	$('.js-table').DataTable();
+	// END Select all checkboxes in table END
+
 });
