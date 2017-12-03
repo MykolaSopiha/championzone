@@ -68,15 +68,18 @@ class CardController extends Controller
 
     public function store(Request $request)
     {
-        $request['date'] = $request["date"]."/1";
+        $salt = 'mMae68KKqu!SOsIX';
+        $request['date']      = $request["date"]."/1";
+        $request["code_hash"] = sha1("".$request["code"].$salt);
 
         $this->validate($request, [
-            'name' => 'max:255|unique:cards',
-            'code' => 'required|numeric|digits:16',
-            'cw2'  => 'required|numeric|digits:3',
-            'date' => 'required|date',
-            'user' => 'required|numeric|min:1',
-            'currency' => 'required|size:3'
+            'name'      => 'max:255|unique:cards',
+            'code'      => 'required|numeric|digits:16',
+            'code_hash' => 'required|unique:cards',
+            'cw2'       => 'required|numeric|digits:3',
+            'date'      => 'required|date',
+            'user'      => 'required|numeric|min:1',
+            'currency'  => 'required|size:3'
         ]);
 
         $request["code"] = encrypt( $request["code"] );
@@ -86,6 +89,7 @@ class CardController extends Controller
         $card->fill([
             'name'      => $request["name"],
             'code'      => $request["code"],
+            'code_hash' => $request["code_hash"],
             'cw2'       => $request["cw2"],
             'date'      => date( "Y/m/d", strtotime($request["date"]) ),
             'currency'  => $request["currency"],
@@ -106,6 +110,8 @@ class CardController extends Controller
 
 
     public function multipleadd(Request $request) {
+
+        $salt = 'mMae68KKqu!SOsIX';
 
         function isDate($value) {
             if (!$value) {
@@ -134,6 +140,10 @@ class CardController extends Controller
             if (is_numeric($word[0])) {
                 if (strlen($word[0]) === 16) {
                     $code = $word[0];
+                } elseif ( $line[4] == ' ' && $line[9] == ' ' && $line[14] == ' ' ) {
+                    $code = "".$word[0]."".$word[1]."".$word[2]."".$word[3];
+                    $word = explode( ' ', $code.substr($line, 19) );
+                    //return $code.substr($line, 19);
                 } else {
                     $errors[$index][] = "Code length isn't 16 digits!";
                 }
@@ -144,10 +154,15 @@ class CardController extends Controller
             
 
             // CHECK CARD DATE begin
-            if ( isDate('1/'.$word[1]) === true) {
-                $date = date( "Y-m-d", strtotime( '1/'.$word[1]) );
+            if ($word[1][2] == '/' || $word[1][2] == '\\' || $word[1][2] == '-' || $word[1][2] == '.') {
+                $date_check = '01/'.$word[1][0].$word[1][1].'/'.substr($word[1], 3);
+                if ( isDate( $date_check ) === true ) {
+                    $date = date( "Y-m-d", strtotime( $date_check ) );
+                } else {
+                    $errors[$index][] = "Date format is incorrect!";
+                }
             } else {
-                $errors[$index][] = "Date format is incorrect!";
+                return false;
             }
             // CHECK CARD DATE end
 
@@ -164,7 +179,9 @@ class CardController extends Controller
             }
             // CHECK CARD CW2 end
 
-            $info = substr($line, strpos($line, $word[2]));
+            // return $code.' '.$date.' '.$word[2].' === '.$line;
+            // return strpos($line, $word[2]);
+            $info = substr($line, strpos($line, $word[2]) );
             $info = substr($info, strlen($word[2])+1);
             $info = trim($info);
 
@@ -176,6 +193,7 @@ class CardController extends Controller
                 $card->fill([
                     'date'      => $date,
                     'code'      => encrypt($code),
+                    'code_hash' => sha1("".$request["code"].$salt),
                     'cw2'       => encrypt($cw2),
                     'currency'  => 'RUB',
                     'user_id'   => Auth::user()->id,

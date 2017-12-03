@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('first_name', 255);
             $table->string('last_name', 255);
             $table->date('birthday');
-            $table->boolean('male');
+            $table->boolean('male')->default(true);
             $table->string('avatar');
             $table->string('email')->unique();
             $table->string('password');

@@ -17,7 +17,9 @@ class CreateTokensTable extends Migration
             $table->date('date');
             $table->integer('user_id')->unsigned();
             $table->integer('card_id')->unsigned();
+            $table->integer('card2_id')->unsigned();
             $table->string('card_code');
+            $table->string('card2_code');
             $table->bigInteger('value')->unsigned()->nullable();
             $table->string('currency');
             $table->string('action');

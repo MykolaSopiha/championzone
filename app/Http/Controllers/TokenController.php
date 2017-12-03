@@ -60,6 +60,10 @@ class TokenController extends Controller
                     $token->action = 'Списать';
                     break;
 
+                case 'transfer':
+                    $token->action = 'Перевести';
+                    break;
+
                 default:
                     # code...
                     break;

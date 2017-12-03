@@ -16,6 +16,7 @@ class CreateCardsTable extends Migration
             $table->increments('id');
             $table->string('name', 255);
             $table->string('code');
+            $table->string('code_hash')->unique();
             $table->string('cw2');
             $table->date('date');
             $table->bigInteger('balance')->unsigned()->default(0);

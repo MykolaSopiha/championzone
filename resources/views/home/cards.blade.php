@@ -157,13 +157,13 @@
                                                 <i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>
                                                 @endif
                                             </a>
-                                            <form method="post" action="{{ url('/home/cards/') }}/{{ $card->id }}">
+<!--                                             <form method="post" action="{{ url('/home/cards/') }}/{{ $card->id }}">
                                                 <input type="hidden" name="_method" value="delete">
                                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                 <button type="submit">
                                                     <i class="remove fa fa-times fa-lg" title="Удалить"  aria-hidden="true"></i>
                                                 </button>
-                                            </form>
+                                            </form> -->
                                         </td>
                                     </tr>
                                 @endforeach
