@@ -193,7 +193,7 @@ class CardController extends Controller
                 $card->fill([
                     'date'      => $date,
                     'code'      => encrypt($code),
-                    'code_hash' => sha1("".$request["code"].$salt),
+                    'code_hash' => sha1("".$code.$salt),
                     'cw2'       => encrypt($cw2),
                     'currency'  => 'RUB',
                     'user_id'   => Auth::user()->id,
