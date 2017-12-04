@@ -27,7 +27,7 @@
 					<select name="user" id="user">
 						@foreach ($users as $user)
 							@if ( $user->id === $card->user_id )
-								<option value="{{ $user->id }}" selected="">{{ $user->name }}</option>
+								<option value="{{ $user->id }}" selected>{{ $user->name }}</option>
 							@else
 								<option value="{{ $user->id }}">{{ $user->name }}</option>
 							@endif
@@ -43,6 +43,10 @@
 						<i class="fa fa-floppy-o fa-lg" aria-hidden="true"></i> Сохранить
 					</button>
 				</div>
+                
+                <div class="form__item" align="center">
+                    <a href="{{url('home/cards')}}">Назад</a>
+                </div>
 
 			</form>
 

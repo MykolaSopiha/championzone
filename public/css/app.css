@@ -408,6 +408,7 @@ input:focus:-moz-placeholder {
     font-size: 16px; }
 
 .table {
+  padding-top: 25px;
   width: 100%;
   color: #333;
   font-size: 14px;
@@ -461,6 +462,9 @@ input:focus:-moz-placeholder {
   display: none; }
   .no-touch .card_user .fa-pencil:hover {
     display: inline-block; }
+
+.select-action {
+  margin: 20px 0; }
 
 .benefits__header {
   margin-bottom: 50px;

@@ -32,5 +32,7 @@ Route::resource('/home/costs',  'CostController');
 Route::resource('/home/tokens', 'TokenController');
 Route::resource('/home/cards',  'CardController');
 
+Route::post('/home/cards/multiple_action',  'CardController@multiple_action');
+
 Route::get('/home/multiple',  	 'CardController@multiplepage');
 Route::post('/home/multiple',  	 'CardController@multipleadd');

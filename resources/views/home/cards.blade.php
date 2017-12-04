@@ -112,7 +112,27 @@
                 <!-- begin items__list -->
                 <div class="items__list">
                     <h2>Список карт</h2>
-                    <form class="js-form" action="{{url('/home/cards/multiple')}}" method="post">
+
+                    <form class="js-form" action="{{url('/home/cards/multiple_action')}}" method="post">
+
+                        <!-- begin select-action -->
+                        <div class="select-action">
+                            <span>Действие:</span>
+                            <select class="js-action" name="card_action">
+                                <option selected="">--</option>
+                                <option value="1">Назначить пользователя</option>
+                                <option value="2">Активировать</option>
+                                <option value="3">Заморозить</option>
+                                <option value="4">Удалить</option>
+                            </select>
+                            <select class="js-users" name="card_user" id="">
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                            <button class="js-submit" type="submit">Выполнить</button>
+                        </div>
+                        <!-- end select-action -->
 
                         <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
 
@@ -172,16 +192,6 @@
                             </tbody>
                         </table>
                         <!-- end table -->
-
-                        <!-- begin select-action -->
-                        <span>Действие:</span>
-                        <select name="" id="">
-                            <option value="1">Назначить пользователя</option>
-                            <option value="2">Изменить статус</option>
-                            <option value="3">Удалить</option>
-                        </select>
-                        <button type="submit">Выполнить</button>
-                        <!-- end select-action -->
 
                     </form>
                 </div>

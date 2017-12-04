@@ -28,7 +28,7 @@ class CardController extends Controller
     public function index()
     {
         if ( Auth::user()->status == 'admin' || Auth::user()->status == 'accountant' ) {
-            $cards = DB::table('cards')->where('status', 'active')->orWhere('status', 'disable')->limit(10)->get();
+            $cards = DB::table('cards')->where('status', 'active')->orWhere('status', 'disable')->get();
             $users = DB::table('users')->get();
             foreach ($cards as $card) {
                 $card->code = decrypt($card->code);
@@ -215,6 +215,37 @@ class CardController extends Controller
 
 
 
+    public function multiple_action(Request $request)
+    {
+        switch ($request->card_action) {
+            case '1':
+                DB::table('cards')->whereIn('id', array_keys($request->card))->update(['user_id' => $request->card_user]);
+                break;
+
+            case '2':
+                // Activate cards
+                DB::table('cards')->whereIn('id', array_keys($request->card))->update(['status' => 'active']);
+                break;
+
+            case '3':
+                // Disactivate cards
+                DB::table('cards')->whereIn('id', array_keys($request->card))->update(['status' => 'disable']);
+                break;
+
+            case '4':
+                // Delete cards
+                $this->destroy( array_keys( $request->card ) );
+                break;
+
+            default:
+                # code...
+                break;
+        }
+        
+        return redirect('/home/cards');
+    }
+
+
 
     /**
      * Display the specified resource.
@@ -227,7 +258,7 @@ class CardController extends Controller
         $users = DB::table('users')->get();
         $card = DB::select('select * from cards where id = ? limit 1', [ $id ] );
         $card = $card[0];
-        return view('/home/showcard', compact('card', 'users') );
+        return view('/home/showcarduser', compact('card', 'users') );
     }
 
     /**
@@ -272,7 +303,13 @@ class CardController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('cards')->where('id', $id)->delete();
+        if ( is_array($id) ) {
+            foreach ($id as $i) {
+                DB::table('cards')->where('id', $i)->delete();
+            }
+        } else {
+            DB::table('cards')->where('id', $id)->delete();
+        }
         return redirect('/home/cards');
     }
 }

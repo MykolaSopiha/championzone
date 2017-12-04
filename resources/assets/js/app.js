@@ -188,15 +188,21 @@ $(document).ready(function () {
 
 
 	// BEGIN Select all checkboxes in table BEGIN
-	$('.table').on('click', '.all_select', function () {
+	const selectManyCheckboxes = function () {
+
 		let form = $(this).closest('form');
 		let all_checkbxs = form.find("input[type='checkbox']");
+
 		if ( $(this).prop('checked') === false ) {
 			all_checkbxs.prop('checked', false);
 		} else {
 			all_checkbxs.prop('checked', true);
 		}
-	});
+
+		return all_checkbxs;
+	}
+
+	$('.table').on('click', '.all_select', selectManyCheckboxes);
 	// END Select all checkboxes in table END
 
 
@@ -224,4 +230,37 @@ $(document).ready(function () {
 		$(form).submit();
 	});
 	// END Delete resource request END
+
+
+
+	// BEGIN Delete resource request BEGIN
+	$('.js-submit').on('click', function (e) {
+
+		e.preventDefault();
+		let form = $('.js-form');
+		let action = $('.js-action').val();
+
+		form.submit();
+
+	});
+	// END Delete resource request END
+
+
+
+	// BEGIN Multiple assignment of cards  BEGIN
+	const users_select = $('.js-users');
+	users_select.hide();
+
+	$('.js-action').change(function () {
+		if ( $(this).val() == '1' ) {
+			users_select.show();
+		} else {
+			users_select.hide();
+		}
+			
+	});
+	// END Multiple assignment of cards  END
+
+
+
 });
