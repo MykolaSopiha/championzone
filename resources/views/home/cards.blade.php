@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+
 @section('styles')
     <style>
         .ui-datepicker-calendar, .ui-datepicker-current {
@@ -8,6 +9,7 @@
     </style>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 @endsection
+
 
 @section('content')
 
@@ -110,10 +112,12 @@
                 <!-- begin items__list -->
                 <div class="items__list">
                     <h2>Список карт</h2>
-                    <form action="{{url('/home/cards/multiple')}}" method="post">
+                    <form class="js-form" action="{{url('/home/cards/multiple')}}" method="post">
+
+                        <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
 
                         <!-- begin table -->
-                        <table class="table js-table">
+                        <table class="table js-table" id="all-cards">
                             <thead>
                                 <tr>
                                     <td>
@@ -143,10 +147,8 @@
                                         <td>{{ $card->status }}</td>
                                         <td class="card_user">
                                             <a href="{{ url('/home/cards/') }}/{{ $card->id }}">
-                                                <button>
-                                                    <span>{{ $card->user_name }}</span>
-                                                    <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
-                                                </button>
+                                                <span>{{ $card->user_name }}</span>
+                                                <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
                                             </a>
                                         </td>
                                         <td class="card-actions">
@@ -157,12 +159,12 @@
                                                 <i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>
                                                 @endif
                                             </a>
-<!--                                             <form method="post" action="{{ url('/home/cards/') }}/{{ $card->id }}">
+                                            <a class="remove-btn" href="{{ url('/home/cards/') }}/{{ $card->id }}">
+                                                <i class="remove fa fa-times fa-lg" title="Удалить" aria-hidden="true"></i>
+                                            </a>
+                                            <!-- <form method="post" action="{{ url('/home/cards/') }}/{{ $card->id }}">
                                                 <input type="hidden" name="_method" value="delete">
-                                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                                <button type="submit">
-                                                    <i class="remove fa fa-times fa-lg" title="Удалить"  aria-hidden="true"></i>
-                                                </button>
+                                                <i class="remove fa fa-times fa-lg" title="Удалить" aria-hidden="true"></i>
                                             </form> -->
                                         </td>
                                     </tr>
@@ -191,4 +193,5 @@
         </div>
     </main>
     <!-- end main -->
+
 @endsection

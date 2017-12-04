@@ -26,7 +26,11 @@
 				<div class="form__item">
 					<select name="user" id="user">
 						@foreach ($users as $user)
-						<option value="{{ $user->id }}">{{ $user->name }}</option>
+							@if ( $user->id === $card->user_id )
+								<option value="{{ $user->id }}" selected="">{{ $user->name }}</option>
+							@else
+								<option value="{{ $user->id }}">{{ $user->name }}</option>
+							@endif
 						@endforeach
 					</select>
 					@if ($errors->has('date'))

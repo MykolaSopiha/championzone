@@ -28,9 +28,9 @@ Route::get('/home/wiki', 		'HomeController@wiki');
 Route::get('/home/account/{id}',	'AccountController@index');
 Route::post('/home/account/{id}', 	'AccountController@store');
 
-Route::resource('/home/costs',  		 'CostController');
-Route::resource('/home/tokens', 		 'TokenController');
-Route::resource('/home/cards',  		 'CardController');
+Route::resource('/home/costs',  'CostController');
+Route::resource('/home/tokens', 'TokenController');
+Route::resource('/home/cards',  'CardController');
 
 Route::get('/home/multiple',  	 'CardController@multiplepage');
 Route::post('/home/multiple',  	 'CardController@multipleadd');

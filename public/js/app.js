@@ -19118,5 +19118,24 @@ $(document).ready(function () {
 	$('.js-table').DataTable();
 	// END Select all checkboxes in table END
 
+
+
+	// BEGIN Delete resource request BEGIN
+	$('.js-form').on('click', '.remove-btn', function (e) {
+		e.preventDefault();
+		let url = $(this).attr('href');
+		let form = $('.js-form').attr({
+			'action':url
+		});
+		let token = $(form).find('#token').val();
+		let deleteInput = $('<input>').attr({
+			'type' : 'hidden',
+			'name' : '_method',
+			'value' : 'delete'
+		});
+		$(form).append(deleteInput);
+		$(form).submit();
+	});
+	// END Delete resource request END
 });
 //# sourceMappingURL=app.js.map
