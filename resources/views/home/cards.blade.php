@@ -7,7 +7,8 @@
             display: none !important;
         }
     </style>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css" />
 @endsection
 
 
@@ -137,59 +138,31 @@
                         <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
 
                         <!-- begin table -->
-                        <table class="table js-table" id="all-cards">
+                        <table class="table" id="all_cards">
                             <thead>
                                 <tr>
-                                    <td>
-                                        <input type="checkbox" class="all_select">
-                                    </td>
-                                    <!-- <td>id</td> -->
-                                    <td>Название</td>
-                                    <td>Код</td>
-                                    <td>Валюта</td>
-                                    <td>Дата</td>
-                                    <td>Статус</td>
-                                    <td>Пользователь</td>
-                                    <td>Действия</td>
+<!--                                     <th><input type="checkbox" class="all_select"></th>
+                                    <th>id</th> -->
+                                    <th>Название</th>
+                                    <th>Код</th>
+                                    <th>Валюта</th>
+                                    <th>Дата</th>
+                                    <th>Статус</th>
+                                    <th>Пользователь</th>
+                                    <!-- <th>Действия</th> -->
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($cards as $card)
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" class="shift_select" name='card[{{ $card->id }}]'>
-                                        </td>
-                                        <!-- <td>{{ $card->id }}</td> -->
-                                        <td>{{ $card->name }}</td>
-                                        <td>{{ $card->code }}</td>
-                                        <td>{{ $card->currency }}</td>
-                                        <td>{{ substr($card->date, 0, 7) }}</td>
-                                        <td>{{ $card->status }}</td>
-                                        <td class="card_user">
-                                            <a href="{{ url('/home/cards/') }}/{{ $card->id }}">
-                                                <span>{{ $card->user_name }}</span>
-                                                <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
-                                            </a>
-                                        </td>
-                                        <td class="card-actions">
-                                            <a href="{{ url('/home/cards/') }}/{{ $card->id }}/edit">
-                                                @if ($card->status === 'active')
-                                                <i class="switch fa fa-toggle-on fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>
-                                                @else
-                                                <i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>
-                                                @endif
-                                            </a>
-                                            <a class="remove-btn" href="{{ url('/home/cards/') }}/{{ $card->id }}">
-                                                <i class="remove fa fa-times fa-lg" title="Удалить" aria-hidden="true"></i>
-                                            </a>
-                                            <!-- <form method="post" action="{{ url('/home/cards/') }}/{{ $card->id }}">
-                                                <input type="hidden" name="_method" value="delete">
-                                                <i class="remove fa fa-times fa-lg" title="Удалить" aria-hidden="true"></i>
-                                            </form> -->
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
                         </table>
                         <!-- end table -->
 
@@ -203,5 +176,42 @@
         </div>
     </main>
     <!-- end main -->
+@endsection
 
+
+@section('scripts_end')
+    <script>
+        $(document).ready(function() {
+
+            $('#all_cards').DataTable( {
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    url: "{{url('/api/cards')}}",
+                    data: function (d) {
+                        d.code_hash = $('input[type="search"]').val();
+                    }
+                },
+                "columns":[
+                    {data: 'name'},
+                    {data: 'code'},
+                    {data: 'currency'},
+                    {data: 'date'},
+                    {data: 'status'},
+                    {data: 'user_id'},
+                ],
+                "initComplete": function () {
+                    this.api().columns().every(function () {
+                        var column = this;
+                        var input = document.createElement("input");
+                        $(input).appendTo($(column.footer()).empty())
+                        .on('change', function () {
+                            column.search($(this).val(), false, false, true).draw();
+                        });
+                    });
+                }
+            });
+
+        });
+    </script>
 @endsection

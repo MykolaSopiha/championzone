@@ -28,7 +28,7 @@ elixir(function(mix) {
 			'libs/inputmask.min.css'
 		])
 		.scripts([
-			'libs/jquery-3.2.1.min.js',
+			'libs/jquery-2.2.2.min.js',
 			'libs/jquery-ui.js',
 			'libs/jquery.dataTables.min.js',
 			'libs/datepicker-ru.js',

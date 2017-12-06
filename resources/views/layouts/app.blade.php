@@ -43,6 +43,7 @@
     <!-- BEGIN scripts -->
     @yield('scripts')
     <script type="text/javascript" src="{{ url('js/app.js') }}"></script>
+    @yield('scripts_end')
     <!-- END scripts -->
 
 </body>
