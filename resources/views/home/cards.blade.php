@@ -8,7 +8,7 @@
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
 @endsection
 
 
@@ -138,23 +138,26 @@
                         <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
 
                         <!-- begin table -->
-                        <table class="table" id="all_cards">
+                        <table class="table" id="all_cards" cellspacing="0" width="100%">
                             <thead>
                                 <tr>
-<!--                                     <th><input type="checkbox" class="all_select"></th>
-                                    <th>id</th> -->
+                                    <th>
+                                        <input type="checkbox" class="all_select">
+                                    </th>
                                     <th>Название</th>
                                     <th>Код</th>
                                     <th>Валюта</th>
                                     <th>Дата</th>
                                     <th>Статус</th>
                                     <th>Пользователь</th>
-                                    <!-- <th>Действия</th> -->
+                                    <th>Действия</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
                             <tfoot>
                                 <tr>
+                                    <th></th>
+                                    <th></th>
                                     <th></th>
                                     <th></th>
                                     <th></th>
@@ -167,6 +170,7 @@
                         <!-- end table -->
 
                     </form>
+
                 </div>
                 <!-- end items__list -->
 
@@ -186,22 +190,21 @@
             $('#all_cards').DataTable( {
                 "processing": true,
                 "serverSide": true,
-                "ajax": {
-                    url: "{{url('/api/cards')}}",
-                    data: function (d) {
-                        d.code_hash = $('input[type="search"]').val();
-                    }
-                },
+                "ajax": "{{url('/api/cards')}}",
+                "lengthMenu": [ [ 10, 25, 50, 75, 100, 200, 500, 1000, -1 ], [ 10, 25, 50, 75, 100, 200, 500, 1000, "ALL" ] ],
+                "responsive": true,
                 "columns":[
-                    {data: 'name'},
-                    {data: 'code'},
-                    {data: 'currency'},
-                    {data: 'date'},
-                    {data: 'status'},
-                    {data: 'user_id'},
+                    {data: 'check', name: 'action', orderable: false, searchable: false, width: "5%"},
+                    {data: 'name', width: "10%"},
+                    {data: 'code', width: "10%"},
+                    {data: 'currency', width: "10%"},
+                    {data: 'date', width: "10%"},
+                    {data: 'status', width: "10%"},
+                    {data: 'user_id', width: "10%"},
+                    {data: 'actions', width: "10%"}
                 ],
                 "initComplete": function () {
-                    this.api().columns().every(function () {
+                    this.api().columns(2).every(function () {
                         var column = this;
                         var input = document.createElement("input");
                         $(input).appendTo($(column.footer()).empty())
@@ -209,9 +212,27 @@
                             column.search($(this).val(), false, false, true).draw();
                         });
                     });
+
+                    let $chkboxes = $('.shift_select');
+                    let lastChecked = null;
+
+                    $chkboxes.click(function(e) {
+
+                        if(!lastChecked) {
+                            lastChecked = this;
+                            return;
+                        }
+
+                        if(e.shiftKey) {
+                            let start = $chkboxes.index(this);
+                            let end = $chkboxes.index(lastChecked);
+                            $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
+                        }
+
+                        lastChecked = this;
+                    });
                 }
             });
-
         });
     </script>
 @endsection

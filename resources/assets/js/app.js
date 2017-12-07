@@ -165,25 +165,25 @@ $(document).ready(function () {
 
 
 	// BEGIN Multiple checkbox selection BEGIN
-    let $chkboxes = $('.shift_select');
-    let lastChecked = null;
+    // let $chkboxes = $('.shift_select');
+    // let lastChecked = null;
 
-    $chkboxes.click(function(e) {
-        if(!lastChecked) {
-            lastChecked = this;
-            return;
-        }
+    // $chkboxes.click(function(e) {
+    //     if(!lastChecked) {
+    //         lastChecked = this;
+    //         return;
+    //     }
 
-        if(e.shiftKey) {
-            let start = $chkboxes.index(this);
-            let end = $chkboxes.index(lastChecked);
+    //     if(e.shiftKey) {
+    //         let start = $chkboxes.index(this);
+    //         let end = $chkboxes.index(lastChecked);
 
-            $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
+    //         $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
 
-        }
+    //     }
 
-        lastChecked = this;
-    });
+    //     lastChecked = this;
+    // });
 	// END Multiple checkbox selection END
 
 
