@@ -29,6 +29,8 @@ class HomeController extends Controller
     {
         if ( Auth::user()->status === 'accountant' ) {
             return redirect('/home/tokens');
+        } elseif ( Auth::user()->status === 'farmer' ) {
+            return redirect('/home/cards');
         } else {
             return view('home');
         }

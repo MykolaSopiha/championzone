@@ -42,3 +42,7 @@ Route::post('/home/multiple',  	 'CardController@multipleadd');
 
 Route::get('/api/test',  'APIController@test');
 Route::get('/api/cards', 'APIController@getCards');
+Route::get('/api/hidden', function ()
+{
+	return config('hidden.salt');
+});

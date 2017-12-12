@@ -27,7 +27,7 @@ class CardController extends Controller
 
     public function index()
     {
-        if ( Auth::user()->status == 'admin' || Auth::user()->status == 'accountant' ) {
+        if ( Auth::user()->status == 'admin' || Auth::user()->status == 'accountant' || Auth::user()->status == 'farmer' ) {
             $cards = DB::table('cards')->where('status', 'active')->orWhere('status', 'disable')->get();
             $users = DB::table('users')->get();
             foreach ($cards as $card) {
@@ -69,7 +69,7 @@ class CardController extends Controller
 
     public function store(Request $request)
     {
-        $salt = 'mMae68KKqu!SOsIX';
+        $salt = config('hidden.salt');
         $request['date']      = $request["date"]."/1";
         $request["code_hash"] = sha1("".$request["code"].$salt);
 
@@ -112,7 +112,7 @@ class CardController extends Controller
 
     public function multipleadd(Request $request) {
 
-        $salt = 'mMae68KKqu!SOsIX';
+        $salt = config('hidden.salt');
 
         function isDate($value) {
             if (!$value) {

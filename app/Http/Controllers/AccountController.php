@@ -24,7 +24,8 @@ class AccountController extends Controller
             $statuses = [
                 'admin',
                 'mediabuyer',
-                'accountant'
+                'accountant',
+                'farmer'
             ];
     	   return view( 'home.showaccount', compact('data', 'statuses') );
         } else {
@@ -33,7 +34,8 @@ class AccountController extends Controller
             $statuses = [
                 'admin',
                 'mediabuyer',
-                'accountant'
+                'accountant',
+                'farmer'
             ];
            return view( 'home.showaccount', compact('data', 'statuses') );
         }
