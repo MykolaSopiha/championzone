@@ -64,7 +64,10 @@ class AccountController extends Controller
             DB::table('users')->where('id', $request['user_id'] )->update(['birthday' => date( "Y-m-d", strtotime($request['birthday']))]);
         }
 
-        DB::table('users')->where('id', $request['user_id'] )->update(['status' => $request['status']]);
+        if ($request['status'] != "") {
+            DB::table('users')->where('id', $request['user_id'] )->update(['status' => $request['status']]);
+        }
+
 
         return redirect('/home/account'.'/'.$request['user_id']);
 

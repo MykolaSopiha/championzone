@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Card;
+use App\User;
 use DB;
 use DataTables;
 
@@ -14,6 +15,15 @@ class APIController extends Controller
     public function test()
 	{
 		return DataTables::eloquent(App\Card::query())->editColumn('code', '{{decrypt($code)}}')->make(true);
+	}
+
+	public function getUsers() {
+		$users = User::select('id','name', 'first_name', 'last_name', 'terra_id', 'status', 'created_at');
+		return DataTables::of($users)->addColumn('edit', function($user)
+			{
+				if ( is_null($user->terra_id) ) $user->terra_id = '';
+				return "<a href='http://localhost/championzone/public/home/account/".$user->id."'><i class='fa fa-pencil' aria-hidden='true'></i></a>";
+			})->make(true);
 	}
 
 	public function getCards(Request $request)
@@ -63,9 +73,7 @@ class APIController extends Controller
 				}
 				$acts .= '</a>';
 
-				return $acts."<a class='remove-btn' href=".url('/home/cards/')."/".$card->id.">
-							<i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i>
-						</a>";
+				return $acts."<a class='remove-btn' href=".url('/home/cards/')."/".$card->id."><i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i></a>";
 			})->make(true);
 		}
 
@@ -87,9 +95,7 @@ class APIController extends Controller
 
 			$res->actions = $acts;
 
-			$res->actions .= "<a class='remove-btn' href=".url('/home/cards/')."/".$res->id.">
-							<i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i>
-						</a>";
+			$res->actions .= "<a class='remove-btn' href=".url('/home/cards/')."/".$res->id."><i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i></a>";
 		}
 
 		$json_data = array(
@@ -101,4 +107,39 @@ class APIController extends Controller
 
 		return $json_data;
 	}
+
+
+	public function createLead(Request $request)
+	{
+
+		if (!isset($_POST['name']) || !isset($_POST['phone']))
+			if (isset($_SERVER['HTTP_REFERER']))
+				header("Location: ".$_SERVER['HTTP_REFERER']);
+			else
+				header("Location: /");
+
+		$data = json_decode(array_keys(json_decode($_POST['result'], true))[0]);
+        
+		$lead = new Lead();
+		$lead->fill([
+			'offer_id' => $data->offer_id,
+			'stream_id' => $data->stream_id,
+			'user_id' => $data->user_id,
+			'name' => $data->name,
+			'phone' => $data->phone,
+			'tz' => $data->tz,
+			'address' => $data->address,
+			'country' => $data->country,
+			'utm_source' => $data->utm_source,
+			'utm_medium' => $data->utm_medium,
+			'utm_campaign' => $data->utm_campaign,
+			'utm_term' => $data->utm_term,
+			'utm_content' => $data->utm_content,
+			'check_sum' => $data->check_sum
+		]);
+		// $card->save();
+		return 500;
+
+	}
+
 }

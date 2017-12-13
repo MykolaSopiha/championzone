@@ -217,29 +217,34 @@ class CardController extends Controller
 
     public function multiple_action(Request $request)
     {
-        switch ($request->card_action) {
-            case '1':
-                DB::table('cards')->whereIn('id', array_keys($request->card))->update(['user_id' => $request->card_user]);
-                break;
+        if (!is_null($request->card)) {
+            switch ($request->card_action) {
+                case '1':
+                    // Change user
+                    if (!is_null($request->card_user)) {
+                        DB::table('cards')->whereIn('id', array_keys($request->card))->update(['user_id' => $request->card_user]);
+                    }
+                    break;
 
-            case '2':
-                // Activate cards
-                DB::table('cards')->whereIn('id', array_keys($request->card))->update(['status' => 'active']);
-                break;
+                case '2':
+                    // Activate cards
+                    DB::table('cards')->whereIn('id', array_keys($request->card))->update(['status' => 'active']);
+                    break;
 
-            case '3':
-                // Disactivate cards
-                DB::table('cards')->whereIn('id', array_keys($request->card))->update(['status' => 'disable']);
-                break;
+                case '3':
+                    // Disactivate cards
+                    DB::table('cards')->whereIn('id', array_keys($request->card))->update(['status' => 'disable']);
+                    break;
 
-            case '4':
-                // Delete cards
-                $this->destroy( array_keys( $request->card ) );
-                break;
+                case '4':
+                    // Delete cards
+                    $this->destroy( array_keys( $request->card ) );
+                    break;
 
-            default:
-                # code...
-                break;
+                default:
+                    # code...
+                    break;
+            }
         }
         
         return redirect('/home/cards');

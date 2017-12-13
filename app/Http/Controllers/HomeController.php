@@ -38,8 +38,7 @@ class HomeController extends Controller
 
     public function users()
     {
-        $users = DB::table('users')->get();
-        return view('home.users', compact('users') );
+        return view('home.users');
     }
 
     public function statistics()

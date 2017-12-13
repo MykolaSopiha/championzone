@@ -1,5 +1,12 @@
 @extends('layouts.app')
 
+
+@section('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+@endsection
+
+
 @section('content')
 
     <!-- begin header -->
@@ -58,7 +65,7 @@
 
                         <div class="form__item{{ $errors->has('rate') ? ' form__item--error' : '' }}">
                             <label for="rate">Курс относительно USD</label>
-                            <input id="rate" type="number" step="0.000001" min="0" name="rate" value="{{ old('rate') }}" required>
+                            <input id="rate" type="number" step="0.000001" min="0" name="rate" value="{{ old('rate') }}" readonly required>
                             @if ($errors->has('rate'))
                                 <p>{{ $errors->first('rate') }}</p>
                             @endif
@@ -83,28 +90,30 @@
 
                 <div class="items__list">
                     <h2>Список затрат</h2>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <td>Дата</td>
-                                <td>Карта</td>
-                                <td>Объем</td>
-                                <td>Курс</td>
-                                <td>Пользователь</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($costs as $cost)
+                    <div class="table-responsive">
+                        <table class="table" id="costs_list">
+                            <thead>
                                 <tr>
-                                    <td>{{ $cost->date }}</td>
-                                    <td>{{ $cost->card_name }} ({{ $cost->currency }}) *{{ substr($cost->card_code, -4) }}</td>
-                                    <td>{{ number_format($cost->value, 2, ',', ' ') }}</td>
-                                    <td>{{ number_format($cost->rate,  6, ',', ' ') }}</td>
-                                    <td>{{ $cost->user_name }}</td>
+                                    <td>Дата</td>
+                                    <td>Карта</td>
+                                    <td>Объем</td>
+                                    <td>Курс</td>
+                                    <td>Пользователь</td>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($costs as $cost)
+                                    <tr>
+                                        <td>{{ $cost->date }}</td>
+                                        <td>{{ $cost->card_name }} ({{ $cost->currency }}) *{{ substr($cost->card_code, -4) }}</td>
+                                        <td>{{ number_format($cost->value, 2, ',', ' ') }}</td>
+                                        <td>{{ number_format($cost->rate,  6, ',', ' ') }}</td>
+                                        <td>{{ $cost->user_name }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
             </div>
@@ -114,5 +123,13 @@
     </main>
     <!-- end main -->
 
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+@endsection
+
+
+@section('scripts_end')
+    <script>
+        $(document).ready(function() {
+            $('#costs_list').DataTable({});
+        });
+    </script>
 @endsection

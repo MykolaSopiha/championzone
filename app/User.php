@@ -29,5 +29,5 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $hidden = ['password', 'terra_id', 'remember_token'];
+    protected $hidden = ['password', 'remember_token'];
 }

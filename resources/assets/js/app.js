@@ -2,6 +2,18 @@ $(document).ready(function () {
 
 
 
+	// BEGIN Menu
+	const menu = $('#menu');
+	const menu_icon = $('.menu_icon');
+
+	$('#menu_btn').click(function() {
+		menu.slideToggle();
+		menu_icon.toggleClass('open');
+	});
+	// END Menu
+
+
+
 	// BEGIN Turn off hover effects on touch screens. BEGIN
 	const isTouchDevice = function() {
 		return ('ontouchstart' in window) || navigator.maxTouchPoints;
@@ -112,7 +124,7 @@ $(document).ready(function () {
 	const NBU_rate = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
 	let current_rate = 1;
 
-	$('#get_rate').on('click', function () {
+	const checkExchangeRate = () => {
 		let currency = $('#card option:selected').attr('title');
 		if (currency === 'USD') {
 			$('#rate').val(1);
@@ -125,7 +137,9 @@ $(document).ready(function () {
 							$('#rate').val( (1/field.rate).toFixed(6) );
 						}
 					});
-				});
+				}).fail( function () {
+					$('#rate').val(0);
+				} );
 			}
 
 			if (currency === 'EUR') {
@@ -140,7 +154,9 @@ $(document).ready(function () {
 						}
 					});
 					$('#rate').val( (EUR/USD).toFixed(6) );
-				});
+				}).fail( function () {
+					$('#rate').val(0);
+				} );
 			}
 
 			if (currency === 'RUB') {
@@ -155,11 +171,17 @@ $(document).ready(function () {
 						}
 					});
 					$('#rate').val( (RUB/USD).toFixed(6) );
-				});
+				}).fail( function () {
+					$('#rate').val(0);
+				} );
 			}
 
 		}
-	});
+	}
+
+	$('#get_rate').on('click', checkExchangeRate);
+	$('select#card').on('change', checkExchangeRate);
+	checkExchangeRate();
 	// END Current exchange rate END
 
 

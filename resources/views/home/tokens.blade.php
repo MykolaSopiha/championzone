@@ -1,5 +1,12 @@
 @extends('layouts.app')
 
+
+@section('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+@endsection
+
+
 @section('content')
 
     <!-- begin header -->
@@ -83,62 +90,64 @@
 
                 <div class="items__list">
                     <h2>Список токенов</h2>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <td>Дата</td>
-                                @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
-                                <td>Пользователь</td>
-                                @endif
-                                <td>Карта (CW2)</td>
-                                <td>Пользователь</td>
-                                <td>Сумма</td>
-                                <td>Валюта</td>
-                                <td>Описание</td>
-                                <td>Отзыв</td>
-                                <td>Статус</td>
-                                <td>Действия</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($tokens as $token)
-                                @if ( $token->status === 'confirmed' )
-                                <tr class="confirmed">
-                                @elseif ( $token->status === 'trash' )
-                                <tr class="trash">
-                                @endif
-                                    <td>{{$token->date}}</td>
+                    <div class="table-responsive">
+                        <table class="table" id="tokens_list">
+                            <thead>
+                                <tr>
+                                    <td>Дата</td>
                                     @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
-                                    <td>{{$token->user_name}}</td>
+                                    <td>Пользователь</td>
                                     @endif
-                                    <td>
-                                        {{
-                                            substr($token->card_code, 0, 4).' '.
-                                            substr($token->card_code, 4, 4).' '.
-                                            substr($token->card_code, 8, 4).' '.
-                                            substr($token->card_code, 12, 4)
-                                        }} 
-                                        ({{ $token->card_cw2 }})
-                                    </td>
-                                    <td>{{ number_format($token->value, 2, ',', ' ') }}</td>
-                                    <td>{{$token->currency}}</td>
-                                    <td>{{$token->action}}</td>
-                                    <td>{{$token->ask}}</td>
-                                    <td>{{$token->ans}}</td>
-                                    <td>{{$token->status}}</td>
-                                    <td>
-                                        @if (($token->status === 'active') || ( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
-                                        <a href="{{url('/home/tokens/')}}/{{$token->id}}">
-                                            <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
-                                        </a>
-                                        @else
-                                        -/-
-                                        @endif
-                                    </td>
+                                    <td>Карта (CW2)</td>
+                                    <td>Пользователь</td>
+                                    <td>Сумма</td>
+                                    <td>Валюта</td>
+                                    <td>Описание</td>
+                                    <td>Отзыв</td>
+                                    <td>Статус</td>
+                                    <td>Действия</td>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($tokens as $token)
+                                    @if ( $token->status === 'confirmed' )
+                                    <tr class="confirmed">
+                                    @elseif ( $token->status === 'trash' )
+                                    <tr class="trash">
+                                    @endif
+                                        <td>{{$token->date}}</td>
+                                        @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
+                                        <td>{{$token->user_name}}</td>
+                                        @endif
+                                        <td>
+                                            {{
+                                                substr($token->card_code, 0, 4).' '.
+                                                substr($token->card_code, 4, 4).' '.
+                                                substr($token->card_code, 8, 4).' '.
+                                                substr($token->card_code, 12, 4)
+                                            }} 
+                                            ({{ $token->card_cw2 }})
+                                        </td>
+                                        <td>{{ number_format($token->value, 2, ',', ' ') }}</td>
+                                        <td>{{$token->currency}}</td>
+                                        <td>{{$token->action}}</td>
+                                        <td>{{$token->ask}}</td>
+                                        <td>{{$token->ans}}</td>
+                                        <td>{{$token->status}}</td>
+                                        <td>
+                                            @if (($token->status === 'active') || ( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
+                                            <a href="{{url('/home/tokens/')}}/{{$token->id}}">
+                                                <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
+                                            </a>
+                                            @else
+                                            -/-
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
             </div>
@@ -148,4 +157,13 @@
     </main>
     <!-- end main -->
 
+@endsection
+
+
+@section('scripts_end')
+    <script>
+        $(document).ready(function() {
+            $('#tokens_list').DataTable({});
+        });
+    </script>
 @endsection

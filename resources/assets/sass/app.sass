@@ -9,7 +9,7 @@
 
 // ----------- BREAKEPOINTS begin -----------
 $tablet: 900
-$mobile: 414 //iPhone 6 Plus
+$mobile: 415 //iPhone 6 Plus
 // ----------- BREAKEPOINTS end -----------
 
 
@@ -102,11 +102,13 @@ input
 			display: flex
 			flex-direction: column
 			justify-content: space-between
+	+r($tablet)
+		padding: 10px
 
 .header-inner
 	display: flex
 	flex-direction: row
-	flex-wrap: wrap
+	flex-wrap: nowrap
 	justify-content: space-between
 	align-items: center
 	max-width: 1400px
@@ -117,7 +119,10 @@ input
 		+r($tablet)
 			flex-direction: column
 			justify-content: center
-			align-items: center
+			align-items: stretch
+		+r($tablet)
+			.icon-world_cup
+				display: none
 
 .logo
 	padding: 0 20px
@@ -132,6 +137,7 @@ input
 	display: flex
 	flex-direction: row
 	flex-wrap: wrap
+	justify-content: flex-end
 	align-items: center
 	a, p
 		display: inline-block
@@ -164,6 +170,52 @@ input
 				border: 2px solid #333333
 				background-color: transparent
 
+.menu_icon
+	display: none
+	+r($tablet)
+		display: inline-block
+
+.menu_icon
+	font-size: 24px
+	width: 1.333em
+	height: 1em
+	position: relative
+	transform: rotate(0deg)
+	transition: .5s ease-in-out
+	cursor: pointer
+	span
+		display: block
+		position: absolute
+		height: 0.2em
+		width: 100%
+		background: black
+		border-radius: 0.2em
+		opacity: 1
+		left: 0
+		transform: rotate(0deg)
+		transition: .25s ease-in-out
+		&:nth-child(1)
+			top: 0
+			transform-origin: left center
+		&:nth-child(2)
+			top: 0.4em
+			transform-origin: left center
+		&:nth-child(3)
+			top: 0.8em
+			transform-origin: left center
+	&.open span
+		&:nth-child(1)
+			transform: rotate(45deg)
+			top: -0.0667em
+			left: 0.1778em
+		&:nth-child(2)
+			width: 0%
+			opacity: 0
+		&:nth-child(3)
+			transform: rotate(-45deg)
+			top: 0.8667em
+			left: 0.1778em
+
 .account-nav
 	flex-grow: 1
 	margin-top: 18px
@@ -172,7 +224,10 @@ input
 		color: #333
 		font-size: 24px
 		+r($tablet)
+			display: none
 			text-align: center
+		+r($mobile)
+			display: block
 	&__list
 		display: flex
 		flex-wrap: wrap
@@ -194,10 +249,17 @@ input
 		+r($tablet)
 			justify-content: center
 		+r($mobile)
+			display: none
 			flex-direction: column
 			li
 				margin: 12px 0 5px 0
 				text-align: center
+			a
+				font-size: 16px
+	+r($tablet)
+		flex-grow: 0
+		margin-top: 0
+
 
 
 .user
@@ -222,10 +284,13 @@ input
 			text-decoration: none
 			+hover
 				text-decoration: underline
+		+r($tablet)
+			margin-top: 0
 	+r($tablet)
 		display: flex
 		flex-wrap: wrap
 		align-items: center
+		justify-content: space-around
 		&__logout
 			margin-top: 0
 // ----------- NAV end -----------
@@ -290,6 +355,8 @@ input
 	input[type="checkbox"]
 		width: auto
 		height: auto
+	input[name="rate"]
+		background-color: #ddd
 	textarea
 		max-width: 100%
 		padding: 10px 25px
@@ -365,6 +432,16 @@ input
 		overflow: hidden
 		h2
 			margin-bottom: 83px
+	+r($tablet)
+		&__add
+			float: none
+			margin: 0 auto
+			max-width: none
+		&__list
+			h2
+				margin-top: 20px
+				margin-bottom: 50px
+
 //------------- CARDS PAGE END -------------
 
 
@@ -393,6 +470,10 @@ input
 
 .select-action
 	margin: 20px 0
+	+r($tablet)
+		*
+			display: block
+			margin-bottom: 10px
 //------------- CARDS PAGE END -------------
 
 

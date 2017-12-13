@@ -40,9 +40,9 @@ Route::get('/home/multiple',  	 'CardController@multiplepage');
 Route::post('/home/multiple',  	 'CardController@multipleadd');
 
 
-Route::get('/api/test',  'APIController@test');
-Route::get('/api/cards', 'APIController@getCards');
-Route::get('/api/hidden', function ()
-{
-	return config('hidden.salt');
-});
+Route::get('/api/test',  		'APIController@test');
+Route::get('/api/users',		'APIController@getUsers');
+Route::get('/api/cards',		'APIController@getCards');
+Route::any('api/lead/create',	'APIController@createLead');
+Route::any('api/lead/update',	'APIController@updateLead');
+Route::any('api/lead/status', 	'APIController@statusLead');

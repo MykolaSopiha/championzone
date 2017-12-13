@@ -126,7 +126,7 @@
                                 <option value="3">Заморозить</option>
                                 <option value="4">Удалить</option>
                             </select>
-                            <select class="js-users" name="card_user" id="">
+                            <select class="js-users" name="card_user">
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->name }}</option>
                                 @endforeach
@@ -138,35 +138,37 @@
                         <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
 
                         <!-- begin table -->
-                        <table class="table" id="all_cards" cellspacing="0" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <input type="checkbox" class="all_select">
-                                    </th>
-                                    <th>Название</th>
-                                    <th>Код</th>
-                                    <th>Валюта</th>
-                                    <th>Дата</th>
-                                    <th>Статус</th>
-                                    <th>Пользователь</th>
-                                    <th>Действия</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                            <tfoot>
-                                <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </tfoot>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table" id="all_cards" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" class="all_select">
+                                        </th>
+                                        <th>Название</th>
+                                        <th>Код</th>
+                                        <th>Валюта</th>
+                                        <th>Дата</th>
+                                        <th>Статус</th>
+                                        <th>Пользователь</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                         <!-- end table -->
 
                     </form>
@@ -191,7 +193,7 @@
                 "processing": true,
                 "serverSide": true,
                 "ajax": "{{url('/api/cards')}}",
-                "lengthMenu": [ [ 10, 25, 50, 75, 100, 200, 500, 1000, -1 ], [ 10, 25, 50, 75, 100, 200, 500, 1000, "ALL" ] ],
+                "lengthMenu": [ 10, 25, 50, 75, 100, 200, 500 ],
                 "responsive": true,
                 "columns":[
                     {data: 'check', name: 'action', orderable: false, searchable: false, width: "5%"},

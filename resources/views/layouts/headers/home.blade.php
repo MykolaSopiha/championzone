@@ -8,8 +8,15 @@
             </div>
 
             <nav class="account-nav" role="navigation">
-                <h2 class="account-nav__page">@yield('page-name')</h2>
-                <ul class="account-nav__list">
+                <div class="account-nav__page" id="menu_btn">
+                    <div class="menu_icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    @yield('page-name')
+                </div>
+                <ul class="account-nav__list" id="menu">
                     @if ( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->status === 'farmer' )
                     <li><a href="{{url('home/cards')}}">Карты</a></li>
                     @endif

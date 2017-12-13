@@ -1,5 +1,12 @@
 @extends('layouts.app')
 
+
+@section('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+@endsection
+
+
 @section('content')
 
     <!-- begin header -->
@@ -13,41 +20,51 @@
     <main class="main" role="main">
         <div class="main-inner">
 
-            <table class="table">
-                <thead>
-                    <tr>
-                        <td>id</td>
-                        <td>Login</td>
-                        <td>First name</td>
-                        <td>Last name</td>
-                        <td>TerraLeads ID</td>
-                        <td>Status</td>
-                        <td>Account created</td>
-                        <td>Edit</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($users as $user) 
-                    <tr>
-                        <td>{{ $user->id }}</td>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->first_name }}</td>
-                        <td>{{ $user->last_name }}</td>
-                        <td>{{ $user->terra_id }}</td>
-                        <td>{{ $user->status }}</td>
-                        <td>{{ $user->created_at }}</td>
-                        <td>
-                            <a href="{{url('/home/account/')}}/{{$user->id}}">
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table" id="all_users" width="100%">
+                    <thead>
+                        <tr>
+                            <td>id</td>
+                            <td>Login</td>
+                            <td>First name</td>
+                            <td>Last name</td>
+                            <td>TerraLeads ID</td>
+                            <td>Status</td>
+                            <td>Account created</td>
+                            <td>Edit</td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
 
         </div>
     </main>
     <!-- end main -->
+@endsection
 
+
+@section('scripts_end')
+    <script>
+        $(document).ready(function() {
+
+            $('#all_users').DataTable( {
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{{url('/api/users')}}",
+                "responsive": true,
+                "columns":[
+                    {data: 'id'},
+                    {data: 'name'},
+                    {data: 'first_name'},
+                    {data: 'last_name'},
+                    {data: 'terra_id'},
+                    {data: 'status'},
+                    {data: 'created_at'},
+                    {data: 'edit', searchable: false}
+                ]
+            });
+
+        });
+    </script>
 @endsection

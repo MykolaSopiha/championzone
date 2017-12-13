@@ -1,5 +1,12 @@
 @extends('layouts.app')
 
+
+@section('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+@endsection
+
+
 @section('content')
 
     <!-- begin header -->
@@ -69,28 +76,30 @@
 
                 <div class="items__list">
                     <h2>Расходы за день</h2>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <td>День</td>
-                                <td>Потрачено, USD</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($stat as $s)
-                            <tr>
-                                <td>{{ $s['day']  }}</td>
-                                <td>{{ $s['cost'] }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td>Всего:</td>
-                                <td>{{ $total }} USD</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table" id="statistics_list">
+                            <thead>
+                                <tr>
+                                    <td>День</td>
+                                    <td>Потрачено, USD</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($stat as $s)
+                                <tr>
+                                    <td>{{ $s['day']  }}</td>
+                                    <td>{{ $s['cost'] }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>Всего:</td>
+                                    <td>{{ $total }} USD</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -98,4 +107,13 @@
     </main>
     <!-- end main -->
 
+@endsection
+
+
+@section('scripts_end')
+    <script>
+        $(document).ready(function() {
+            $('#statistics_list').DataTable({});
+        });
+    </script>
 @endsection
