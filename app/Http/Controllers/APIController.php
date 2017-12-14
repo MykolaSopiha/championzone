@@ -41,14 +41,14 @@ class APIController extends Controller
 		// getting records as per search parameters
 		if( !empty($requestData['columns'][2]['search']['value']) ){   //code
 
-			$code_hash = sha1($requestData['columns'][2]['search']['value'].config('hidden.salt'));
+			$code_hash = sha1($requestData['columns'][2]['search']['value'].env('APP_SALT'));
 			$conditions[] = array( 'code_hash', $code_hash );
 			$results = DB::table('cards')->where($conditions)->get();
 			$totalFiltered = DB::table('cards')->where('code_hash', $code_hash)->count();
 
 		} elseif ( !empty($requestData['search']['value']) && (strlen($requestData['search']['value']) == 16) && is_numeric($requestData['search']['value']) ) {
 
-			$code_hash = sha1($requestData['search']['value'].config('hidden.salt'));
+			$code_hash = sha1($requestData['search']['value'].env('APP_SALT'));
 			$conditions[] = array( 'code_hash', $code_hash );
 			$results = DB::table('cards')->where($conditions)->get();
 			$totalFiltered = DB::table('cards')->where('code_hash', $code_hash)->count();

@@ -48,14 +48,11 @@
                             @endif
                         </div>
 
-                        <div class="form__item{{ $errors->has('code') ? ' form__item--error' : '' }}">
+                        <div class="form__item{{ $errors->has('code_hash') ? ' form__item--error' : '' }}">
                             <label for="code">Номер карты</label>
                             <input id="code" type="text" name="code" placeholder="16 digits only" maxlength="16" required>
-                            @if ($errors->has('code'))
-                                <p>{{ $errors->first('code') }}</p>
-                            @endif
-                            @if ($errors->has('card_code'))
-                                <p>{{ $errors->first('card_code') }}</p>
+                            @if ($errors->has('code_hash'))
+                                <p>{{ $errors->first('code_hash') }}</p>
                             @endif
                         </div>
 
@@ -69,7 +66,7 @@
 
                         <div class="form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
                             <label for="date">Дата</label>
-                            <input id="date" class="card_date" type="text" name="date" value="{{ old('date') }}" placeholder="Введите дату" required>
+                            <input id="date" class="card_date" type="text" name="date" value="{{ substr(old('date'), 0, -2) }}" placeholder="Введите дату" required>
                             @if ($errors->has('date'))
                                 <p>{{ $errors->first('date') }}</p>
                             @endif

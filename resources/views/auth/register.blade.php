@@ -40,7 +40,7 @@
 
             <div class="form__item {{ $errors->has('password') ? 'form__item--error' : '' }}">
                 <label for="password">Пароль</label>
-                <input id="password" type="password" name="password" minlength="4" value="{{ old('password') }}" placeholder="4+ символов" required>
+                <input id="password" type="password" name="password" minlength="4" value="{{ old('password') }}" placeholder="6+ символов" required>
                 @if ($errors->has('email'))
                     <p>{{ $errors->first('password') }}</p>
                 @endif

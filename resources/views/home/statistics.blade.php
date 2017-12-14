@@ -76,12 +76,13 @@
 
                 <div class="items__list">
                     <h2>Расходы за день</h2>
+
                     <div class="table-responsive">
                         <table class="table" id="statistics_list">
                             <thead>
                                 <tr>
-                                    <td>День</td>
-                                    <td>Потрачено, USD</td>
+                                    <th>День</th>
+                                    <th>Потрачено, USD</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -100,6 +101,7 @@
                             </tfoot>
                         </table>
                     </div>
+
                 </div>
             </div>
 

@@ -69,7 +69,7 @@ class CardController extends Controller
 
     public function store(Request $request)
     {
-        $salt = config('hidden.salt');
+        $salt = env('APP_SALT');
         $request['date']      = $request["date"]."/1";
         $request["code_hash"] = sha1("".$request["code"].$salt);
 
@@ -81,6 +81,8 @@ class CardController extends Controller
             'date'      => 'required|date',
             'user'      => 'required|numeric|min:1',
             'currency'  => 'required|size:3'
+        ], [
+            'code_hash.unique' => 'The card code has already been taken.'
         ]);
 
         $request["code"] = encrypt( $request["code"] );
@@ -112,7 +114,7 @@ class CardController extends Controller
 
     public function multipleadd(Request $request) {
 
-        $salt = config('hidden.salt');
+        $salt = env('APP_SALT');
 
         function isDate($value) {
             if (!$value) {

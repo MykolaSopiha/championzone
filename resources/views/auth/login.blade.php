@@ -49,7 +49,7 @@
             </div>
 
             <div class="form__pass-reset">
-                <!-- <a href="{{ url('/password/reset') }}">Забыли пароль?</a> -->
+                <a href="{{ url('/password/reset') }}">Забыли пароль?</a>
             </div>
 
         </form>

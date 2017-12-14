@@ -157,7 +157,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 
 
-        Yajra\Datatables\DataTablesServiceProvider::class,
+        Yajra\Datatables\DatatablesServiceProvider::class,
 
     ],
 
@@ -206,7 +206,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
 
-        'DataTables' => Yajra\Datatables\Facades\DataTables::class,
+        'DataTables' => Yajra\Datatables\Facades\Datatables::class,
 
     ],
 
