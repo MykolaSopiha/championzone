@@ -121,7 +121,7 @@
                                             }} 
                                             ({{ $token->card_cw2 }})
                                         </td>
-                                        <td>{{ number_format($token->value, 2, ',', ' ') }}</td>
+                                        <td>{{html_entity_decode(number_format($token->value, 2, ',', "&nbsp;"))}}</td>
                                         <td>{{$token->currency}}</td>
                                         <td>{{$token->action}}</td>
                                         <td>{{$token->ask}}</td>
