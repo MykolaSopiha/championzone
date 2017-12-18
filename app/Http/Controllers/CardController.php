@@ -107,7 +107,8 @@ class CardController extends Controller
 
 
     public function multiplepage() {
-        return view('home.multiple_page');
+        $users = DB::table('users')->get();
+        return view('home.multiple_page', compact('users'));
     }
 
 
@@ -199,7 +200,7 @@ class CardController extends Controller
                     'code_hash' => sha1("".$code.$salt),
                     'cw2'       => encrypt($cw2),
                     'currency'  => 'RUB',
-                    'user_id'   => Auth::user()->id,
+                    'user_id'   => $request->card_user,
                     'info'      => $info
                 ]);
                 $card->save();
