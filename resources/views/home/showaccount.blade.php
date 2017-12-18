@@ -22,9 +22,16 @@
                 </header>
 
                 <div class="form__item">
-                    <label>Nickname: {{ $data->name }}</label><br>
                     <label>User ID: {{ $data->id }}</label>
                     <input type="hidden" name="user_id" value="{{$data->id}}">
+                </div>
+
+                <div class="form__item{{ $errors->has('name') ? ' form__item--error' : '' }}">
+                    <label for="name">Nickname:</label>
+                    <input id="name" type="text" name="name" value="{{ $data->name }}">
+                    @if ($errors->has('name'))
+                        <p>{{ $errors->first('name') }}</p>
+                    @endif
                 </div>
 
                 <div class="form__item{{ $errors->has('first_name') ? ' form__item--error' : '' }}">

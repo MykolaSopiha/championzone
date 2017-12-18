@@ -43,6 +43,14 @@ class AccountController extends Controller
 
     public function store(Request $request)
     {
+        if ($request['name'] != "") {
+            $user = DB::table('users')->where('id', $request['user_id'] )->get();
+            $user = $user[0];
+            if ($request->name != $user->name) {
+                $this->validate($request, ['name' => 'required|max:255|unique:users']);
+                DB::table('users')->where('id', $request['user_id'] )->update(['name' => $request['name']]);
+            }
+        }
 
         if ($request['first_name'] != "") {
             $this->validate($request, ['first_name' => 'required|max:255']);
