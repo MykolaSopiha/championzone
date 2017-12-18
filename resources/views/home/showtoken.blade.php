@@ -58,7 +58,7 @@
 
                 <div class="form__item{{ $errors->has('ask') ? ' form__item--error' : '' }}">
                     <label for="ask">Описание</label><br>
-                    <textarea name="ask" id="ask" cols="80" rows="5" placeholder="краткий комментарий. не обязательно"></textarea>
+                    <textarea name="ask" id="ask" cols="80" rows="5" placeholder="краткий комментарий. не обязательно">{{$token->ask}}</textarea>
                     @if ($errors->has('value'))
                         <p>{{ $errors->first('value') }}</p>
                     @endif
@@ -66,7 +66,7 @@
 
                 <div class="form__item{{ $errors->has('ans') ? ' form__item--error' : '' }}">
                     <label for="ans">Отзыв</label><br>
-                    <textarea name="ans" id="ask" cols="80" rows="5" placeholder="отзыв бухгалтера. не обязательно"></textarea>
+                    <textarea name="ans" id="ask" cols="80" rows="5" placeholder="отзыв бухгалтера. не обязательно">{{$token->ans}}</textarea>
                     @if ($errors->has('ans'))
                         <p>{{ $errors->first('ans') }}</p>
                     @endif
