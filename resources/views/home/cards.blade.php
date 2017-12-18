@@ -48,7 +48,7 @@
 
                         <div class="form__item{{ $errors->has('code_hash') ? ' form__item--error' : '' }}">
                             <label for="code">Номер карты</label>
-                            <input id="code" type="text" name="code" placeholder="16 digits only" maxlength="16" required>
+                            <input id="code" type="text" name="code" placeholder="16 digits only" required>
                             @if ($errors->has('code_hash'))
                                 <p>{{ $errors->first('code_hash') }}</p>
                             @endif
@@ -183,6 +183,14 @@
 @section('scripts_end')
     <script>
         $(document).ready(function() {
+
+            $('#code').change(function () {
+                let trimmed_code = $(this).val();
+                trimmed_code = $.trim(trimmed_code);
+                trimmed_code = trimmed_code.replace(/ /g,'');
+                trimmed_code = trimmed_code.substring(0, 16);
+                $(this).val(trimmed_code);
+            });
 
             $('#all_cards').DataTable( {
                 "processing": true,
