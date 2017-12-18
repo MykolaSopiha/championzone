@@ -22,6 +22,7 @@
 
     <!-- Styles -->
     <link href="{{ url('css/app.css') }}" rel="stylesheet">
+    @yield('styles')
 
 </head>
 <body id="app-layout">
