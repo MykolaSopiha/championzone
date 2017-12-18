@@ -55,8 +55,12 @@ class AccountController extends Controller
         }
 
         if ($request['terra_id'] != "") {
-            $this->validate($request, ['terra_id' => 'required|numeric|min:0|unique:users']);
-            DB::table('users')->where('id', $request['user_id'] )->update(['terra_id' => $request['terra_id']]);
+            $user = DB::table('users')->where('id', $request['user_id'] )->get();
+            $user = $user[0];
+            if ($request->terra_id != $user->terra_id) {
+                $this->validate($request, ['terra_id' => 'required|numeric|min:0|unique:users']);
+                DB::table('users')->where('id', $request['user_id'] )->update(['terra_id' => $request['terra_id']]);
+            }
         }
 
         if ($request['birthday'] != "0000-00-00") {

@@ -28,8 +28,17 @@
                         </header>
 
                         <div>
-                            <p>Формат: ХХХХХХХХХХХХХХХХ ММ/ГГГГ CW2 .... </p><br>
-                            <p>Введите данные:</p><br>
+                            <p><strong>Формат: ХХХХХХХХХХХХХХХХ ММ/ГГГГ CW2 .... </strong></p>
+                            <br>
+                            <p>Выберите пользователя для привязки карт:</p>
+                            <br>
+                            <select name="card_user">
+                                @foreach ($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                            <p><br>Введите данные:</p>
+                            <br>
                             <textarea style="max-width: 100%" name="cards" id="" cols="300" rows="10"></textarea>
                         </div>
 
