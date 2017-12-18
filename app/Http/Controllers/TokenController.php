@@ -137,7 +137,8 @@ class TokenController extends Controller
         $token = DB::table('tokens')->where('id', $id)->limit(1)->get();
         $token = $token[0];
 
-        if ($token->user_id === Auth::user()->id || Auth::user()->status === 'accountant' || Auth::user()->status === 'admin') {            
+        if (Auth::user()->id === $token->user_id || Auth::user()->status === 'accountant' || Auth::user()->status === 'admin') {            
+
             $token->card_code = decrypt($token->card_code);
             $token->value = $token->value/100; 
             $cards = DB::table('cards')->where('id', $token->card_id)->limit(1)->get();
