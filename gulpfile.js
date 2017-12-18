@@ -4,8 +4,8 @@ require('laravel-elixir-svgstore');
 require('laravel-elixir-webpack');
 require('laravel-elixir-livereload');
 
-	{ collapseGroups: false }
 var svgminPlugins = [
+	{ collapseGroups: false },
 	{ removeUnknownsAndDefaults: false },
 	{ removeUselessStrokeAndFill: false },
 ];
@@ -23,17 +23,7 @@ var svgminPlugins = [
 
 elixir(function(mix) {
 	mix.sass('app.sass')
-		.styles([
-			'libs/jquery-ui.css',
-			'libs/inputmask.min.css'
-		])
-		.scripts([
-			'libs/jquery-2.2.2.min.js',
-			'libs/jquery-ui.js',
-			'libs/jquery.dataTables.min.js',
-			'libs/datepicker-ru.js',
-			'app.js'
-		], 'public/js/app.js')
+		.webpack('app.js')
 		.svgstore('resources/assets/svg', 'public/img/', 'sprite.svg', svgminPlugins)
 		.livereload();
 });

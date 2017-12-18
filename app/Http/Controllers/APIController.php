@@ -63,6 +63,9 @@ class APIController extends Controller
 				$user = DB::table('users')->where('id', $card->user_id)->limit(1)->get();
 				$user = $user[0];
 				return "<a href='".url('home/cards')."/".$card->id."'>".$user->name."</a>";
+			})->editColumn('date', function($card)
+			{
+				return $card->date = substr($card->date, 0, 4)."-".substr($card->date, -2);
 			})->addColumn('actions', function($card)
 			{
 				$acts = "<a href='".url('/home/cards/')."/".$card->id."/edit'>";
@@ -80,6 +83,7 @@ class APIController extends Controller
 		foreach ($results as $res) {
 			// $res->check = "<input type='checkbox' class='shift_select' name='card[".$card->id."]'>";
 			$res->code = decrypt($res->code);
+			$res->date = substr($res->date, 0, 4)."-".substr($res->date, -2);
 			$res->check = "<input type='checkbox' class='shift_select' name='card[26]'>";
 			$user = DB::table('users')->where('id', $res->user_id)->limit(1)->get();
 			$user = $user[0];

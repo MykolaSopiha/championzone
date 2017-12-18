@@ -1,5 +1,10 @@
-$(document).ready(function () {
+window.$ = window.jQuery = require('jquery');
+window.$ = $.extend(require('jquery-ui-bundle'));
+var dt = require('datatables');
 
+
+
+$(document).ready(function () {
 
 
 	// BEGIN Menu
@@ -229,11 +234,15 @@ $(document).ready(function () {
 
 
 
-	// BEGIN Select all checkboxes in table BEGIN
+	// BEGIN tables
 	$('.js-table').DataTable();
-	// END Select all checkboxes in table END
+	$('#tokens_list').DataTable();
+	// END tables
 
 
+	// BEGIN tables
+	// $('.modal_token').modal();
+	// END tables
 
 	// BEGIN Delete resource request BEGIN
 	$('.js-form').on('click', '.remove-btn', function (e) {

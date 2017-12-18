@@ -1,19 +1,12 @@
 @extends('layouts.app')
 
 
-@section('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
-@endsection
-
-
 @section('content')
 
     <!-- begin header -->
     @section('page-name') Токены @endsection
     @include('layouts.headers.home')
     <!-- end header -->
-
 
 
     <!-- begin main -->
@@ -99,13 +92,13 @@
                                     <td>Пользователь</td>
                                     @endif
                                     <td>Карта (CW2)</td>
-                                    <td>Пользователь</td>
                                     <td>Сумма</td>
                                     <td>Валюта</td>
+                                    <td>Действие</td>
                                     <td>Описание</td>
                                     <td>Отзыв</td>
                                     <td>Статус</td>
-                                    <td>Действия</td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -133,14 +126,20 @@
                                         <td>{{$token->action}}</td>
                                         <td>{{$token->ask}}</td>
                                         <td>{{$token->ans}}</td>
-                                        <td>{{$token->status}}</td>
+                                        <td>
+                                        @if (( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
+                                            <a href="#myModal" class="modal_token" data-toggle="modal" data-id="{{$token->id}}" data-status="{{$token->status}}">{{$token->status}}</a>
+                                        @else
+                                            {{$token->status}}
+                                        @endif
+                                        </td>
                                         <td>
                                             @if (($token->status === 'active') || ( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
-                                            <a href="{{url('/home/tokens/')}}/{{$token->id}}">
-                                                <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
-                                            </a>
+                                                <a href="{{url('/home/tokens/')}}/{{$token->id}}">
+                                                    <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
+                                                </a>
                                             @else
-                                            -/-
+                                                -/-
                                             @endif
                                         </td>
                                     </tr>
@@ -157,13 +156,27 @@
     </main>
     <!-- end main -->
 
-@endsection
 
+    <!-- Modal begin -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal end -->
 
-@section('scripts_end')
-    <script>
-        $(document).ready(function() {
-            $('#tokens_list').DataTable({});
-        });
-    </script>
 @endsection

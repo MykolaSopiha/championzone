@@ -88,6 +88,7 @@
                 <!-- end item__add -->
 
 
+                <!-- begin items__list -->
                 <div class="items__list">
                     <h2>Список затрат</h2>
                     <div class="table-responsive">
@@ -115,6 +116,7 @@
                         </table>
                     </div>
                 </div>
+                <!-- end items__list -->
 
             </div>
             <!-- end items -->
