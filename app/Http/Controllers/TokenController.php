@@ -36,9 +36,9 @@ class TokenController extends Controller
 
 
         if (Auth::user()->status === 'accountant' || Auth::user()->status === 'admin') {
-            $tokens = DB::table('tokens')->get();
+            $tokens = DB::table('tokens')->orderBy('id', 'desc')->get();
         } else {
-            $tokens = DB::table('tokens')->where('user_id', Auth::user()->id)->get();
+            $tokens = DB::table('tokens')->where('user_id', Auth::user()->id)->orderBy('id', 'desc')->get();
         }
 
         foreach ($tokens as $token) {
