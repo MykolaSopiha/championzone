@@ -83,70 +83,76 @@
 
                 <div class="items__list">
                     <h2>Список токенов</h2>
-                    <div class="table-responsive">
-                        <table class="table" id="tokens_list">
-                            <thead>
-                                <tr>
-                                    <td>Дата</td>
-                                    @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
-                                    <td>Пользователь</td>
-                                    @endif
-                                    <td>Карта (CW2)</td>
-                                    <td>Сумма</td>
-                                    <td>Валюта</td>
-                                    <td>Действие</td>
-                                    <td>Описание</td>
-                                    <td>Отзыв</td>
-                                    <td>Статус</td>
-                                    <td></td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($tokens as $token)
-                                    @if ( $token->status === 'confirmed' )
-                                    <tr class="confirmed">
-                                    @elseif ( $token->status === 'trash' )
-                                    <tr class="trash">
-                                    @endif
-                                        <td>{{$token->date}}</td>
+                    <form class="js-form" action="#" method="post">
+                        <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
+                        <div class="table-responsive">
+                            <table class="table" id="tokens_list">
+                                <thead>
+                                    <tr>
+                                        <td>Дата</td>
                                         @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
-                                        <td>{{$token->user_name}}</td>
+                                        <td>Пользователь</td>
                                         @endif
-                                        <td>
-                                            {{
-                                                substr($token->card_code, 0, 4).' '.
-                                                substr($token->card_code, 4, 4).' '.
-                                                substr($token->card_code, 8, 4).' '.
-                                                substr($token->card_code, 12, 4)
-                                            }} 
-                                            ({{ $token->card_cw2 }})
-                                        </td>
-                                        <td>{{html_entity_decode(number_format($token->value, 2, ',', "&nbsp;"))}}</td>
-                                        <td>{{$token->currency}}</td>
-                                        <td>{{$token->action}}</td>
-                                        <td>{{$token->ask}}</td>
-                                        <td>{{$token->ans}}</td>
-                                        <td>
-                                        @if (( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
-                                            <a href="#myModal" class="modal_token" data-toggle="modal" data-id="{{$token->id}}" data-status="{{$token->status}}">{{$token->status}}</a>
-                                        @else
-                                            {{$token->status}}
-                                        @endif
-                                        </td>
-                                        <td>
-                                            @if (($token->status === 'active') || ( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
-                                                <a href="{{url('/home/tokens/')}}/{{$token->id}}">
-                                                    <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
-                                                </a>
-                                            @else
-                                                -/-
-                                            @endif
-                                        </td>
+                                        <td>Карта (CW2)</td>
+                                        <td>Сумма</td>
+                                        <td>Валюта</td>
+                                        <td>Действие</td>
+                                        <td>Описание</td>
+                                        <td>Отзыв</td>
+                                        <td>Статус</td>
+                                        <td></td>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    @foreach ($tokens as $token)
+                                        @if ( $token->status === 'confirmed' )
+                                        <tr class="confirmed">
+                                        @elseif ( $token->status === 'trash' )
+                                        <tr class="trash">
+                                        @endif
+                                            <td>{{$token->date}}</td>
+                                            @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
+                                            <td>{{$token->user_name}}</td>
+                                            @endif
+                                            <td>
+                                                {{
+                                                    substr($token->card_code, 0, 4).' '.
+                                                    substr($token->card_code, 4, 4).' '.
+                                                    substr($token->card_code, 8, 4).' '.
+                                                    substr($token->card_code, 12, 4)
+                                                }} 
+                                                ({{ $token->card_cw2 }})
+                                            </td>
+                                            <td>{{html_entity_decode(number_format($token->value, 2, ',', "&nbsp;"))}}</td>
+                                            <td>{{$token->currency}}</td>
+                                            <td>{{$token->action}}</td>
+                                            <td>{{$token->ask}}</td>
+                                            <td>{{$token->ans}}</td>
+                                            <td>
+                                            @if (( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
+                                                <a href="#myModal" class="modal_token" data-toggle="modal" data-id="{{$token->id}}" data-status="{{$token->status}}">{{$token->status}}</a>
+                                            @else
+                                                {{$token->status}}
+                                            @endif
+                                            </td>
+                                            <td>
+                                                @if (($token->status === 'active') || ( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
+                                                    <a href="{{url('/home/tokens/')}}/{{$token->id}}">
+                                                        <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
+                                                    </a>
+                                                    <a class='remove-btn' href="{{url('/home/tokens/')}}/{{$token->id}}">
+                                                        <i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i>
+                                                    </a>
+                                                @else
+                                                    -/-
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
                 </div>
 
             </div>

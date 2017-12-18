@@ -137,7 +137,8 @@ class TokenController extends Controller
         $token = DB::table('tokens')->where('id', $id)->limit(1)->get();
         $token = $token[0];
 
-        if (Auth::user()->id === $token->user_id || Auth::user()->status === 'accountant' || Auth::user()->status === 'admin') {            
+
+        if (Auth::user()->id == $token->user_id || Auth::user()->status == 'accountant' || Auth::user()->status == 'admin') {            
 
             $token->card_code = decrypt($token->card_code);
             $token->value = $token->value/100; 
@@ -201,6 +202,19 @@ class TokenController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if ( is_array($id) ) {
+            foreach ($id as $i) {
+                DB::table('tokens')->where([
+                    ['id', $i],
+                    ['status', 'active']
+                ])->delete();
+            }
+        } else {
+            DB::table('tokens')->where([
+                ['id', $id],
+                ['status', 'active']
+            ])->delete();
+        }
+        return redirect('/home/tokens');
     }
 }

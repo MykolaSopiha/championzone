@@ -32,25 +32,25 @@ $(document).ready(function () {
 
 	// BEGIN Post request function BEGIN
 	const post = function(path, method, parameters) {
-		let form = $('<form></form>');
+		var $form = $("<form></form>");
 
-		form.attr("method", method);
-		form.attr("action", path);
+		$form.attr("method", method);
+		$form.attr("action", path);
 
 		$.each(parameters, function(key, value) {
-			let field = $('<input></input>');
+			var $field = $("<input></input>");
 
-			field.attr("type", "hidden");
-			field.attr("name", key);
-			field.attr("value", value);
+			$field.attr("type", "hidden");
+			$field.attr("name", key);
+			$field.attr("value", value);
 
-			form.append(field);
+			$form.append($field);
 		});
 
 		// The form needs to be a part of the document in
 		// order for us to be able to submit it.
-		$(document.body).append(form);
-		form.submit();
+		$(document.body).append($form);
+		$form.submit();
 	}
 	// END Post request function END
 
@@ -116,7 +116,7 @@ $(document).ready(function () {
 
 	// BEGIN Make 2 decimals for money value BEGIN
 	$('.money_input').on('blur', function () {
-		let money = $(this).val();
+		var money = $(this).val();
 		money = Number.parseFloat(money);
 		money = (money).toFixed(2);
 		$(this).val(money);
@@ -126,10 +126,10 @@ $(document).ready(function () {
 
 	// BEGIN Current exchange rate BEGIN
 	const NBU_rate = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
-	let current_rate = 1;
+	var current_rate = 1;
 
-	const checkExchangeRate = () => {
-		let currency = $('#card option:selected').attr('title');
+	const checkExchangeRate = function() {
+		var currency = $('#card option:selected').attr('title');
 		if (currency === 'USD') {
 			$('#rate').val(1);
 		} else {
@@ -148,7 +148,7 @@ $(document).ready(function () {
 
 			if (currency === 'EUR') {
 				$.getJSON(NBU_rate, function(result){
-					let USD = 1, EUR = 1;
+					var USD = 1, EUR = 1;
 					$.each(result, function(i, field){
 						if (field.r030 === 840) {
 							USD = field.rate;
@@ -165,7 +165,7 @@ $(document).ready(function () {
 
 			if (currency === 'RUB') {
 				$.getJSON(NBU_rate, function(result){
-					let USD = 1, RUB = 1;
+					var USD = 1, RUB = 1;
 					$.each(result, function(i, field){
 						if (field.r030 === 840) {
 							USD = field.rate;
@@ -216,8 +216,8 @@ $(document).ready(function () {
 	// BEGIN Select all checkboxes in table BEGIN
 	const selectManyCheckboxes = function () {
 
-		let form = $(this).closest('form');
-		let all_checkbxs = form.find("input[type='checkbox']");
+		var form = $(this).closest('form');
+		var all_checkbxs = form.find("input[type='checkbox']");
 
 		if ( $(this).prop('checked') === false ) {
 			all_checkbxs.prop('checked', false);
@@ -246,12 +246,12 @@ $(document).ready(function () {
 	// BEGIN Delete resource request BEGIN
 	$('.js-form').on('click', '.remove-btn', function (e) {
 		e.preventDefault();
-		let url = $(this).attr('href');
-		let form = $('.js-form').attr({
+		var url = $(this).attr('href');
+		var form = $('.js-form').attr({
 			'action':url
 		});
-		let token = $(form).find('#token').val();
-		let deleteInput = $('<input>').attr({
+		var token = $(form).find('#token').val();
+		var deleteInput = $('<input>').attr({
 			'type' : 'hidden',
 			'name' : '_method',
 			'value' : 'delete'
@@ -267,8 +267,8 @@ $(document).ready(function () {
 	$('.js-submit').on('click', function (e) {
 
 		e.preventDefault();
-		let form = $('.js-form');
-		let action = $('.js-action').val();
+		var form = $('.js-form');
+		var action = $('.js-action').val();
 
 		form.submit();
 
