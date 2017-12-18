@@ -67,7 +67,7 @@ $(document).ready(function () {
 			dateFormat: "yy/mm",
 			changeMonth: true,
 			changeYear: true,
-			yearRange: "-5:+5",
+			yearRange: "-5:+10",
 			showButtonPanel: true,
 			onClose: function(dateText, inst) {
 				function isDonePressed(){
@@ -235,7 +235,9 @@ $(document).ready(function () {
 
 	// BEGIN tables
 	$('.js-table').DataTable();
-	$('#tokens_list').DataTable();
+	$('#tokens_list').DataTable({
+		"order": [8, "asc"]
+	});
 	// END tables
 
 
