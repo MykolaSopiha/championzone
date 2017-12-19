@@ -6,6 +6,15 @@
     .dropdown-menu {
         min-width: 0 !important
     }
+    .chosen-container {
+        font-size: 18px !important
+    }
+    .chosen-single {
+        height: 70px !important;
+        line-height: 70px !important;
+        background: none !important;
+        text-align: center
+    }
 </style>
 @endsection
 
@@ -38,13 +47,8 @@
 
                         <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
                             <label for="card">Карта</label>
-                            <select name="card" id="card">
-                                @foreach ($cards as $card)
-                                    <option value="{{ $card->id }}" title="{{ $card->currency }}">
-                                        {{ $card->name }} 
-                                        ({{ $card->currency }}) 
-                                        *{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} 
-                                    </option>
+                            <select name="card" id="card" class="chosen-js-select">
+                                @foreach ($cards as $card)<option value="{{ $card->id }}" title="{{ $card->currency }}">...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
                                 @endforeach
                             </select>
                             @if ($errors->has('card'))
@@ -118,6 +122,8 @@
                                         <tr class="confirmed">
                                         @elseif ( $token->status === 'trash' )
                                         <tr class="trash">
+                                        @else
+                                        <tr>
                                         @endif
                                             <td>{{$token->date}}</td>
                                             @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
@@ -206,5 +212,8 @@
         </div>
     </div>
     <!-- Modal end -->
+@endsection
 
+
+@section('scripts_end')
 @endsection

@@ -2,6 +2,8 @@ window.$ = window.jQuery = require('jquery');
 window.$ = $.extend(require('jquery-ui-bundle'));
 var dt = require('datatables');
 var bootstrap = require('bootstrap-sass');
+var chosen_js = require('chosen-js');
+
 
 
 $(document).ready(function () {
@@ -17,6 +19,16 @@ $(document).ready(function () {
 	});
 	// END Menu
 
+
+
+	// BEGIN BEEP  Notification
+
+	// END BEEP  Notification
+
+
+	// BEGIN Chosen-JS Init
+	$('.chosen-js-select').chosen();
+	// END Chosen-JS Init
 
 
 	// BEGIN Turn off hover effects on touch screens. BEGIN
