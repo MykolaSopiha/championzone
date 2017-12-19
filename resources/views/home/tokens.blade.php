@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 
+@section('styles')
+<style>
+    .dropdown-menu {
+        min-width: 0 !important
+    }
+</style>
+@endsection
+
+
 @section('content')
 
     <!-- begin header -->
@@ -130,7 +139,20 @@
                                             <td>{{$token->ans}}</td>
                                             <td>
                                             @if (( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
-                                                <a href="#myModal" class="modal_token" data-toggle="modal" data-id="{{$token->id}}" data-status="{{$token->status}}">{{$token->status}}</a>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{$token->status}}<span class="caret"></span></button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a href="{{url('/home/tokens/')}}/{{$token->id}}/edit?status=active">active</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="{{url('/home/tokens/')}}/{{$token->id}}/edit?status=confirmed">confirmed</a>
+                                                        </li>
+                                                        <li>
+                                                            <a href="{{url('/home/tokens/')}}/{{$token->id}}/edit?status=trash">trash</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             @else
                                                 {{$token->status}}
                                             @endif
@@ -164,7 +186,7 @@
 
 
     <!-- Modal begin -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modal_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">

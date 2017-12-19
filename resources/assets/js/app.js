@@ -1,6 +1,7 @@
 window.$ = window.jQuery = require('jquery');
 window.$ = $.extend(require('jquery-ui-bundle'));
 var dt = require('datatables');
+var bootstrap = require('bootstrap-sass');
 
 
 $(document).ready(function () {

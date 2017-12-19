@@ -164,7 +164,30 @@ class TokenController extends Controller
      */
     public function edit($id)
     {
-        //
+        $token = DB::table('tokens')->where('id', $id)->limit(1)->get();
+        $token = $token[0];
+
+        if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || ($token->user_id === Auth::user()->id))
+        if (isset($_GET['status'])) {
+
+            $status = $_GET['status'];
+            
+            switch ($status) {
+                            case 'active':
+                                $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'active']);
+                                break;
+                            case 'confirmed':
+                                $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'confirmed']);
+                                break;
+                            case 'trash':
+                                $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'trash']);
+                                break;
+                            default:
+                                # code...
+                                break;
+                        }            
+        }
+        return redirect('/home/tokens');
     }
 
     /**
@@ -176,20 +199,12 @@ class TokenController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // DB::update("update tokens set action = ? and ask = ? and ans = ? where id = ?", [
-        //     $request->action,
-        //     $request->ask,
-        //     $request->ans,
-        //     $id
-        // ]);
-
-        DB::table('tokens')->where('id', $id)->update([
-            'action' => $request->action,
-            'value'  => intval( round($request["value"], 2)*100 ),
-            'ask'    => $request->ask,
-            'ans'    => $request->ans,
-            'status' => $request->status
-        ]);
+        $request["value"] = intval( round($request["value"], 2)*100 );
+        
+        DB::table('tokens')->where('id', $id)->update(request()->except([
+            '_token',
+            '_method'
+        ]));
 
         return redirect('/home/tokens');
     }
