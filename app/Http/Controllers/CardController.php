@@ -103,7 +103,7 @@ class CardController extends Controller
             return redirect('/home/cards');
 
         }
-        return 0;
+
         $this->validate($request, [
             'name'      => 'max:255|unique:cards',
             'code'      => 'required|numeric|digits:16',
