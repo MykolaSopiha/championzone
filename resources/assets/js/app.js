@@ -20,10 +20,31 @@ $(document).ready(function () {
 	// END Menu
 
 
+	// BEGIN BEEP Notification
+	$('input[name="payment_sys"]').on('click', function () {
 
-	// BEGIN BEEP  Notification
+		var payment_sys = $(this).val();
+		var $inputs = $('input#date, input#cw2');
+		var $blocks = $inputs.parent('div');
+		var $options = $('select#currency option:not([value="USD"],[value="RUB"])');
 
-	// END BEEP  Notification
+		if (payment_sys == 1) {
+			$inputs.removeAttr('required');
+			$blocks.slideUp();
+			$options.attr('disabled','disabled');
+		} else {
+			$inputs.attr('required', 'true');
+			$blocks.slideDown();
+			$options.removeAttr('disabled');
+		}
+
+	});
+	// END BEEP Notification
+
+
+	// BEGIN BEEP Notification
+
+	// END BEEP Notification
 
 
 	// BEGIN Chosen-JS Init

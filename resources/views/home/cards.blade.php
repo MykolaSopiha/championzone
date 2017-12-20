@@ -46,6 +46,15 @@
                             @endif
                         </div>
 
+                        <div class="form__item">
+                            <label>Платежная система</label>
+                            <p>
+                                <input type="radio" name="payment_sys" value="0" required checked>Обычная карта
+                                <br>
+                                <input type="radio" name="payment_sys" value="1" required>QIWI
+                            </p>
+                        </div>
+
                         <div class="form__item{{ $errors->has('code_hash') ? ' form__item--error' : '' }}">
                             <label for="code">Номер карты</label>
                             <input id="code" type="text" name="code" placeholder="16 digits only" required>

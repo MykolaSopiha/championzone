@@ -106,7 +106,7 @@
                                         @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
                                         <td>Пользователь</td>
                                         @endif
-                                        <td>Карта (CW2)</td>
+                                        <td>Карта</td>
                                         <td>Сумма</td>
                                         <td>Валюта</td>
                                         <td>Действие</td>
@@ -129,6 +129,9 @@
                                             @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
                                             <td>{{$token->user_name}}</td>
                                             @endif
+                                            @if ($token->card_cw2 == "QIWI")
+                                            <td>{{$token->card_code}} ({{ $token->card_cw2 }})</td>
+                                            @else
                                             <td>
                                                 {{
                                                     substr($token->card_code, 0, 4).' '.
@@ -138,6 +141,7 @@
                                                 }} 
                                                 ({{ $token->card_cw2 }})
                                             </td>
+                                            @endif
                                             <td>{{html_entity_decode(number_format($token->value, 2, ',', "&nbsp;"))}}</td>
                                             <td>{{$token->currency}}</td>
                                             <td>{{$token->action}}</td>

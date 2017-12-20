@@ -73,6 +73,37 @@ class CardController extends Controller
         $request['date']      = $request["date"]."/1";
         $request["code_hash"] = sha1("".$request["code"].$salt);
 
+        if ($request->payment_sys == 1) {
+            
+            $this->validate($request, [
+                'name'      => 'max:255|unique:cards',
+                'code'      => 'required',
+                'code_hash' => 'required|unique:cards',
+                'user'      => 'required|numeric|min:1',
+                'currency'  => 'required|size:3'
+            ], [
+                'code_hash.unique' => 'The card code has already been taken.'
+            ]);
+
+            $request["code"] = encrypt($request["code"]);
+            $request["cw2"]  = encrypt('QIWI');
+
+            $card = new Card();
+            $card->fill([
+                'name'      => $request["name"],
+                'code'      => $request["code"],
+                'code_hash' => $request["code_hash"],
+                'cw2'       => $request["cw2"],
+                'currency'  => $request["currency"],
+                'user_id'   => $request["user"],
+                'status'    => 'active'
+            ]);
+            $card->save();
+
+            return redirect('/home/cards');
+
+        }
+        return 0;
         $this->validate($request, [
             'name'      => 'max:255|unique:cards',
             'code'      => 'required|numeric|digits:16',

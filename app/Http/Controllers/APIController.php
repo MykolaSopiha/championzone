@@ -113,6 +113,20 @@ class APIController extends Controller
 	}
 
 
+
+	public function tokensNotification(Request $request)
+	{
+		if (Auth::user()->status === "accountant") {
+			return DB::table('tokens')->where('status', 'active')->count();
+		}
+		return DB::table('tokens')->where([
+			'user_id' => Auth::user()->id,
+			'status'  => 'confirmed'
+		])->count();
+	}
+
+
+
 	public function createLead(Request $request)
 	{
 
