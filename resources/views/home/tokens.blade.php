@@ -194,6 +194,13 @@
     </main>
     <!-- end main -->
 
+    <!-- begin beep -->
+    <div class="beep" style="visibility: hidden">
+        <audio id="sound1">
+            <source src="{{ url('audio/filling-your-inbox.mp3') }}">
+        </audio>
+    </div>
+    <!-- end beep -->
 
     <!-- Modal begin -->
     <div class="modal fade" id="modal_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -220,4 +227,38 @@
 
 
 @section('scripts_end')
+    <script>
+        const BEEP = (soundObj) => {
+            let sound = document.getElementById(soundObj);
+            if (sound)
+                sound.play();
+        }
+
+        var tokens_count   = null;
+        let checkTokensUrl = "{{url('/api/token_notify/')}}";
+
+        const checkTokens = () => {
+            $.ajax({
+                url: checkTokensUrl,
+                success: function(result){
+                    console.log(result);
+
+                    if (tokens_count == null) {
+                        tokens_count = result;
+                        return;
+                    }
+
+                    if (tokens_count < result) {
+                        BEEP("sound1");
+                        alert("Новый токен! Обновите страницу");
+                    }
+
+                    tokens_count = result;
+                }
+            });
+        }
+
+        checkTokens();
+        setInterval(checkTokens, 30000);
+    </script>
 @endsection

@@ -9,6 +9,7 @@ use App\Card;
 use App\User;
 use DB;
 use DataTables;
+use Auth;
 
 class APIController extends Controller
 {
@@ -114,15 +115,16 @@ class APIController extends Controller
 
 
 
-	public function tokensNotification(Request $request)
+	public function checkTokens(Request $request)
 	{
-		if (Auth::user()->status === "accountant") {
+		if (Auth::user()->status === "accountant" || Auth::user()->status === "admin") {
 			return DB::table('tokens')->where('status', 'active')->count();
 		}
-		return DB::table('tokens')->where([
-			'user_id' => Auth::user()->id,
-			'status'  => 'confirmed'
-		])->count();
+		return 0;
+		// return DB::table('tokens')->where([
+		// 	'user_id' => Auth::user()->id,
+		// 	'status'  => 'confirmed'
+		// ])->count();
 	}
 
 

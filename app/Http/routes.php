@@ -46,3 +46,4 @@ Route::get('/api/cards',		'APIController@getCards');
 Route::any('/api/lead/create',	'APIController@createLead');
 Route::any('/api/lead/update',	'APIController@updateLead');
 Route::any('/api/lead/status', 	'APIController@statusLead');
+Route::get('/api/token_notify',	'APIController@checkTokens');
