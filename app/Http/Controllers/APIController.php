@@ -78,7 +78,7 @@ class APIController extends Controller
 				}
 
 				if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
-					return "<p class='text-".$color."'>".$token->status."</p>";
+					return "<p class='text-".$color."'><strong>".$token->status."</strong></p>";
 				} else {
 					return '<div class="dropdown">
                                 <button class="btn btn-'.$color.' dropdown-toggle" type="button" data-toggle="dropdown">'.$token->status.'<span class="caret"></span></button>
@@ -97,7 +97,7 @@ class APIController extends Controller
 				}
 			})->addColumn('tools', function($token)
 			{
-				if ($token->status == 'active') {
+				if ($token->status == 'active' || Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
 					return '<td>
 							<a href="'.url('home/tokens').'/'.$token->id.'">
                                 <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>

@@ -25,12 +25,12 @@ class TokenController extends Controller
 
     public function index()
     {
-        $cards_permission = [];
+        $cards_coditions = [];
         if ( Auth::user()->status !== 'admin') {
                 $cards_coditions[] = ['status', 'active'];
                 $cards_coditions[] = ['user_id', Auth::user()->id];
         }
-        $cards = DB::table('cards')->where($cards_permission)->get();
+        $cards = DB::table('cards')->where($cards_coditions)->get();
 
         return view('home/tokens', compact('cards'));
     }

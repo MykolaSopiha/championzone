@@ -333,9 +333,55 @@ class CardController extends Controller
      */
     public function update(Request $request, $id)
     {
-        DB::update("update cards set user_id = ? where id = ?", [ $request->user ,$id ]);
+        // DB::update("update cards set user_id = ? where id = ?", [ $request->user ,$id ]);
         
-        return redirect('/home/cards');
+        // return redirect('/home/cards');
+
+        
+        // DB::table('cards')->where('id', $id)->update(request()->except([
+        //     '_token',
+        //     '_method'
+        // ]));
+
+        // return redirect('/home/cards');
+
+        $salt = env('APP_SALT');
+
+        if ($request['name'] != "") {
+            $this->validate($request, ['name' => 'required|max:255']);
+            DB::table('cards')->where('id', $id)->update(['name' => $request['name']]);
+        }
+
+        if ($request['type'] != "") {
+            $this->validate($request, ['type' => 'required|numeric|min:0']);
+            DB::table('cards')->where('id', $id)->update(['type' => $request['type']]);
+        }
+
+        if ($request['code'] != "") {
+            $this->validate($request, ['code' => 'required|max:255']);
+            DB::table('cards')->where('id', $id)->update(['code' => encrypt($request['code'])]);
+            DB::table('cards')->where('id', $id)->update(['code_hash' => sha1("".$request["code"].$salt)]);
+        }
+
+        if ($request['cw2'] != "") {
+            $this->validate($request, ['code' => 'required|max:255']);
+            DB::table('cards')->where('id', $id)->update(['cw2' => encrypt($request['cw2'])]);
+        }
+
+        if (isset($request['date'])) {
+            $this->validate($request, ['date' => 'required']);
+            DB::table('cards')->where('id', $id )->update(['date' => date( "Y-m-d", strtotime($request['date']))]);
+        }
+
+        if ($request['currency'] != "") {
+            DB::table('cards')->where('id', $id)->update(['currency' => $request['currency']]);
+        }
+
+        if ($request['user'] != "") {
+            DB::table('cards')->where('id', $id)->update(['user_id' => $request['user']]);
+        }
+
+        return redirect('/home/cards'.'/'.$request['user_id']);
     }
 
     /**
