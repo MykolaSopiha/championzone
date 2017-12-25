@@ -278,7 +278,7 @@
                 });
             }
             checkTokens();
-            setInterval(checkTokens, 3000);
+            setInterval(checkTokens, 300000);
         });
     </script>
 @endsection
