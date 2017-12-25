@@ -26,7 +26,7 @@ class APIController extends Controller
 		return DataTables::of($users)->addColumn('edit', function($user)
 			{
 				if ( is_null($user->terra_id) ) $user->terra_id = '';
-				return "<a href='".url('/home/account/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>";
+				return "<a href='".url('/home/users/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>";
 			})->make(true);
 	}
 
@@ -194,7 +194,7 @@ class APIController extends Controller
 	{
 		$coditions = [];
 		$coditions[] = ['status', 'active'];
-		
+
 		if ($request->user_status != "farmer") {
 			if ($request->user_status == 'mediabuyer') {
 				$coditions[] = ['user_id', $request->user_id];
