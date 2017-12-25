@@ -52,6 +52,41 @@
                             @endif
                         </div>
 
+                        <div class="form__item{{ $errors->has('value') ? ' form__item--error' : '' }}">
+                            <label for="value">Стоимость</label>
+                            <input id="value" class="money_input" type="text" step="0.01" name="value">
+                            @if ($errors->has('value'))
+                                <p>{{ $errors->first('value') }}</p>
+                            @endif
+                        </div>
+
+                        <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}">
+                            <label for="currency">Валюта</label>
+                            <select name="currency" id="currency" class="chosen-js-select">
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="RUB">RUB</option>
+                                <option value="UAH">UAH</option>
+                            </select>
+                            @if ($errors->has('currency'))
+                                <p>{{ $errors->first('currency') }}</p>
+                            @endif
+                        </div>
+
+                        <div class="form__item{{ $errors->has('rate') ? ' form__item--error' : '' }}">
+                            <label for="rate">Курс относительно USD</label>
+                            <input id="rate" class="readonly" type="number" step="0.000001" min="0" name="rate" value="{{ old('rate') }}" readonly required>
+                            @if ($errors->has('rate'))
+                                <p>{{ $errors->first('rate') }}</p>
+                            @endif
+                        </div>
+
+                        <div class="form__item">
+                            <button type="button" id="get_rate">
+                                <i class="fa fa-refresh fa-lg" aria-hidden="true"></i> Обновить курс
+                            </button>
+                        </div>
+
                         <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
                             <label for="user">Пользователь</label>
                             <select name="user" id="user" class="chosen-js-select">

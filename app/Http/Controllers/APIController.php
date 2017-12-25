@@ -192,8 +192,14 @@ class APIController extends Controller
 
 	public function checkTokens(Request $request)
 	{
-		if (Auth::user()->status !== "farmer") {
-			return DB::table('tokens')->where('status', 'active')->count();
+		$coditions = [];
+		$coditions[] = ['status', 'active'];
+		
+		if ($request->user_status != "farmer") {
+			if ($request->user_status == 'mediabuyer') {
+				$coditions[] = ['user_id', $request->user_id];
+			}
+			return DB::table('tokens')->where($coditions)->count();
 		}
 		return 0;
 	}

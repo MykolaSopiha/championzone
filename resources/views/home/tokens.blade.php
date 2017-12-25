@@ -72,7 +72,7 @@
 
                         <div class="form__item{{ $errors->has('value') ? ' form__item--error' : '' }}">
                             <label for="value">Количество денег</label>
-                            <input id="value" class="money_input" type="number" step="0.01" name="value">
+                            <input id="value" class="money_input" type="text" step="0.01" name="value">
                             @if ($errors->has('value'))
                                 <p>{{ $errors->first('value') }}</p>
                             @endif
@@ -206,7 +206,7 @@
                 };
             }
 
-            $('#tokens_ssp_table').DataTable({
+            let $table = $('#tokens_ssp_table').DataTable({
                 "processing": true,
                 "serverSide": true,
                 "searching": false,
@@ -227,16 +227,6 @@
                 ],
                 "columnDefs": [columnDefs_json],
                 "initComplete": function () {
-                    // let table = this;
-                    // table.api().columns(2).every(function () {
-                    //     var column = this;
-                    //     var input = document.createElement("input");
-                    //     input.style.maxWidth = '100px';
-                    //     $(input).appendTo($(column.footer()).empty())
-                    //     .on('change', function () {
-                    //         column.search($(this).val(), false, false, true).draw();
-                    //     });
-                    // });
                 },
                 "drawCallback": function(settings) {
                     $(".token_status").each(function (index) {
@@ -257,11 +247,12 @@
             }
 
             var tokens_count   = null;
-            let checkTokensUrl = "{{url('/api/token_notify')}}";
+            let checkTokensUrl = "{{url('/api/token_notify')}}?user_id={{Auth::user()->id}}&user_status={{Auth::user()->status}}";
 
             const checkTokens = () => {
                 $.ajax({
                     url: checkTokensUrl,
+                    type: 'GET',
                     success: function(result){
 
                         if (tokens_count == null) {
@@ -269,14 +260,17 @@
                             return;
                         }
 
+                        console.log(result);
+
                         if (tokens_count < result) {
                             BEEP("sound1");
-                            alert("Новый токен! Обновите страницу");
+                            alert("Новый токен!");
                         }
 
                         if (tokens_count > result) {
                             BEEP("sound1");
-                            alert("Токен обработан! Обновите страницу");
+                            $table.draw();
+                            alert("Токен обработан!");
                         }
 
                         tokens_count = result;
@@ -284,7 +278,7 @@
                 });
             }
             checkTokens();
-            setInterval(checkTokens, 300000);
+            setInterval(checkTokens, 3000);
         });
     </script>
 @endsection
