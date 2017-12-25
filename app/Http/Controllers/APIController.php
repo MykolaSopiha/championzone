@@ -27,6 +27,14 @@ class APIController extends Controller
 			{
 				if ( is_null($user->terra_id) ) $user->terra_id = '';
 				return "<a href='".url('/home/users/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>";
+			})->addColumn('balance', function($user)
+			{
+				$accounts = DB::table('accounts')->where('user_id', $user->id)->get();
+				$balance = 0;
+				foreach ($accounts as $acc) {
+					$balance += $acc->price*$acc->rate/100;
+				}
+				return round($balance, 2);
 			})->make(true);
 	}
 

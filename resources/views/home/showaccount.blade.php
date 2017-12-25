@@ -72,6 +72,14 @@
                     @endif
                 </div>
 
+                <div class="form__item{{ $errors->has('rate') ? ' form__item--error' : '' }}">
+                    <label for="rate">Курс относительно USD</label>
+                    <input id="rate" name="rate" class="money_input2" value="{{$account->rate}}" required>
+                    @if ($errors->has('rate'))
+                        <p>{{ $errors->first('rate') }}</p>
+                    @endif
+                </div>
+
 		        <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}">
                     <label for="acc_currency">Валюта</label>
                     <select name="currency" id="acc_currency" class="chosen-js-select">

@@ -158,6 +158,13 @@ $(document).ready(function () {
 		money = (money).toFixed(2);
 		$(this).val(money);
 	});
+
+	$('.money_input2').on('blur', function () {
+		var money = $(this).val();
+		money = Number.parseFloat(money);
+		money = (money).toFixed(6);
+		$(this).val(money);
+	});
 	// END Make 2 decimals for money value END
 
 

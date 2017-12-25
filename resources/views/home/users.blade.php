@@ -19,13 +19,14 @@
                     <thead>
                         <tr>
                             <td>id</td>
-                            <td>Login</td>
-                            <td>First name</td>
-                            <td>Last name</td>
+                            <td>Логин</td>
+                            <td>Имя</td>
+                            <td>Фамилия</td>
                             <td>TerraLeads ID</td>
-                            <td>Status</td>
-                            <td>Account created</td>
-                            <td>Edit</td>
+                            <td>Баланс, USD</td>
+                            <td>Статус</td>
+                            <td>Зарегистрирован</td>
+                            <td>Изменить</td>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -53,6 +54,7 @@
                     {data: 'first_name'},
                     {data: 'last_name'},
                     {data: 'terra_id'},
+                    {data: 'balance'},
                     {data: 'status'},
                     {data: 'created_at'},
                     {data: 'edit', searchable: false}

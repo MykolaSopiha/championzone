@@ -112,6 +112,7 @@ class AccountController extends Controller
     {
 
         $request["price"] = intval( round($request["price"], 2)*100 );
+        $request["rate"] = floatval( $request["rate"] );
         
         DB::table('accounts')->where('id', $id)->update(request()->except([
             '_token',
