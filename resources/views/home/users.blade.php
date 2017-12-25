@@ -1,12 +1,6 @@
 @extends('layouts.app')
 
 
-@section('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
-@endsection
-
-
 @section('content')
 
     <!-- begin header -->

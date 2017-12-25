@@ -43,8 +43,16 @@ $(document).ready(function () {
 		checkCardType(this);
 	});
 
-	var type_input = $('.card_type input[name="type"]');
-	checkCardType(type_input);
+	var payment_sys = $('.card_type input[name="type"]').val();
+	var $inputs     = $('input#date, input#cw2');
+	var $blocks     = $inputs.parent('div');
+	var $options    = $('select#currency option:not([value="USD"],[value="RUB"])');
+
+	if (payment_sys == '1') {
+		$inputs.removeAttr('required');
+		$blocks.slideUp();
+		$options.attr('disabled','disabled');
+	}
 	// END Card type select
 
 

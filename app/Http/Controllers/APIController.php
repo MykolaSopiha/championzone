@@ -62,26 +62,11 @@ class APIController extends Controller
 				return $action;
 			})->editColumn('status', function($token)
 			{
-				$color = "";
-				switch ($token->status) {
-					case 'confirmed':
-						$color = "success";
-						break;
-					
-					case 'trash':
-						$color = "danger";
-						break;
-					
-					default:
-						$color = "primary";
-						break;
-				}
-
 				if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
-					return "<p class='text-".$color."'><strong>".$token->status."</strong></p>";
+					return "<p class='token_status'>".$token->status."</p>";
 				} else {
 					return '<div class="dropdown">
-                                <button class="btn btn-'.$color.' dropdown-toggle" type="button" data-toggle="dropdown">'.$token->status.'<span class="caret"></span></button>
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><span class="token_status">'.$token->status.'</span><span class="caret"></span></button>
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=active">active</a>

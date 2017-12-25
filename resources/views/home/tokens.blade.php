@@ -15,9 +15,9 @@
         background: none !important;
         text-align: center
     }
-    #tokens_ssp_table tfoot {
+/*    #tokens_ssp_table tfoot {
         display: table-header-group;
-    }
+    }*/
 </style>
 @endsection
 
@@ -132,7 +132,7 @@
                                         <td></td>
                                     </tr>
                                 </thead>
-                                <tfoot>
+<!--                                 <tfoot>
                                     <tr>
                                         <th></th>
                                         <th></th>
@@ -146,7 +146,7 @@
                                         <th></th>
                                         <th></th>
                                     </tr>
-                                </tfoot>
+                                </tfoot> -->
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -237,6 +237,16 @@
                     //         column.search($(this).val(), false, false, true).draw();
                     //     });
                     // });
+                },
+                "drawCallback": function(settings) {
+                    $(".token_status").each(function (index) {
+                        if ($(this).html() == 'confirmed' ) {
+                            $(this).closest('tr').css('background-color', 'rgb(144, 238, 144)');
+                        }
+                        if ($(this).html() == 'trash' ) {
+                            $(this).closest('tr').css('background-color','rgb(250, 128, 114)');
+                        }
+                    });
                 }
             });
 

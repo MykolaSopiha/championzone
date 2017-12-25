@@ -26,16 +26,13 @@ Route::get('/home/motivation',  'HomeController@motivation');
 Route::get('/home/wiki', 		'HomeController@wiki');
 
 
-Route::get('/home/account/{id}',	'UserController@index');
-Route::post('/home/account/{id}', 	'UserController@store');
+Route::get('/home/users/{id}',	'UserController@index');
+Route::post('/home/users/{id}', 'UserController@store');
 
-
-// Route::resource('/home/costs',  'CostController');
 Route::resource('/home/tokens', 'TokenController');
-
-
-Route::resource('/home/accounts',  'AccountController');
 Route::resource('/home/cards',  'CardController');
+Route::resource('/home/accounts',  'AccountController');
+
 Route::post('/home/cards/multiple_action',  'CardController@multiple_action');
 Route::get('/home/multiple',  	 'CardController@multiplepage');
 Route::post('/home/multiple',  	 'CardController@multipleadd');
@@ -49,35 +46,3 @@ Route::any('/api/lead/create',	'APIController@createLead');
 Route::any('/api/lead/update',	'APIController@updateLead');
 Route::any('/api/lead/status', 	'APIController@statusLead');
 Route::get('/api/token_notify',	'APIController@checkTokens');
-
-
-Route::get('/setRate',	function ()
-{
-	$tokens = DB::table('tokens')->get();
-
-	foreach ($tokens as $token) {
-		if ($token->rate == 0) {
-			switch ($token->currency) {
-				case 'USD':
-					DB::table('tokens')->where('id', $token->id)->update(['rate' => 1]);
-					break;
-				
-				case 'RUB':
-					DB::table('tokens')->where('id', $token->id)->update(['rate' => 0.017077]);
-					break;
-
-				case 'EUR':
-					DB::table('tokens')->where('id', $token->id)->update(['rate' => 1.185900]);
-					break;
-
-				case 'UAH':
-					DB::table('tokens')->where('id', $token->id)->update(['rate' => 0.035899]);
-					break;
-
-				default:
-					break;
-			}
-		}
-	}
-	return "Done!";
-});

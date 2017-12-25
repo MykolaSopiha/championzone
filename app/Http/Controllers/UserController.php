@@ -8,7 +8,7 @@ use Validator;
 use DB;
 use Auth;
 
-class AccountController extends Controller
+class UserController extends Controller
 {
 
     public function __construct()
@@ -81,7 +81,7 @@ class AccountController extends Controller
         }
 
 
-        return redirect('/home/account'.'/'.$request['user_id']);
+        return redirect('/home/users'.'/'.$request['user_id']);
 
     }
 

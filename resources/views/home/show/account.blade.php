@@ -13,7 +13,7 @@
     <main class="main" role="main">
         <div class="main-inner">
 
-            <form class="form" method="POST" action="{{url('/home/account/')}}/{{$data->id}}">
+            <form class="form" method="POST" action="{{url('/home/users/')}}/{{$data->id}}">
 
                 {{ csrf_field() }}
 
