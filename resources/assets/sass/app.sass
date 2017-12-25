@@ -1,72 +1,18 @@
 @import 'reset'
 @import 'fonts'
 @import 'icons'
+@import 'vars'
+@import 'common'
+
+
+
+// ----------- LIBRARIES begin -----------
 @import 'libs/mixins'
 @import 'node_modules/bootstrap-sass/assets/stylesheets/bootstrap'
 @import 'node_modules/jquery-ui-bundle/jquery-ui.min'
 @import 'node_modules/chosen-js/chosen.min'
 @import 'node_modules/datatables/media/css/jquery.dataTables.min'
-
-
-
-// ----------- BREAKEPOINTS begin -----------
-$tablet: 900
-$mobile: 415 //iPhone 6 Plus 414px
-// ----------- BREAKEPOINTS end -----------
-
-
-
-// ----------- COLORS begin -----------
-$galliano: #D6BD0E
-$straw:    #D6BD8E
-$merino:   #F7F2E8
-$green:    #7FFF00
-
-.confirmed
-	background-color: $green !important
-.trash
-	background-color: #ff0000 !important
-// ----------- COLORS end -----------
-
-
-
-// ----------- GENERAL SETTINGS begin -----------
-* 
-  box-sizing: border-box
-
-html, body
-	height: 100%
-
-body
-	font-family: "Roboto", sans-serif
-
-h1
-	margin-bottom: 10px
-	font-size: 36px
-	color: #d5bd8d
-
-h2
-	margin-bottom: 10px
-	font-size: 24px
-	color: #656565
-
-h3
-	margin-bottom: 10px
-	font-size: 18px
-	color: #656565
-	line-height: 1.5em
-
-input
-	&:focus
-		&::-webkit-input-placeholder
-			color: transparent
-		&::-moz-placeholder
-			color: transparent
-		&:-ms-input-placeholder
-			color: transparent
-		&:-moz-placeholder
-			color: transparent
-// ----------- GENERAL SETTINGS end -----------
+// ----------- LIBRARIES end -----------
 
 
 
@@ -263,7 +209,6 @@ input
 		margin-top: 0
 
 
-
 .user
 	margin-top: 18px
 	text-align: right
@@ -299,17 +244,17 @@ input
 
 
 
-// ----------- MAIN begin -----------
+// ----------- DIV.MAIN begin -----------
 .main
 	max-width: 1400px
 	margin: 0 auto
 	padding-top: 50px
 	padding-bottom: 50px
-// ----------- MAIN end -----------
+// ----------- DIV.MAIN end -----------
 
 
 
-//------------- FORM BEGIN -------------
+//------------- FORM begin -------------
 .form
 	width: 100%
 	max-width: 600px
@@ -319,6 +264,10 @@ input
 	padding-left: 10px
 	&__header
 		margin-bottom: 50px
+	&__two-columns
+		display: grid
+		grid-template-columns: 1fr 1fr
+		grid-column-gap: 10px
 	&__item
 		margin-bottom: 30px
 		&--error
@@ -357,8 +306,6 @@ input
 	input[type="checkbox"]
 		width: auto
 		height: auto
-	input[name="rate"]
-		background-color: #ddd
 	textarea
 		max-width: 100%
 		padding: 10px 25px
@@ -393,11 +340,11 @@ input
 		input, select
 			height: 30px
 			font-size: 16px
-//------------- FORM END -------------
+//------------- FORM end -------------
 
 
 
-//------------- TABLE BEGIN -------------
+//------------- TABLE begin -------------
 .table
 	padding-top: 25px
 	width: 100%
@@ -419,11 +366,11 @@ input
 		padding-right: 10px
 		padding-left: 10px
 
-//------------- TABLE END -------------
+//------------- TABLE end -------------
 
 
 
-//------------- CARDS PAGE BEGIN -------------
+//------------- ITEMS begin -------------
 .items
 	+clr
 	&__add
@@ -445,11 +392,11 @@ input
 				margin-top: 20px
 				margin-bottom: 50px
 
-//------------- CARDS PAGE END -------------
+//------------- ITEMS end -------------
 
 
 		
-//------------- CARDS PAGE BEGIN -------------
+//------------- CARDS TABLE ACTIONDIV. begin -------------
 .card-actions
 	text-align: center
 	a
@@ -477,11 +424,11 @@ input
 		*
 			display: block
 			margin-bottom: 10px
-//------------- CARDS PAGE END -------------
+//------------- CARDS TABLE ACTIONDIV. end -------------
 
 
 
-//------------- MOTIVATION BEGIN -------------
+//------------- MOTIVATION TABLE begin -------------
 .benefits
 	&__header
 		margin-bottom: 50px
@@ -492,20 +439,4 @@ input
 		grid-gap: 10px
 		+r($tablet)
 			grid-template-columns: 1fr
-//------------- MOTIVATION END -------------
-
-
-
-//------------- COSTS BEGIN -------------
-.costs
-	+clr
-.add-cost
-	float: left
-	max-width: 360px
-.costs-list
-	padding-right: 10px
-	padding-left: 10px
-	overflow: hidden
-	h2
-		margin-bottom: 50px
-//------------- COSTS END -------------
+//------------- MOTIVATION TABLE end -------------

@@ -7,16 +7,19 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Card;
 use App\User;
+use App\Token;
 use DB;
 use DataTables;
 use Auth;
 
 class APIController extends Controller
 {
+
     public function test()
 	{
 		return DataTables::eloquent(App\Card::query())->editColumn('code', '{{decrypt($code)}}')->make(true);
 	}
+
 
 	public function getUsers() {
 		$users = User::select('id','name', 'first_name', 'last_name', 'terra_id', 'status', 'created_at');
@@ -26,6 +29,71 @@ class APIController extends Controller
 				return "<a href='".url('/home/account/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>";
 			})->make(true);
 	}
+
+
+	public function getTokens(Request $request)
+	{
+
+		$tokens = Token::select('id', 'date', 'user_id', 'card_code', 'value', 'currency', 'rate', 'action', 'ask', 'ans', 'status');
+
+		$coditions = [];
+		if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
+			$coditions[] = ['user_id', Auth::user()->id];
+		}
+
+		return DataTables::of($tokens)->where($coditions)->addColumn('user_name', function($token)
+			{
+				$user = DB::table('users')->where('id', $token->user_id)->limit(1)->get();
+				return $user[0]->name;
+			})->editColumn('card_code', function($token)
+			{
+				return decrypt($token->card_code);
+			})->editColumn('value', function($token)
+			{
+				return floatval($token->value/100);
+			})->editColumn('action', function($token)
+			{
+				$actions_RU = [
+					'deposit'  => 'Пополнить',
+					'withdraw' => 'Списать',
+					'transfer' => 'Перевести'
+				];
+				$action = $actions_RU[$token->action];
+				return $action;
+			})->editColumn('status', function($token)
+			{
+				if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
+					return $token->status;
+				} else {
+					return '<div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">'.$token->status.'<span class="caret"></span></button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=active">active</a>
+                                    </li>
+                                    <li>
+                                        <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=confirmed">confirmed</a>
+                                    </li>
+                                    <li>
+                                        <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=trash">trash</a>
+                                    </li>
+                                </ul>
+                            </div>';
+				}
+			})->addColumn('tools', function($token)
+			{
+				return '<td>
+							<a href="'.url('home/tokens').'/'.$token->id.'">
+                                <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
+                            </a><br>
+                            <a class="remove-btn" href="'.url('home/tokens').'/'.$token->id.'">
+                                <i class="remove fa fa-times fa-lg" title="Удалить" aria-hidden="true"></i>
+                            </a>
+						</td>';
+			})->make(true);
+
+	}
+
 
 	public function getCards(Request $request)
 	{
@@ -56,7 +124,10 @@ class APIController extends Controller
 
 		} else {
 			$cards = Card::all();
-			return DataTables::of($cards)->editColumn('code', '{{decrypt($code)}}')->addColumn('check', function ($card)
+			return DataTables::of($cards)->editColumn('code', function($card)
+			{
+				return "<a href='".url('/home/cards')."/".$card->id."'>".decrypt($card->code)."</a>";
+			})->addColumn('check', function ($card)
 			{
 				return "<input type='checkbox' class='shift_select' name='card[".$card->id."]'>";
 			}, 0)->editColumn('user_id', function($card)
@@ -83,7 +154,7 @@ class APIController extends Controller
 
 		foreach ($results as $res) {
 			// $res->check = "<input type='checkbox' class='shift_select' name='card[".$card->id."]'>";
-			$res->code = decrypt($res->code);
+			$res->code = "<a>".decrypt($res->code)."</a>";
 			$res->date = substr($res->date, 0, 4)."-".substr($res->date, -2);
 			$res->check = "<input type='checkbox' class='shift_select' name='card[26]'>";
 			$user = DB::table('users')->where('id', $res->user_id)->limit(1)->get();
@@ -117,14 +188,10 @@ class APIController extends Controller
 
 	public function checkTokens(Request $request)
 	{
-		if (Auth::user()->status === "accountant" || Auth::user()->status === "admin") {
+		if (Auth::user()->status !== "farmer") {
 			return DB::table('tokens')->where('status', 'active')->count();
 		}
 		return 0;
-		// return DB::table('tokens')->where([
-		// 	'user_id' => Auth::user()->id,
-		// 	'status'  => 'confirmed'
-		// ])->count();
 	}
 
 

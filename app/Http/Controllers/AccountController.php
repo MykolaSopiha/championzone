@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Http\Requests;
-use Validator;
+use App\Account;
 use DB;
 use Auth;
 
@@ -16,73 +17,108 @@ class AccountController extends Controller
         $this->middleware('auth');
     }
 
-    public function index($id)
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
     {
-        if ( Auth::user()->status === 'admin' ) {
-            $data = DB::table('users')->where('id', $id)->limit(1)->get();
-            $data = $data[0];
-            $statuses = [
-                'admin',
-                'mediabuyer',
-                'accountant',
-                'farmer'
-            ];
-    	   return view( 'home.showaccount', compact('data', 'statuses') );
-        } else {
-            $data = DB::table('users')->where('id', Auth::user()->id)->limit(1)->get();
-            $data = $data[0];
-            $statuses = [
-                'admin',
-                'mediabuyer',
-                'accountant',
-                'farmer'
-            ];
-           return view( 'home.showaccount', compact('data', 'statuses') );
-        }
+        $conditions = [];
+        if (Auth::user()->status != 'admin') 
+            $conditions[] = ['user_id', Auth::user()->id];
+
+        $users = DB::table('users')->select('id', 'name')->get();
+        $accounts = DB::table('accounts')->where($conditions)->join('users', 'accounts.user_id', '=', 'users.id')->select('accounts.*', 'users.name as user_name')->get();
+        return view('home.accounts', compact('users', 'accounts'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *users.id
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request)
     {
-        if ($request['name'] != "") {
-            $user = DB::table('users')->where('id', $request['user_id'] )->get();
-            $user = $user[0];
-            if ($request->name != $user->name) {
-                $this->validate($request, ['name' => 'required|max:255|unique:users']);
-                DB::table('users')->where('id', $request['user_id'] )->update(['name' => $request['name']]);
-            }
-        }
+        $this->validate($request, [
+            'info'      => 'required',
+            'user'      => 'required|numeric|min:1',
+        ], [
+           'user.numeric' => 'The user id is incorrect.' 
+        ]);
 
-        if ($request['first_name'] != "") {
-            $this->validate($request, ['first_name' => 'required|max:255']);
-            DB::table('users')->where('id', $request['user_id'] )->update(['first_name' => $request['first_name']]);
-        }
+        $account = new Account();
+        $account->fill([
+            'info' => $request['info'],
+            'user_id' => intval($request['user'])
+        ]);
+        $account->save();
 
-        if ($request['last_name'] != "") {
-            $this->validate($request, ['last_name' => 'required|max:255']);
-            DB::table('users')->where('id', $request['user_id'] )->update(['last_name' => $request['last_name']]);
-        }
-
-        if ($request['terra_id'] != "") {
-            $user = DB::table('users')->where('id', $request['user_id'] )->get();
-            $user = $user[0];
-            if ($request->terra_id != $user->terra_id) {
-                $this->validate($request, ['terra_id' => 'required|numeric|min:0|unique:users']);
-                DB::table('users')->where('id', $request['user_id'] )->update(['terra_id' => $request['terra_id']]);
-            }
-        }
-
-        if ($request['birthday'] != "0000-00-00") {
-            $this->validate($request, ['date' => 'date']);
-            DB::table('users')->where('id', $request['user_id'] )->update(['birthday' => date( "Y-m-d", strtotime($request['birthday']))]);
-        }
-
-        if ($request['status'] != "") {
-            DB::table('users')->where('id', $request['user_id'] )->update(['status' => $request['status']]);
-        }
-
-
-        return redirect('/home/account'.'/'.$request['user_id']);
-
+        return redirect('/home/accounts');
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $account = DB::table('accounts')->where('id', $id)->get();
+        $account = $account[0];
+        $users = DB::table('users')->get();
+        return view('home.showaccount', compact('account', 'users'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        DB::table('accounts')->where('id', $id)->update([
+            'info' => $request->info,
+            'user_id' => $request->user
+        ]);
+        
+        return redirect('/home/accounts');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        DB::table('accounts')->where('id', $id)->limit(1)->delete();
+        return redirect('/home/accounts');
+    }
 }

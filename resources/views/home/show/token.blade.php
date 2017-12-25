@@ -45,6 +45,20 @@
                     @endif
                 </div>
 
+                @if (( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' ) && $token->rate != "USD")
+                <div class="form__item{{ $errors->has('rate') ? ' form__item--error' : '' }}">
+                    <label for="rate">Курс относительно USD</label>
+                    <input id="rate" type="number" step="0.000001" min="0" name="rate" value="{{ $token->rate }}" required>
+                    @if ($errors->has('rate'))
+                        <p>{{ $errors->first('rate') }}</p>
+                    @endif
+                </div>
+                @elseif ($token->rate != "USD")
+                <div class="form__item">
+                    <label for="status">Курс относительно USD: {{$token->rate}}</label>
+                </div>
+                @endif
+
                 <div class="form__item{{ $errors->has('action') ? ' form__item--error' : '' }}">
                     <label for="action">Действие</label>
                     <select name="action" id="action">
@@ -64,6 +78,7 @@
                     @endif
                 </div>
 
+                @if ( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' )
                 <div class="form__item{{ $errors->has('ans') ? ' form__item--error' : '' }}">
                     <label for="ans">Отзыв</label><br>
                     <textarea name="ans" id="ask" cols="80" rows="5" placeholder="отзыв бухгалтера. не обязательно">{{$token->ans}}</textarea>
@@ -71,8 +86,7 @@
                         <p>{{ $errors->first('ans') }}</p>
                     @endif
                 </div>
-
-                @if ( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' )
+                
                 <div class="form__item">
                     <label for="status">Статус</label>
                     <select name="status" id="status">

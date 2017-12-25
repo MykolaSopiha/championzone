@@ -15,6 +15,9 @@
         background: none !important;
         text-align: center
     }
+    #tokens_ssp_table tfoot {
+        display: table-header-group;
+    }
 </style>
 @endsection
 
@@ -75,6 +78,20 @@
                             @endif
                         </div>
 
+                        <div class="form__item{{ $errors->has('rate') ? ' form__item--error' : '' }}">
+                            <label for="rate">Курс относительно USD</label>
+                            <input id="rate" class="readonly" type="number" step="0.000001" min="0" name="rate" value="{{ old('rate') }}" readonly required>
+                            @if ($errors->has('rate'))
+                                <p>{{ $errors->first('rate') }}</p>
+                            @endif
+                        </div>
+
+                        <div class="form__item">
+                            <button type="button" id="get_rate">
+                                <i class="fa fa-refresh fa-lg" aria-hidden="true"></i> Обновить курс
+                            </button>
+                        </div>
+
                         <div class="form__item{{ $errors->has('ask') ? ' form__item--error' : '' }}">
                             <label for="ask">Описание</label><br>
                             <textarea name="ask" id="ask" cols="50" rows="5" placeholder="краткий комментарий. не обязательно"></textarea>
@@ -99,16 +116,15 @@
                     <form class="js-form" action="#" method="post">
                         <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
                         <div class="table-responsive">
-                            <table class="table" id="tokens_list">
+                            <table class="table" id="tokens_ssp_table">
                                 <thead>
                                     <tr>
                                         <td>Дата</td>
-                                        @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
                                         <td>Пользователь</td>
-                                        @endif
                                         <td>Карта</td>
                                         <td>Сумма</td>
                                         <td>Валюта</td>
+                                        <td>Курс</td>
                                         <td>Действие</td>
                                         <td>Описание</td>
                                         <td>Отзыв</td>
@@ -116,72 +132,22 @@
                                         <td></td>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    @foreach ($tokens as $token)
-                                        @if ( $token->status === 'confirmed' )
-                                        <tr class="confirmed">
-                                        @elseif ( $token->status === 'trash' )
-                                        <tr class="trash">
-                                        @else
-                                        <tr>
-                                        @endif
-                                            <td>{{$token->date}}</td>
-                                            @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
-                                            <td>{{$token->user_name}}</td>
-                                            @endif
-                                            @if ($token->card_cw2 == "QIWI")
-                                            <td>{{$token->card_code}} ({{ $token->card_cw2 }})</td>
-                                            @else
-                                            <td>
-                                                {{
-                                                    substr($token->card_code, 0, 4).' '.
-                                                    substr($token->card_code, 4, 4).' '.
-                                                    substr($token->card_code, 8, 4).' '.
-                                                    substr($token->card_code, 12, 4)
-                                                }} 
-                                                ({{ $token->card_cw2 }})
-                                            </td>
-                                            @endif
-                                            <td>{{html_entity_decode(number_format($token->value, 2, ',', "&nbsp;"))}}</td>
-                                            <td>{{$token->currency}}</td>
-                                            <td>{{$token->action}}</td>
-                                            <td>{{$token->ask}}</td>
-                                            <td>{{$token->ans}}</td>
-                                            <td>
-                                            @if (( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
-                                                <div class="dropdown">
-                                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">{{$token->status}}<span class="caret"></span></button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a href="{{url('/home/tokens/')}}/{{$token->id}}/edit?status=active">active</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="{{url('/home/tokens/')}}/{{$token->id}}/edit?status=confirmed">confirmed</a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="{{url('/home/tokens/')}}/{{$token->id}}/edit?status=trash">trash</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            @else
-                                                {{$token->status}}
-                                            @endif
-                                            </td>
-                                            <td>
-                                                @if (($token->status === 'active') || ( Auth::user()->status === "admin" || Auth::user()->status === "accountant" ))
-                                                    <a href="{{url('/home/tokens/')}}/{{$token->id}}">
-                                                        <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
-                                                    </a>
-                                                    <a class='remove-btn' href="{{url('/home/tokens/')}}/{{$token->id}}">
-                                                        <i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i>
-                                                    </a>
-                                                @else
-                                                    -/-
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </form>
@@ -228,37 +194,87 @@
 
 @section('scripts_end')
     <script>
-        const BEEP = (soundObj) => {
-            let sound = document.getElementById(soundObj);
-            if (sound)
-                sound.play();
-        }
+        $(document).ready(function() {
 
-        var tokens_count   = null;
-        let checkTokensUrl = "{{url('/api/token_notify/')}}";
+            let user_status = "{{Auth::user()->status}}";
+            let columnDefs_json = {};
+            if (user_status != 'admin' && user_status != 'accountant') {
+                columnDefs_json = {
+                    "targets": [1],
+                    "visible": false,
+                    "searchable": true
+                };
+            }
 
-        const checkTokens = () => {
-            $.ajax({
-                url: checkTokensUrl,
-                success: function(result){
-                    console.log(result);
-
-                    if (tokens_count == null) {
-                        tokens_count = result;
-                        return;
-                    }
-
-                    if (tokens_count < result) {
-                        BEEP("sound1");
-                        alert("Новый токен! Обновите страницу");
-                    }
-
-                    tokens_count = result;
+            $('#tokens_ssp_table').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "searching": false,
+                "ajax": "{{url('/api/tokens')}}",
+                "responsive": true,
+                "columns":[
+                    {data: 'date'},
+                    {data: 'user_name'},
+                    {data: 'card_code'},
+                    {data: 'value'},
+                    {data: 'currency'},
+                    {data: 'rate'},
+                    {data: 'action'},
+                    {data: 'ask'},
+                    {data: 'ans'},
+                    {data: 'status'},
+                    {data: 'tools'}
+                ],
+                "columnDefs": [columnDefs_json],
+                "initComplete": function () {
+                    // let table = this;
+                    // table.api().columns(2).every(function () {
+                    //     var column = this;
+                    //     var input = document.createElement("input");
+                    //     input.style.maxWidth = '100px';
+                    //     $(input).appendTo($(column.footer()).empty())
+                    //     .on('change', function () {
+                    //         column.search($(this).val(), false, false, true).draw();
+                    //     });
+                    // });
                 }
             });
-        }
 
-        checkTokens();
-        setInterval(checkTokens, 30000);
+            const BEEP = (soundObj) => {
+                let sound = document.getElementById(soundObj);
+                if (sound)
+                    sound.play();
+            }
+
+            var tokens_count   = null;
+            let checkTokensUrl = "{{url('/api/token_notify')}}";
+
+            const checkTokens = () => {
+                $.ajax({
+                    url: checkTokensUrl,
+                    success: function(result){
+
+                        if (tokens_count == null) {
+                            tokens_count = result;
+                            return;
+                        }
+
+                        if (tokens_count < result) {
+                            BEEP("sound1");
+                            alert("Новый токен! Обновите страницу");
+                        }
+
+                        if (tokens_count > result) {
+                            BEEP("sound1");
+                            alert("Токен обработан! Обновите страницу");
+                        }
+
+                        tokens_count = result;
+                    }
+                });
+            }
+            checkTokens();
+            setInterval(checkTokens, 300000);
+        });
     </script>
 @endsection

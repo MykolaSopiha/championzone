@@ -2,8 +2,17 @@
 
 
 @section('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
+    <style>
+        .chosen-container {
+            font-size: 18px !important
+        }
+        .chosen-single {
+            height: 70px !important;
+            line-height: 70px !important;
+            background: none !important;
+            text-align: center
+        }
+    </style>
 @endsection
 
 
@@ -26,7 +35,7 @@
                 <!-- begin items__add -->
                 <div class="items__add">
 
-                    <form class="form" method="POST" action="{{ url('/home/statistics') }}">
+                    <form class="form" method="GET" action="{{ url('/home/statistics') }}">
   
                         {{ csrf_field() }}
   
@@ -34,34 +43,57 @@
                             <h2>Фильтр расходов</h2>
                         </header>
 
+                        <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                            <label for="card">Карта</label>
+                            <select name="card" id="card" class="chosen-js-select">
+                                <option value="">Выберите карту</option>
+                                @foreach ($cards as $card)
+                                    @if (isset($_REQUEST['card']) && $_REQUEST['card'] == $card->id)
+                                        <option value="{{ $card->id }}" title="{{ $card->currency }}" selected>...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
+                                    @else
+                                        <option value="{{ $card->id }}" title="{{ $card->currency }}">...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                            @if ($errors->has('card'))
+                                <p>{{ $errors->first('card') }}</p>
+                            @endif
+                        </div>
+
+                        @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
                         <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
                             <label for="user">Пользователь</label>
-                            <select name="user" id="user">
+                            <select name="user" id="user" class="chosen-js-select">
+                                <option value="">Вce пользователи</option>
                                 @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @if (isset($_REQUEST['user']) && $_REQUEST['user'] == $user->id)
+                                        <option value="{{ $user->id }}" selected>{{ $user->name }}</option>
+                                    @else
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endif
                                 @endforeach
                             </select>
                             @if ($errors->has('date'))
                                 <p>{{ $errors->first('user') }}</p>
                             @endif
                         </div>
+                        @endif
   
-                        <h3>За период</h3>
-                        
-                        <div class="form__item">
-                            <label for="from">С</label>
-                            <input id="from" class="pick_date" type="text" name="from">
-                            @if ($errors->has('first_name'))
-                                <p>{{ $errors->first('first_name') }}</p>
-                            @endif
-                        </div>
-  
-                        <div class="form__item">
-                            <label for="to">По</label>
-                            <input id="to" class="pick_date" type="text" name="to">
-                            @if ($errors->has('last_name'))
-                                <p>{{ $errors->first('last_name') }}</p>
-                            @endif
+                        <label>За период</label>
+                        <div class="form__two-columns">
+                            <div class="form__item">
+                                <input id="from" class="pick_date" type="text" name="from" value="{{isset($_REQUEST['from']) ? ($_REQUEST['from']) : ''}}" placeholder="с">
+                                @if ($errors->has('first_name'))
+                                    <p>{{ $errors->first('first_name') }}</p>
+                                @endif
+                            </div>
+      
+                            <div class="form__item">
+                                <input id="to" class="pick_date" type="text" name="to" value="{{isset($_REQUEST['to']) ? ($_REQUEST['to']) : ''}}" placeholder="по">
+                                @if ($errors->has('last_name'))
+                                    <p>{{ $errors->first('last_name') }}</p>
+                                @endif
+                            </div>
                         </div>
   
                         <div class="form__item">
@@ -75,18 +107,18 @@
                 </div>
 
                 <div class="items__list">
-                    <h2>Расходы за день</h2>
+                    <h2>Статистика по дням</h2>
 
                     <div class="table-responsive">
                         <table class="table" id="statistics_list">
                             <thead>
                                 <tr>
                                     <th>День</th>
-                                    <th>Потрачено, USD</th>
+                                    <th>Баланс, USD</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($stat as $s)
+                                @foreach ($statistics as $s)
                                 <tr>
                                     <td>{{ $s['day']  }}</td>
                                     <td>{{ $s['cost'] }}</td>

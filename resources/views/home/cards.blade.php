@@ -46,13 +46,16 @@
                             @endif
                         </div>
 
-                        <div class="form__item">
-                            <label>Платежная система</label>
-                            <p>
-                                <input type="radio" name="payment_sys" value="0" required checked>Обычная карта
-                                <br>
-                                <input type="radio" name="payment_sys" value="1" required>QIWI
-                            </p>
+                        <div class="form__item{{ $errors->has('type') ? ' form__item--error' : '' }}">
+                            <label>Тип</label>
+                            <div class="card_type">
+                                <input type="radio" name="type" value="0" required>Яндекс.Деньги<br>
+                                <input type="radio" name="type" value="1" required>QIWI<br>
+                                <input type="radio" name="type" value="2" required>Пластиковая карта
+                            </div>
+                            @if ($errors->has('type'))
+                                <p>{{ $errors->first('type') }}</p>
+                            @endif
                         </div>
 
                         <div class="form__item{{ $errors->has('code_hash') ? ' form__item--error' : '' }}">
@@ -118,6 +121,20 @@
                 <div class="items__list">
                     <h2>Список карт</h2>
 
+                    <div class="dropdown js_card_types">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                            <span class="type_name">Все карты</span>
+                            &nbsp;
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu type_list">
+                            <li><a href="#" class="type" data-type-code="">Все карты</a></li>
+                            <li><a href="#" class="type" data-type-code="0">Яндекс.Деньги</a></li>
+                            <li><a href="#" class="type" data-type-code="1">QIWI</a></li>
+                            <li><a href="#" class="type" data-type-code="2">Пластиковые карты</a></li>
+                        </ul>
+                    </div>
+
                     <form class="js-form" action="{{url('/home/cards/multiple_action')}}" method="post">
 
                         <!-- begin select-action -->
@@ -146,9 +163,7 @@
                             <table class="table" id="all_cards" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>
-                                            <input type="checkbox" class="all_select">
-                                        </th>
+                                        <th><input type="checkbox" class="all_select"></th>
                                         <th>Название</th>
                                         <th>Код</th>
                                         <th>Валюта</th>
@@ -208,17 +223,24 @@
                 "lengthMenu": [ 10, 25, 50, 75, 100, 200, 500 ],
                 "responsive": true,
                 "columns":[
-                    {data: 'check', name: 'action', orderable: false, searchable: false, width: "5%"},
-                    {data: 'name', width: "10%"},
-                    {data: 'code', width: "10%"},
-                    {data: 'currency', width: "10%"},
-                    {data: 'date', width: "10%"},
-                    {data: 'status', width: "10%"},
-                    {data: 'user_id', width: "10%"},
-                    {data: 'actions', width: "10%"}
+                    {data: 'check', name: 'action', orderable: false, searchable: false},
+                    {data: 'name'},
+                    {data: 'code'},
+                    {data: 'currency'},
+                    {data: 'date'},
+                    {data: 'status'},
+                    {data: 'user_id'},
+                    {data: 'actions'},
+                    {data: 'type'}
                 ],
+                "columnDefs": [{
+                    "targets": [8],
+                    "visible": false,
+                    "searchable": true
+                }],
                 "initComplete": function () {
-                    this.api().columns(2).every(function () {
+                    let table = this;
+                    table.api().column(2).every(function () {
                         var column = this;
                         var input = document.createElement("input");
                         $(input).appendTo($(column.footer()).empty())
@@ -227,26 +249,39 @@
                         });
                     });
 
+
                     let $chkboxes = $('.shift_select');
                     let lastChecked = null;
-
                     $chkboxes.click(function(e) {
-
                         if(!lastChecked) {
                             lastChecked = this;
                             return;
                         }
-
                         if(e.shiftKey) {
                             let start = $chkboxes.index(this);
                             let end = $chkboxes.index(lastChecked);
                             $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
                         }
-
                         lastChecked = this;
                     });
+
+
+                    // BEGIN Select card type
+                    let $card_types_btn = $('.js_card_types');
+                    let $curr_card_type = $card_types_btn.find('.type_name');
+                    let $card_types     = $card_types_btn.find('.type');
+
+                    $card_types.on('click', function (e) {
+                        e.preventDefault();
+                        let type = $(this).html();
+                        let code = $(this).attr('data-type-code');
+                        $curr_card_type.html(type);
+                        table.api().column(8).search(code).draw();
+                    });
+                    // END Select card type
                 }
             });
+            
         });
     </script>
 @endsection

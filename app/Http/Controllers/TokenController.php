@@ -25,53 +25,14 @@ class TokenController extends Controller
 
     public function index()
     {
-        if ( Auth::user()->status === 'admin') {
-            $cards  = DB::table('cards')->get();
-        } else {
-            $cards  = DB::table('cards')->where([
-                ['status', 'active'],
-                ['user_id', Auth::user()->id]
-            ])->get();
+        $cards_permission = [];
+        if ( Auth::user()->status !== 'admin') {
+                $cards_coditions[] = ['status', 'active'];
+                $cards_coditions[] = ['user_id', Auth::user()->id];
         }
+        $cards = DB::table('cards')->where($cards_permission)->get();
 
-
-        if (Auth::user()->status === 'accountant' || Auth::user()->status === 'admin') {
-            $tokens = DB::table('tokens')->orderBy('id', 'desc')->get();
-        } else {
-            $tokens = DB::table('tokens')->where('user_id', Auth::user()->id)->orderBy('id', 'desc')->get();
-        }
-
-        foreach ($tokens as $token) {
-            $user_name = DB::table('users')->where('id', $token->user_id)->limit(1)->get();
-            $token->user_name = $user_name[0]->name;
-
-            $card = DB::table('cards')->where('id', $token->card_id)->limit(1)->get();
-            $token->card_code = decrypt($card[0]->code);
-            $token->card_cw2  = decrypt($card[0]->cw2);
-
-            $token->value = floatval( $token->value/100 );
-
-            switch ($token->action) {
-                case 'deposit':
-                    $token->action = 'Пополнить';
-                    break;
-
-                case 'withdraw':
-                    $token->action = 'Списать';
-                    break;
-
-                case 'transfer':
-                    $token->action = 'Перевести';
-                    break;
-
-                default:
-                    # code...
-                    break;
-            }
-        }
-
-        // return dd($tokens);
-        return view('home/tokens', compact('cards', 'tokens') );
+        return view('home/tokens', compact('cards'));
     }
 
     /**
@@ -116,6 +77,7 @@ class TokenController extends Controller
             'card_code' => $token_card->code,
             'value'     => intval( round($request["value"], 2)*100 ),
             'currency'  => $token_card->currency,
+            'rate'      => $request['rate'],
             'action'    => $request['action'],
             'ask'       => $request['ask'],
             'ans'       => $request['ans'],
@@ -149,7 +111,7 @@ class TokenController extends Controller
                 'confirmed',
                 'trash'
             ];
-            return view( 'home/showtoken', compact('token', 'card', 'statuses') );
+            return view( 'home.show.token', compact('token', 'card', 'statuses') );
         } else {
             return redirect('/home/tokens');
         }
@@ -173,19 +135,19 @@ class TokenController extends Controller
             $status = $_GET['status'];
             
             switch ($status) {
-                            case 'active':
-                                $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'active']);
-                                break;
-                            case 'confirmed':
-                                $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'confirmed']);
-                                break;
-                            case 'trash':
-                                $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'trash']);
-                                break;
-                            default:
-                                # code...
-                                break;
-                        }            
+                case 'active':
+                    $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'active']);
+                    break;
+                case 'confirmed':
+                    $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'confirmed']);
+                    break;
+                case 'trash':
+                    $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'trash']);
+                    break;
+                default:
+                    # code...
+                    break;
+            }
         }
         return redirect('/home/tokens');
     }

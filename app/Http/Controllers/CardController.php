@@ -13,35 +13,22 @@ use Auth;
 
 class CardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-
-
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         if ( Auth::user()->status == 'admin' || Auth::user()->status == 'accountant' || Auth::user()->status == 'farmer' ) {
-            $cards = DB::table('cards')->where('status', 'active')->orWhere('status', 'disable')->get();
             $users = DB::table('users')->get();
-            foreach ($cards as $card) {
-                $card->code = decrypt($card->code);
-                $code = "".$card->code;
-                $card->code = substr($code, 0, 4).'-'.substr($code, 4, 4).'-'.substr($code, 8, 4).'-'.substr($code, 12, 4);
-                foreach ($users as $user) {
-                    if ( $user->id == $card->user_id ) {
-                        $card->user_name = $user->name;
-                        break;
-                    }
-                }
-            }
-            return view('/home/cards', compact('cards', 'users') );
+            return view('/home/cards', compact('users') );
         } else {
             return view('/home');
         }
@@ -73,16 +60,18 @@ class CardController extends Controller
         $request['date']      = $request["date"]."/1";
         $request["code_hash"] = sha1("".$request["code"].$salt);
 
-        if ($request->payment_sys == 1) {
+        if ($request->type === "1") {
             
             $this->validate($request, [
                 'name'      => 'max:255|unique:cards',
                 'code'      => 'required',
                 'code_hash' => 'required|unique:cards',
                 'user'      => 'required|numeric|min:1',
-                'currency'  => 'required|size:3'
+                'currency'  => 'required|size:3',
+                'type'      => 'required|numeric'
             ], [
-                'code_hash.unique' => 'The card code has already been taken.'
+                'code_hash.unique' => 'The card code has already been taken.',
+                'type.numeric'     => 'The card type is incorrect.',
             ]);
 
             $request["code"] = encrypt($request["code"]);
@@ -96,7 +85,8 @@ class CardController extends Controller
                 'cw2'       => $request["cw2"],
                 'currency'  => $request["currency"],
                 'user_id'   => $request["user"],
-                'status'    => 'active'
+                'status'    => 'active',
+                'type'      => intval($request["type"])
             ]);
             $card->save();
 
@@ -111,9 +101,11 @@ class CardController extends Controller
             'cw2'       => 'required|numeric|digits:3',
             'date'      => 'required|date',
             'user'      => 'required|numeric|min:1',
-            'currency'  => 'required|size:3'
+            'currency'  => 'required|size:3',
+            'type'      => 'required|numeric'
         ], [
-            'code_hash.unique' => 'The card code has already been taken.'
+            'code_hash.unique' => 'The card code has already been taken.',
+            'type.numeric'     => 'The card type is incorrect.'
         ]);
 
         $request["code"] = encrypt( $request["code"] );
@@ -128,7 +120,8 @@ class CardController extends Controller
             'date'      => date( "Y/m/d", strtotime($request["date"]) ),
             'currency'  => $request["currency"],
             'user_id'   => $request["user"],
-            'status'    => 'active'
+            'status'    => 'active',
+            'type'      => intval($request["type"])
         ]);
         $card->save();
 
@@ -244,7 +237,8 @@ class CardController extends Controller
 
         }
 
-        return view('home.multiple_page', compact('errors') );
+        $users = DB::table('users')->get();
+        return view('home.multiple_page', compact('errors', 'users') );
     }
 
 
@@ -294,10 +288,20 @@ class CardController extends Controller
      */
     public function show($id)
     {
-        $users = DB::table('users')->get();
-        $card = DB::select('select * from cards where id = ? limit 1', [ $id ] );
+        $card  = DB::table('cards')->where('id', $id)->get();
         $card = $card[0];
-        return view('/home/showcarduser', compact('card', 'users') );
+        $card->code = decrypt($card->code);
+        $card->cw2  = decrypt($card->cw2);
+        $card->date = date("Y/m/d", strtotime($card->date));
+
+        $users = DB::table('users')->get();
+        $card_types = [
+            ['0', 'Яндекс.Деньги'],
+            ['1', 'QIWI'],
+            ['2', 'Пластиковая карта']
+        ];
+        
+        return view('home.show.card', compact('card', 'card_types', 'users') );
     }
 
     /**

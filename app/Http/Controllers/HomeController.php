@@ -43,72 +43,56 @@ class HomeController extends Controller
         return redirect('/home');
     }
 
-    public function statistics()
+    public function statistics(Request $request)
     {
-        $stat = [];
+        if (Auth::user()->status === 'farmer')
+            return redirect('/home');
+
+        $from = ($request->from != '') ? $request->from : '0000-00-00';
+        $to   = ($request->to != '') ? $request->to : date( "Y-m-d" );
+
+        $conditions = [
+            [ 'date', '>=', $from ],
+            [ 'date', '<=', $to   ]
+        ];
+
+        if ($request->card != '')
+            $conditions[] = ['card_id', '=', $request->card];
+
+        if ($request->user != '')
+            $conditions[] = ['user_id', '=', $request->user];
+
+        $card_conditions = [];
+        $statistics = [];
         $total = 0;
 
-        $user_costs = DB::table('costs')->where( 'user_id', Auth::user()->id )->get();
-        $users = DB::table('users')->get();
-        
-        foreach ($user_costs as $u_cost) {
-            $stat[ $u_cost->date ] = [];
-            $stat[ $u_cost->date ]['day']  = '';
-            $stat[ $u_cost->date ]['cost'] = 0;
-        }
-        
-        foreach ($user_costs as $u_cost) {
-            $stat[ $u_cost->date ]['day'] = $u_cost->date;
-            $stat[ $u_cost->date ]['cost'] += $u_cost->value*$u_cost->rate/100;
+        if (Auth::user()->status === 'mediabuyer') {
+            $conditions[] = ['user_id', Auth::user()->id];
+            $card_conditions[] = ['user_id', Auth::user()->id];
         }
 
-        foreach ($stat as $s) {
-            $total += $s['cost'];
+        $tokens = DB::table('tokens')->where($conditions)->join('users', 'tokens.user_id', '=', 'users.id')->select('tokens.*', 'users.name as user_name')->get();
+        $users = DB::table('users')->select('id', 'name')->get();
+        $cards = DB::table('cards')->select('id', 'name', 'code', 'currency')->where($card_conditions)->get();
+
+        foreach ($tokens as $token) {
+            $USD = $token->value*$token->rate/100;
+            if ($token->action !== 'deposit') {
+                    $USD *= -1;
+                }
+            if (isset($statistics[$token->date])) {
+                $statistics[$token->date]['cost'] += $USD;
+            } else {
+                $statistics[$token->date] = [
+                    'day'  => $token->date, 
+                    'cost' => $USD
+                ];
+            }
+            
+            $total += $USD;
         }
 
-        return view('home/statistics', compact('stat', 'total', 'users') );
-    }
-    
-    public function date_range(Request $request)
-    {
-
-        if ($request['from'] === '')
-            $request['from'] = '0000-00-00';
-
-        if ($request['to'] === '') {
-            $request['to'] = date( "Y-m-d" );
-        }
-
-        $users = DB::table('users')->get();
-
-        $stat = [];
-        $total = 0;
-
-        $user_costs = DB::table('costs')->where([
-            [ 'date', '<=', $request['to']   ],
-            [ 'date', '>=', $request['from'] ],
-            [ 'user_id', $request['user'] ]
-        ])->get();
-
-        foreach ($user_costs as $u_cost) {
-            $stat[ $u_cost->date ] = [];
-            $stat[ $u_cost->date ]['day']  = '';
-            $stat[ $u_cost->date ]['cost'] = 0;
-        }
-        
-        foreach ($user_costs as $u_cost) {
-            $stat[ $u_cost->date ]['day'] = $u_cost->date;
-            $stat[ $u_cost->date ]['cost'] += $u_cost->value*$u_cost->rate/100;
-        }
-
-        foreach ($stat as $s) {
-            $total += $s['cost'];
-        }
-
-        $prev = $request;
-
-        return view('home/statistics', compact('stat', 'total', 'prev', 'users') );
-
+        return view('home/statistics', compact('statistics', 'total', 'users', 'cards') );
     }
 
     public function balance()

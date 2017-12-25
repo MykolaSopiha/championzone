@@ -20,15 +20,15 @@ $(document).ready(function () {
 	// END Menu
 
 
-	// BEGIN BEEP Notification
-	$('input[name="payment_sys"]').on('click', function () {
+	// BEGIN Card type select
+	$('.card_type input[name="type"]').on('click', function () {
 
 		var payment_sys = $(this).val();
-		var $inputs = $('input#date, input#cw2');
-		var $blocks = $inputs.parent('div');
-		var $options = $('select#currency option:not([value="USD"],[value="RUB"])');
+		var $inputs     = $('input#date, input#cw2');
+		var $blocks     = $inputs.parent('div');
+		var $options    = $('select#currency option:not([value="USD"],[value="RUB"])');
 
-		if (payment_sys == 1) {
+		if (payment_sys == '1') {
 			$inputs.removeAttr('required');
 			$blocks.slideUp();
 			$options.attr('disabled','disabled');
@@ -39,12 +39,7 @@ $(document).ready(function () {
 		}
 
 	});
-	// END BEEP Notification
-
-
-	// BEGIN BEEP Notification
-
-	// END BEEP Notification
+	// END Card type select
 
 
 	// BEGIN Chosen-JS Init
@@ -87,12 +82,6 @@ $(document).ready(function () {
 		$form.submit();
 	}
 	// END Post request function END
-
-
-
-	// $('.card_number').inputmask("9999-9999-9999-9999");
-	// $('.money').inputmask('9{*}.9{2}');
-	// $('new-').
 
 
 	// BEGIN Initialization of datepicker BEGIN
@@ -221,7 +210,6 @@ $(document).ready(function () {
 	$('select#card').on('change', checkExchangeRate);
 	checkExchangeRate();
 	// END Current exchange rate END
-
 
 
 	// BEGIN Multiple checkbox selection BEGIN

@@ -3,7 +3,7 @@
 @section('content')
 
     <!-- begin header -->
-    @section('page-name') Меню @endsection
+    @section('page-name') Главная @endsection
     @include('layouts.headers.home')
     <!-- end header -->
 
