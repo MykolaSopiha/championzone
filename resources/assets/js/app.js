@@ -165,7 +165,7 @@ $(document).ready(function () {
 						}
 					});
 				}).fail( function () {
-					$('#rate').val(0);
+					$('#rate').val(0.035899);
 				} );
 			}
 
@@ -182,7 +182,7 @@ $(document).ready(function () {
 					});
 					$('#rate').val( (EUR/USD).toFixed(6) );
 				}).fail( function () {
-					$('#rate').val(0);
+					$('#rate').val(1.185900);
 				} );
 			}
 
@@ -199,7 +199,7 @@ $(document).ready(function () {
 					});
 					$('#rate').val( (RUB/USD).toFixed(6) );
 				}).fail( function () {
-					$('#rate').val(0);
+					$('#rate').val(0.017077);
 				} );
 			}
 

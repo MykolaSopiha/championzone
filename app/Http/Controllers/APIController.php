@@ -41,7 +41,7 @@ class APIController extends Controller
 			$coditions[] = ['user_id', Auth::user()->id];
 		}
 
-		return DataTables::of($tokens)->where($coditions)->addColumn('user_name', function($token)
+		return DataTables::of($tokens)->where($coditions)->orderBy('id', 'desc')->addColumn('user_name', function($token)
 			{
 				$user = DB::table('users')->where('id', $token->user_id)->limit(1)->get();
 				return $user[0]->name;
@@ -62,11 +62,26 @@ class APIController extends Controller
 				return $action;
 			})->editColumn('status', function($token)
 			{
+				$color = "";
+				switch ($token->status) {
+					case 'confirmed':
+						$color = "success";
+						break;
+					
+					case 'trash':
+						$color = "danger";
+						break;
+					
+					default:
+						$color = "primary";
+						break;
+				}
+
 				if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
-					return $token->status;
+					return "<p class='text-".$color."'>".$token->status."</p>";
 				} else {
 					return '<div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">'.$token->status.'<span class="caret"></span></button>
+                                <button class="btn btn-'.$color.' dropdown-toggle" type="button" data-toggle="dropdown">'.$token->status.'<span class="caret"></span></button>
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=active">active</a>
@@ -82,7 +97,8 @@ class APIController extends Controller
 				}
 			})->addColumn('tools', function($token)
 			{
-				return '<td>
+				if ($token->status == 'active') {
+					return '<td>
 							<a href="'.url('home/tokens').'/'.$token->id.'">
                                 <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
                             </a><br>
@@ -90,6 +106,9 @@ class APIController extends Controller
                                 <i class="remove fa fa-times fa-lg" title="Удалить" aria-hidden="true"></i>
                             </a>
 						</td>';
+				} else {
+					return '--';
+				}
 			})->make(true);
 
 	}
