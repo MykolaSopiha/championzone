@@ -51,17 +51,25 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
+
         $this->validate($request, [
             'info'      => 'required',
             'user'      => 'required|numeric|min:1',
+            'value'     => 'required|numeric|min:0',
+            'currency'  => 'required',
+            'rate'      => 'required|numeric|min:0',
         ], [
            'user.numeric' => 'The user id is incorrect.' 
         ]);
 
+
         $account = new Account();
         $account->fill([
-            'info' => $request['info'],
-            'user_id' => intval($request['user'])
+            'info'      => $request['info'],
+            'user_id'   => intval($request['user']),
+            'price'     => intval(round($request["value"], 2)*100),
+            'rate'      => $request['rate'],
+            'currency'  => $request['currency'],
         ]);
         $account->save();
 
@@ -102,11 +110,14 @@ class AccountController extends Controller
      */
     public function update(Request $request, $id)
     {
-        DB::table('accounts')->where('id', $id)->update([
-            'info' => $request->info,
-            'user_id' => $request->user
-        ]);
+
+        $request["price"] = intval( round($request["price"], 2)*100 );
         
+        DB::table('accounts')->where('id', $id)->update(request()->except([
+            '_token',
+            '_method'
+        ]));
+
         return redirect('/home/accounts');
     }
 

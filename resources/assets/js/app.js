@@ -223,6 +223,61 @@ $(document).ready(function () {
 	$('#get_rate').on('click', checkExchangeRate);
 	$('select#card').on('change', checkExchangeRate);
 	checkExchangeRate();
+	
+	$('select#acc_currency').on('change', function () {
+		var currency = $(this).val();
+		if (currency === 'USD') {
+			$('#rate').val(1);
+		} else {
+
+			if (currency === 'UAH') {
+				$.getJSON(NBU_rate, function(result){
+					$.each(result, function(i, field){
+						if (field.r030 === 840) {
+							$('#rate').val( (1/field.rate).toFixed(6) );
+						}
+					});
+				}).fail( function () {
+					$('#rate').val(0.035899);
+				} );
+			}
+
+			if (currency === 'EUR') {
+				$.getJSON(NBU_rate, function(result){
+					var USD = 1, EUR = 1;
+					$.each(result, function(i, field){
+						if (field.r030 === 840) {
+							USD = field.rate;
+						}
+						if (field.r030 === 978) {
+							EUR = field.rate;
+						}
+					});
+					$('#rate').val( (EUR/USD).toFixed(6) );
+				}).fail( function () {
+					$('#rate').val(1.185900);
+				} );
+			}
+
+			if (currency === 'RUB') {
+				$.getJSON(NBU_rate, function(result){
+					var USD = 1, RUB = 1;
+					$.each(result, function(i, field){
+						if (field.r030 === 840) {
+							USD = field.rate;
+						}
+						if (field.r030 === 643) {
+							RUB = field.rate;
+						}
+					});
+					$('#rate').val( (RUB/USD).toFixed(6) );
+				}).fail( function () {
+					$('#rate').val(0.017077);
+				} );
+			}
+
+		}
+	});
 	// END Current exchange rate END
 
 

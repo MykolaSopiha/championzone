@@ -61,8 +61,8 @@
                         </div>
 
                         <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}">
-                            <label for="currency">Валюта</label>
-                            <select name="currency" id="currency" class="chosen-js-select">
+                            <label for="acc_currency">Валюта</label>
+                            <select name="currency" id="acc_currency" class="chosen-js-select">
                                 <option value="USD">USD</option>
                                 <option value="EUR">EUR</option>
                                 <option value="RUB">RUB</option>
@@ -75,7 +75,7 @@
 
                         <div class="form__item{{ $errors->has('rate') ? ' form__item--error' : '' }}">
                             <label for="rate">Курс относительно USD</label>
-                            <input id="rate" class="readonly" type="number" step="0.000001" min="0" name="rate" value="{{ old('rate') }}" readonly required>
+                            <input id="rate" class="readonly" type="number" step="0.000001" min="0" name="rate" value="1" readonly required>
                             @if ($errors->has('rate'))
                                 <p>{{ $errors->first('rate') }}</p>
                             @endif
@@ -123,6 +123,8 @@
                                     <tr>
                                         <th>Пользователь</th>
                                         <th>Информация</th>
+                                        <th>Цена</th>
+                                        <th>Валюта</th>
                                         @if (Auth::user()->status === 'admin')
                                         <th></th>
                                         @endif
@@ -133,6 +135,8 @@
                                     <tr>
                                         <td>{{$a->user_name}}</td>
                                         <td>{{$a->info}}</td>
+                                        <td>{{$a->price/100}}</td>
+                                        <td>{{$a->currency}}</td>
                                         @if (Auth::user()->status === 'admin')
                                         <td>
                                             <a href="{{url('/home/accounts')}}/{{$a->id}}">
