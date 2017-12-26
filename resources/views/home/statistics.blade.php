@@ -43,6 +43,34 @@
                             <h2>Фильтр расходов</h2>
                         </header>
 
+                        @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
+                        <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
+                            <label for="user">Пользователь</label>
+                            <select name="user" id="user" class="chosen-js-select">
+                                <option value="">Вce пользователи</option>
+                                @foreach ($users as $user)
+                                    @if (isset($_REQUEST['user']) && $_REQUEST['user'] == $user->id)
+                                        @if ($user->first_name == "" || $user->last_name == "")
+                                            <option value="{{ $user->id }}" selected>{{ $user->name }}</option>
+                                        @else
+                                            <option value="{{ $user->id }}" selected>{{ $user->first_name." ".$user->last_name }}</option>
+                                        @endif
+                                    @else
+                                        @if ($user->first_name == "" || $user->last_name == "")
+                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @else
+                                            <option value="{{ $user->id }}">{{ $user->first_name." ".$user->last_name }}</option>
+                                        @endif
+                                    @endif
+                                @endforeach
+                            </select>
+                            @if ($errors->has('date'))
+                                <p>{{ $errors->first('user') }}</p>
+                            @endif
+                        </div>
+                        @endif
+
+
                         <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
                             <label for="card">Карта</label>
                             <select name="card" id="card" class="chosen-js-select">
@@ -59,25 +87,6 @@
                                 <p>{{ $errors->first('card') }}</p>
                             @endif
                         </div>
-
-                        @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
-                        <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
-                            <label for="user">Пользователь</label>
-                            <select name="user" id="user" class="chosen-js-select">
-                                <option value="">Вce пользователи</option>
-                                @foreach ($users as $user)
-                                    @if (isset($_REQUEST['user']) && $_REQUEST['user'] == $user->id)
-                                        <option value="{{ $user->id }}" selected>{{ $user->name }}</option>
-                                    @else
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                    @endif
-                                @endforeach
-                            </select>
-                            @if ($errors->has('date'))
-                                <p>{{ $errors->first('user') }}</p>
-                            @endif
-                        </div>
-                        @endif
   
                         <label>За период</label>
                         <div class="form__two-columns">

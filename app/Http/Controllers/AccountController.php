@@ -28,7 +28,7 @@ class AccountController extends Controller
         if (Auth::user()->status != 'admin') 
             $conditions[] = ['user_id', Auth::user()->id];
 
-        $users = DB::table('users')->select('id', 'name')->get();
+        $users = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->get();
         $accounts = DB::table('accounts')->where($conditions)->join('users', 'accounts.user_id', '=', 'users.id')->select('accounts.*', 'users.name as user_name')->get();
         return view('home.accounts', compact('users', 'accounts'));
     }

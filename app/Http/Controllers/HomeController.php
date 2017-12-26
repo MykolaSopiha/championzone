@@ -72,7 +72,7 @@ class HomeController extends Controller
         }
 
         $tokens = DB::table('tokens')->where($conditions)->join('users', 'tokens.user_id', '=', 'users.id')->select('tokens.*', 'users.name as user_name')->get();
-        $users = DB::table('users')->select('id', 'name')->get();
+        $users = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->get();
         $cards = DB::table('cards')->select('id', 'name', 'code', 'currency')->where($card_conditions)->get();
 
         foreach ($tokens as $token) {

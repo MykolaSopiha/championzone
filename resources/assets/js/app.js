@@ -10,11 +10,11 @@ $(document).ready(function () {
 
 
 	// BEGIN Menu
-	const menu = $('#menu');
+	const menu_list = $('#menu');
 	const menu_icon = $('.menu_icon');
 
-	$('#menu_btn').click(function() {
-		menu.slideToggle();
+	$(menu_icon).click(function() {
+		menu_list.slideToggle();
 		menu_icon.toggleClass('open');
 	});
 	// END Menu

@@ -6,6 +6,15 @@
         .ui-datepicker-calendar, .ui-datepicker-current {
             display: none !important;
         }
+        .chosen-container {
+            font-size: 18px !important
+        }
+        .chosen-single {
+            height: 70px !important;
+            line-height: 70px !important;
+            background: none !important;
+            text-align: center
+        }
     </style>
 @endsection
 
@@ -97,9 +106,13 @@
 
                         <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
                             <label for="user">Пользователь</label>
-                            <select name="user" id="user">
+                            <select name="user" id="user" class="chosen-js-select">
                                 @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @if ($user->first_name == "" || $user->last_name == "")
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @else
+                                        <option value="{{ $user->id }}">{{ $user->first_name." ".$user->last_name }}</option>
+                                    @endif
                                 @endforeach
                             </select>
                             @if ($errors->has('date'))

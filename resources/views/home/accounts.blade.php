@@ -91,7 +91,11 @@
                             <label for="user">Пользователь</label>
                             <select name="user" id="user" class="chosen-js-select">
                                 @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @if ($user->first_name == "" || $user->last_name == "")
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @else
+                                        <option value="{{ $user->id }}">{{ $user->first_name." ".$user->last_name }}</option>
+                                    @endif
                                 @endforeach
                             </select>
                             @if ($errors->has('user'))
