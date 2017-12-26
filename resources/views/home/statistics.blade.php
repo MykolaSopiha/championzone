@@ -130,17 +130,27 @@
                             <tbody>
                                 @foreach ($statistics as $s)
                                 <tr>
-                                    <td>{{ $s['day']  }}</td>
-                                    <td>{{ round($s['cost'], 2) }}</td>
-                                    <td>{{ round($s['cost_RUB'], 2) }}</td>
+                                    <td>
+                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}">
+                                            {{$s['day']}}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ number_format($s['cost'], 2, ".", " ") }}
+                                    </td>
+                                    <td>
+                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}&currency=RUB">
+                                            {{ number_format($s['cost_RUB'], 2, ".", " ") }}
+                                        </a>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td>Всего:</td>
-                                    <td>{{ round($total, 2) }} USD</td>
-                                    <td>{{ round($total_RUB, 2) }} RUB</td>
+                                    <td>{{ number_format($total, 2, ".", " ") }} USD</td>
+                                    <td>{{ number_format($total_RUB, 2, ".", " ") }} RUB</td>
                                 </tr>
                             </tfoot>
                         </table>

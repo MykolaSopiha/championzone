@@ -132,21 +132,6 @@
                                         <td></td>
                                     </tr>
                                 </thead>
-<!--                                 <tfoot>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                </tfoot> -->
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -206,12 +191,19 @@
                 };
             }
 
+
             let $table = $('#tokens_ssp_table').DataTable({
                 "processing": true,
                 "serverSide": true,
                 "searching": false,
-                "ajax": "{{url('/api/tokens')}}",
+                "ajax": {
+                    url: "{{url('/api/tokens')}}",
+                    data: {
+                        data: window.location.search.toString().substr(1)
+                    }
+                },
                 "responsive": true,
+                "ordering": false,
                 "columns":[
                     {data: 'date'},
                     {data: 'user_name'},

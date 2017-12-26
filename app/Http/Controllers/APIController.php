@@ -41,10 +41,12 @@ class APIController extends Controller
 
 	public function getTokens(Request $request)
 	{
+		$coditions = [];
+		parse_str($request->data, $coditions);
+		
 
 		$tokens = Token::select('id', 'date', 'user_id', 'card_code', 'value', 'currency', 'rate', 'action', 'ask', 'ans', 'status');
 
-		$coditions = [];
 		if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
 			$coditions[] = ['user_id', Auth::user()->id];
 		}
