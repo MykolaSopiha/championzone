@@ -15,6 +15,9 @@
             background: none !important;
             text-align: center
         }
+        #all_cards tfoot {
+            display: table-header-group;
+        }
     </style>
 @endsection
 
@@ -186,7 +189,6 @@
                                         <th>Действия</th>
                                     </tr>
                                 </thead>
-                                <tbody></tbody>
                                 <tfoot>
                                     <tr>
                                         <th></th>
@@ -199,6 +201,7 @@
                                         <th></th>
                                     </tr>
                                 </tfoot>
+                                <tbody></tbody>
                             </table>
                         </div>
                         <!-- end table -->

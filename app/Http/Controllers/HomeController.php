@@ -55,6 +55,8 @@ class HomeController extends Controller
             [ 'date', '>=', $from ],
             [ 'date', '<=', $to   ]
         ];
+        $card_conditions = [];
+        $statistics = [];
 
         if ($request->card != '')
             $conditions[] = ['card_id', '=', $request->card];
@@ -62,37 +64,45 @@ class HomeController extends Controller
         if ($request->user != '')
             $conditions[] = ['user_id', '=', $request->user];
 
-        $card_conditions = [];
-        $statistics = [];
-        $total = 0;
-
         if (Auth::user()->status === 'mediabuyer') {
-            $conditions[] = ['user_id', Auth::user()->id];
+            $conditions[]      = ['user_id', Auth::user()->id];
             $card_conditions[] = ['user_id', Auth::user()->id];
         }
 
         $tokens = DB::table('tokens')->where($conditions)->join('users', 'tokens.user_id', '=', 'users.id')->select('tokens.*', 'users.name as user_name')->get();
-        $users = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->get();
-        $cards = DB::table('cards')->select('id', 'name', 'code', 'currency')->where($card_conditions)->get();
+        $users  = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->get();
+        $cards  = DB::table('cards')->select('id', 'name', 'code', 'currency', 'user_id')->where($card_conditions)->get();
+
+
+        $total = 0;
+        $total_RUB = 0;
 
         foreach ($tokens as $token) {
             $USD = $token->value*$token->rate/100;
+            $RUB = 0;
+            if ($token->currency == 'RUB') {
+                $RUB = $token->value/100;
+            }
             if ($token->action !== 'deposit') {
                     $USD *= -1;
+                    $RUB *= -1;
                 }
             if (isset($statistics[$token->date])) {
                 $statistics[$token->date]['cost'] += $USD;
+                $statistics[$token->date]['cost_RUB'] += $RUB;
             } else {
                 $statistics[$token->date] = [
                     'day'  => $token->date, 
-                    'cost' => $USD
+                    'cost' => $USD,
+                    'cost_RUB' => $RUB
                 ];
             }
             
             $total += $USD;
+            $total_RUB += $RUB;
         }
 
-        return view('home/statistics', compact('statistics', 'total', 'users', 'cards') );
+        return view('home/statistics', compact('statistics', 'total', 'total_RUB', 'users', 'cards') );
     }
 
     public function balance()

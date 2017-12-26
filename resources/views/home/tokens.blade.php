@@ -15,9 +15,9 @@
         background: none !important;
         text-align: center
     }
-/*    #tokens_ssp_table tfoot {
+    #tokens_ssp_table tfoot {
         display: table-header-group;
-    }*/
+    }
 </style>
 @endsection
 

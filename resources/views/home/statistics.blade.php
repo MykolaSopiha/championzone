@@ -45,7 +45,7 @@
 
                         @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
                         <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
-                            <label for="user">Пользователь</label>
+                            <label for="user">Пользователь</label><br>
                             <select name="user" id="user" class="chosen-js-select">
                                 <option value="">Вce пользователи</option>
                                 @foreach ($users as $user)
@@ -72,14 +72,14 @@
 
 
                         <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
-                            <label for="card">Карта</label>
+                            <label for="card">Карта</label><br>
                             <select name="card" id="card" class="chosen-js-select">
                                 <option value="">Выберите карту</option>
                                 @foreach ($cards as $card)
                                     @if (isset($_REQUEST['card']) && $_REQUEST['card'] == $card->id)
-                                        <option value="{{ $card->id }}" title="{{ $card->currency }}" selected>...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
+                                        <option value="{{ $card->id }}" title="{{ $card->currency }}" data-card-owner="{{ $card->user_id }}" selected>...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
                                     @else
-                                        <option value="{{ $card->id }}" title="{{ $card->currency }}">...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
+                                        <option value="{{ $card->id }}" title="{{ $card->currency }}" data-card-owner="{{ $card->user_id }}">...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
                                     @endif
                                 @endforeach
                             </select>
@@ -124,20 +124,23 @@
                                 <tr>
                                     <th>День</th>
                                     <th>Баланс, USD</th>
+                                    <th>RUB</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($statistics as $s)
                                 <tr>
                                     <td>{{ $s['day']  }}</td>
-                                    <td>{{ $s['cost'] }}</td>
+                                    <td>{{ round($s['cost'], 2) }}</td>
+                                    <td>{{ round($s['cost_RUB'], 2) }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td>Всего:</td>
-                                    <td>{{ $total }} USD</td>
+                                    <td>{{ round($total, 2) }} USD</td>
+                                    <td>{{ round($total_RUB, 2) }} RUB</td>
                                 </tr>
                             </tfoot>
                         </table>
