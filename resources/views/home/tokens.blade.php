@@ -204,6 +204,7 @@
                 },
                 "responsive": true,
                 "ordering": false,
+                "lengthMenu": [ 10, 25, 50, 75, 100, 200, 500 ],
                 "columns":[
                     {data: 'date'},
                     {data: 'user_name'},
@@ -215,7 +216,7 @@
                     {data: 'ask'},
                     {data: 'ans'},
                     {data: 'status'},
-                    {data: 'tools'}
+                    {data: 'tools', searchable: false}
                 ],
                 "columnDefs": [columnDefs_json],
                 "initComplete": function () {

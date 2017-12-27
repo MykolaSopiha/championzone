@@ -44,7 +44,6 @@ class APIController extends Controller
 		$coditions = [];
 		parse_str($request->data, $coditions);
 		
-
 		$tokens = Token::select('id', 'date', 'user_id', 'card_code', 'value', 'currency', 'rate', 'action', 'ask', 'ans', 'status');
 
 		if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
@@ -60,7 +59,10 @@ class APIController extends Controller
 				return decrypt($token->card_code);
 			})->editColumn('value', function($token)
 			{
-				return floatval($token->value/100);
+				return number_format(floatval($token->value/100), 2, ".", "");
+			})->editColumn('rate', function($token)
+			{
+				return number_format(floatval($token->rate), 5, ".", "");
 			})->editColumn('action', function($token)
 			{
 				$actions_RU = [
@@ -168,7 +170,7 @@ class APIController extends Controller
 
 		foreach ($results as $res) {
 			// $res->check = "<input type='checkbox' class='shift_select' name='card[".$card->id."]'>";
-			$res->code = "<a>".decrypt($res->code)."</a>";
+			$res->code = "<a href='".url('/home/cards')."/".$res->id."'>".decrypt($res->code)."</a>";
 			$res->date = substr($res->date, 0, 4)."-".substr($res->date, -2);
 			$res->check = "<input type='checkbox' class='shift_select' name='card[26]'>";
 			$user = DB::table('users')->where('id', $res->user_id)->limit(1)->get();

@@ -78,10 +78,10 @@ class HomeController extends Controller
         $total_RUB = 0;
 
         foreach ($tokens as $token) {
-            $USD = $token->value*$token->rate/100;
+            $USD = 1.1*$token->value*$token->rate/100;
             $RUB = 0;
             if ($token->currency == 'RUB') {
-                $RUB = $token->value/100;
+                1.1*$RUB = $token->value/100;
             }
             if ($token->action !== 'deposit') {
                     $USD *= -1;
@@ -98,7 +98,7 @@ class HomeController extends Controller
                 ];
             }
             
-            $total += $USD;
+            $total     += $USD;
             $total_RUB += $RUB;
         }
 

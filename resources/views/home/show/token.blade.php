@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="form__item{{ $errors->has('value') ? ' form__item--error' : '' }}">
-                    <label for="value">Количество денег ({{ $token->currency }})</label>
+                    <label for="value">Количество денег</label>
                     <input id="value" class="money_input" type="number" step="0.01" name="value" value="{{ $token->value }}">
                     @if ($errors->has('value'))
                         <p>{{ $errors->first('value') }}</p>
@@ -46,6 +46,19 @@
                 </div>
 
                 @if (( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' ) && $token->rate != "USD")
+                <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}">
+                    <label for="currency">Валюта</label>
+                    <select name="currency" id="currency">
+                        <option value="USD" @if ($token->currency === 'USD')  selected @endif >USD</option>
+                        <option value="EUR" @if ($token->currency === 'EUR')  selected @endif >EUR</option>
+                        <option value="RUB" @if ($token->currency === 'RUB')  selected @endif >RUB</option>
+                        <option value="UAH" @if ($token->currency === 'UAH')  selected @endif >UAH</option>
+                    </select>
+                    @if ($errors->has('currency'))
+                        <p>{{ $errors->first('currency') }}</p>
+                    @endif
+                </div>
+
                 <div class="form__item{{ $errors->has('rate') ? ' form__item--error' : '' }}">
                     <label for="rate">Курс относительно USD</label>
                     <input id="rate" type="number" step="0.000001" min="0" name="rate" value="{{ $token->rate }}" required>
