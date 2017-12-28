@@ -166,6 +166,16 @@
                                 </select>
                             </div>
 
+                            <div class="form-group" style="max-width: 400px">
+                                <label for="currency">Валюта</label><br>
+                                <select name="currency" id="currency" class="form-control">
+                                    <option value="">Все</option>
+                                    @foreach ($currencies as $c)
+                                    <option value="{{$c}}" @if (isset($_GET['currency']) && $_GET['currency'] == $c) selected="selected" @endif>{{$c}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                             <div style="margin-top: 20px">
                                 <button type="submit" class="btn btn-primary">Искать</button>
                                 <button type="submit" class="btn btn-default">

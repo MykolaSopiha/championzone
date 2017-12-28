@@ -123,8 +123,8 @@
                             <thead>
                                 <tr>
                                     <th>День</th>
-                                    <th>Баланс, USD</th>
-                                    <th>RUB</th>
+                                    <th>Баланс, USD*</th>
+                                    <th>RUB*</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -136,10 +136,12 @@
                                         </a>
                                     </td>
                                     <td>
-                                        {{ number_format($s['cost'], 2, ".", " ") }}
+                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}&status=confirmed">
+                                            {{ number_format($s['cost'], 2, ".", " ") }}
+                                        </a>
                                     </td>
                                     <td>
-                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}&currency=RUB">
+                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}&currency=RUB&status=confirmed">
                                             {{ number_format($s['cost_RUB'], 2, ".", " ") }}
                                         </a>
                                     </td>
@@ -155,6 +157,7 @@
                             </tfoot>
                         </table>
                     </div>
+                    <p><strong>* +10%</strong> - средняя комиссия за транзакцию</p>
                     <div class="table-responsive" id="sub_table"></div>
 
                 </div>
@@ -170,7 +173,9 @@
 @section('scripts_end')
     <script>
         $(document).ready(function() {
-            $('#statistics_list').DataTable({});
+            $('#statistics_list').DataTable({
+                "order": [[ 0, "desc" ]]
+            });
             $('#sub_table').click(function () {
                 $(this).slideToggle();
             });

@@ -53,7 +53,8 @@ class HomeController extends Controller
 
         $conditions = [
             [ 'date', '>=', $from ],
-            [ 'date', '<=', $to   ]
+            [ 'date', '<=', $to   ],
+            ['tokens.status', 'confirmed']
         ];
         $card_conditions = [];
         $statistics = [];
@@ -69,20 +70,21 @@ class HomeController extends Controller
             $card_conditions[] = ['user_id', Auth::user()->id];
         }
 
-        $tokens = DB::table('tokens')->where($conditions)->join('users', 'tokens.user_id', '=', 'users.id')->select('tokens.*', 'users.name as user_name')->get();
+        $tokens = DB::table('tokens')->where($conditions)
+            ->join('users', 'tokens.user_id', '=', 'users.id')
+            ->select('tokens.*', 'users.name as user_name')
+            ->get();
         $users  = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->get();
         $cards  = DB::table('cards')->select('id', 'name', 'code', 'currency', 'user_id')->where($card_conditions)->get();
 
-
+        $fee = 1.1; // transaction fee ~10%
         $total = 0;
         $total_RUB = 0;
 
         foreach ($tokens as $token) {
-            $USD = 1.1*$token->value*$token->rate/100;
-            $RUB = 0;
-            if ($token->currency == 'RUB') {
-                1.1*$RUB = $token->value/100;
-            }
+            $USD = $fee*$token->value*$token->rate/100;
+            $RUB = ($token->currency == 'RUB') ? $fee*$token->value/100 : 0;
+
             if ($token->action !== 'deposit') {
                     $USD *= -1;
                     $RUB *= -1;
