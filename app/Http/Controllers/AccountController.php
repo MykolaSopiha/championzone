@@ -25,11 +25,18 @@ class AccountController extends Controller
     public function index()
     {
         $conditions = [];
-        if (Auth::user()->status != 'admin') 
+        if (Auth::user()->status != 'admin') {
             $conditions[] = ['user_id', Auth::user()->id];
+        }
 
-        $users = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->get();
-        $accounts = DB::table('accounts')->where($conditions)->join('users', 'accounts.user_id', '=', 'users.id')->select('accounts.*', 'users.name as user_name')->get();
+        $users = DB::select('select id, name, first_name, last_name from users');
+
+        $accounts = DB::table('accounts')
+            ->where($conditions)
+            ->join('users', 'accounts.user_id', '=', 'users.id')
+            ->select('accounts.*', 'users.name as user_name')
+            ->get();
+
         return view('home.accounts', compact('users', 'accounts'));
     }
 
@@ -62,7 +69,6 @@ class AccountController extends Controller
            'user.numeric' => 'The user id is incorrect.' 
         ]);
 
-
         $account = new Account();
         $account->fill([
             'info'      => $request['info'],
@@ -84,9 +90,9 @@ class AccountController extends Controller
      */
     public function show($id)
     {
-        $account = DB::table('accounts')->where('id', $id)->get();
-        $account = $account[0];
-        $users = DB::table('users')->get();
+        $account = DB::table('accounts')->where('id', $id)->first();
+        $users   = DB::select('select id, name from users');
+
         return view('home.showaccount', compact('account', 'users'));
     }
 
@@ -111,13 +117,16 @@ class AccountController extends Controller
     public function update(Request $request, $id)
     {
 
-        $request["price"] = intval( round($request["price"], 2)*100 );
-        $request["rate"] = floatval( $request["rate"] );
+        $request["price"] = intval(round($request["price"], 2)*100);
+        $request["rate"]  = floatval($request["rate"]);
         
-        DB::table('accounts')->where('id', $id)->update(request()->except([
-            '_token',
-            '_method'
-        ]));
+        DB::table('accounts')->where('id', $id)
+            ->update(
+                request()->except([
+                    '_token',
+                    '_method'
+                ])
+            );
 
         return redirect('/home/accounts');
     }
@@ -130,7 +139,8 @@ class AccountController extends Controller
      */
     public function destroy($id)
     {
-        DB::table('accounts')->where('id', $id)->limit(1)->delete();
+        DB::delete('delete from accounts where id = ? limit 1', [$id]);
+
         return redirect('/home/accounts');
     }
 }

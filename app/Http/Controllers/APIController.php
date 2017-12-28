@@ -41,10 +41,16 @@ class APIController extends Controller
 
 	public function getTokens(Request $request)
 	{
+		parse_str($request->data, $filter);
+
 		$coditions = [];
-		parse_str($request->data, $coditions);
+
+		foreach ($filter as $key => $value) {
+			if ($value != "") $coditions[$key] = $value;
+		}
+
 		
-		$tokens = Token::select('id', 'date', 'user_id', 'card_code', 'value', 'currency', 'rate', 'action', 'ask', 'ans', 'status');
+		$tokens = Token::select('id', 'date', 'user_id', 'card_id', 'card_code', 'value', 'currency', 'rate', 'action', 'ask', 'ans', 'status');
 
 		if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
 			$coditions[] = ['user_id', Auth::user()->id];
@@ -56,7 +62,8 @@ class APIController extends Controller
 				return $user[0]->name;
 			})->editColumn('card_code', function($token)
 			{
-				return decrypt($token->card_code);
+				$code = decrypt($token->card_code);
+				return substr($code, 0, 4)."&nbsp;".substr($code, 4, 4)."&nbsp;".substr($code, 8, 4)."&nbsp;".substr($code, 12);
 			})->editColumn('value', function($token)
 			{
 				return number_format(floatval($token->value/100), 2, ".", "");

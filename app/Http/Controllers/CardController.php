@@ -27,7 +27,7 @@ class CardController extends Controller
     public function index()
     {
         if ( Auth::user()->status == 'admin' || Auth::user()->status == 'accountant' || Auth::user()->status == 'farmer' ) {
-            $users = DB::table('users')->get();
+            $users = DB::select('select id, name, first_name, last_name from users');
             return view('/home/cards', compact('users') );
         } else {
             return view('/home');
@@ -58,44 +58,12 @@ class CardController extends Controller
     {
         $salt = env('APP_SALT');
         $request['date']      = $request["date"]."/1";
-        $request["code_hash"] = sha1("".$request["code"].$salt);
+        $request["code_hash"] = sha1($request["code"].$salt);
 
-        if ($request->type === "1") {
-            
-            $this->validate($request, [
-                'name'      => 'max:255|unique:cards',
-                'code'      => 'required',
-                'code_hash' => 'required|unique:cards',
-                'user'      => 'required|numeric|min:1',
-                'currency'  => 'required|size:3',
-                'type'      => 'required|numeric'
-            ], [
-                'code_hash.unique' => 'The card code has already been taken.',
-                'type.numeric'     => 'The card type is incorrect.',
-            ]);
 
-            $request["code"] = encrypt($request["code"]);
-            $request["cw2"]  = encrypt('QIWI');
-
-            $card = new Card();
-            $card->fill([
-                'name'      => $request["name"],
-                'code'      => $request["code"],
-                'code_hash' => $request["code_hash"],
-                'cw2'       => $request["cw2"],
-                'currency'  => $request["currency"],
-                'user_id'   => $request["user"],
-                'status'    => 'active',
-                'type'      => intval($request["type"])
-            ]);
-            $card->save();
-
-            return redirect('/home/cards');
-
-        }
-
-        $this->validate($request, [
-            'name'      => 'max:255|unique:cards',
+        // Validation params BEGIN
+        $rules = [
+            'name'      => 'required|max:255|unique:cards',
             'code'      => 'required|numeric|digits:16',
             'code_hash' => 'required|unique:cards',
             'cw2'       => 'required|numeric|digits:3',
@@ -103,26 +71,50 @@ class CardController extends Controller
             'user'      => 'required|numeric|min:1',
             'currency'  => 'required|size:3',
             'type'      => 'required|numeric'
-        ], [
+        ];
+
+        $QIWI_rules = [
+            'code'      => 'required',
+            'cw2'       => '',
+            'date'      => ''
+        ];
+
+        $err_msg = [
             'code_hash.unique' => 'The card code has already been taken.',
             'type.numeric'     => 'The card type is incorrect.'
-        ]);
+        ];
+        // Validation params END
 
-        $request["code"] = encrypt( $request["code"] );
-        $request["cw2"]  = encrypt( $request["cw2"]  );
 
-        $card = new Card();
-        $card->fill([
+        // Data to store BEGIN
+        $data = [
             'name'      => $request["name"],
-            'code'      => $request["code"],
+            'code'      => encrypt($request["code"]),
             'code_hash' => $request["code_hash"],
-            'cw2'       => $request["cw2"],
-            'date'      => date( "Y/m/d", strtotime($request["date"]) ),
+            'cw2'       => encrypt($request["cw2"]),
+            'date'      => date("Y/m/d", strtotime($request["date"])),
             'currency'  => $request["currency"],
             'user_id'   => $request["user"],
             'status'    => 'active',
             'type'      => intval($request["type"])
-        ]);
+        ];
+
+        $QIWI_data = [
+            'cw2'  => encrypt('QIWI'),
+            'date' => date("Y-m-d")
+        ];
+        // Data to store END
+
+
+        if ($request->type === "1") {
+            $rules = array_merge($rules, $QIWI_rules);
+            $data  = array_merge($data,  $QIWI_data);
+        }
+
+        $this->validate($request, $rules, $err_msg);
+
+        $card = new Card();
+        $card->fill($data);
         $card->save();
 
         return redirect('/home/cards');
@@ -288,10 +280,9 @@ class CardController extends Controller
      */
     public function show($id)
     {
-        $card  = DB::table('cards')->where('id', $id)->get();
-        $card = $card[0];
+        $card  = DB::table('cards')->where('id', $id)->first();
         $card->code = decrypt($card->code);
-        $card->cw2  = decrypt($card->cw2);
+        $card->cw2  = (is_null($card->cw2)) ? null : decrypt($card->cw2);
         $card->date = date("Y/m/d", strtotime($card->date));
 
         $users = DB::table('users')->get();

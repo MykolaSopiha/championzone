@@ -28,7 +28,7 @@
 
                 <div class="form__item{{ $errors->has('name') ? ' form__item--error' : '' }}">
                     <label for="name">Nickname:</label>
-                    <input id="name" type="text" name="name" value="{{ $data->name }}">
+                    <input id="name" type="text" name="name" value="{{$data->name}}">
                     @if ($errors->has('name'))
                         <p>{{ $errors->first('name') }}</p>
                     @endif
@@ -36,7 +36,7 @@
 
                 <div class="form__item{{ $errors->has('first_name') ? ' form__item--error' : '' }}">
                     <label for="first_name">Имя</label>
-                    <input id="first_name" type="text" name="first_name" value="{{ $data->first_name }}">
+                    <input id="first_name" type="text" name="first_name" value="{{$data->first_name}}">
                     @if ($errors->has('first_name'))
                         <p>{{ $errors->first('first_name') }}</p>
                     @endif
@@ -44,7 +44,7 @@
 
                 <div class="form__item{{ $errors->has('last_name') ? ' form__item--error' : '' }}">
                     <label for="last_name">Фамилия</label>
-                    <input id="last_name" type="text" name="last_name" value="{{ $data->last_name }}">
+                    <input id="last_name" type="text" name="last_name" value="{{$data->last_name}}">
                     @if ($errors->has('last_name'))
                         <p>{{ $errors->first('last_name') }}</p>
                     @endif
@@ -52,7 +52,7 @@
 
                 <div class="form__item{{ $errors->has('birthday') ? ' form__item--error' : '' }}">
                     <label for="birthday">Дата рождения</label>
-                    <input id="birthday" class="pick_birthday" type="text" name="birthday" value="{{ $data->birthday }}" placeholder="Введите дату">
+                    <input id="birthday" class="pick_birthday" type="text" name="birthday" value="{{$data->birthday}}" placeholder="Введите дату">
                     @if ($errors->has('date'))
                         <p>{{ $errors->first('date') }}</p>
                     @endif
@@ -60,7 +60,7 @@
 
                 <div class="form__item{{ $errors->has('terra_id') ? ' form__item--error' : '' }}">
                     <label for="terra_id">Terra Leads ID</label>
-                    <input id="terra_id" type="text" name="terra_id" value="{{ $data->terra_id }}">
+                    <input id="terra_id" type="text" name="terra_id" value="{{$data->terra_id}}">
                     @if ($errors->has('terra_id'))
                         <p>{{ $errors->first('terra_id') }}</p>
                     @endif

@@ -6,10 +6,10 @@
     .dropdown-menu {
         min-width: 0 !important
     }
-    .chosen-container {
+    .chosen-js .chosen-container {
         font-size: 18px !important
     }
-    .chosen-single {
+    .chosen-js .chosen-single {
         height: 70px !important;
         line-height: 70px !important;
         background: none !important;
@@ -17,6 +17,15 @@
     }
     #tokens_ssp_table tfoot {
         display: table-header-group;
+    }
+    .chosen-single {
+        height: 34px !important;
+        line-height: 34px !important;
+        background: none !important;
+        min-width: 150px;
+    }
+    .chosen-container {
+        min-width: 150px;
     }
 </style>
 @endsection
@@ -48,7 +57,7 @@
                             <h2>Добавить токен</h2>
                         </header>
 
-                        <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                        <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
                             <label for="card">Карта</label>
                             <select name="card" id="card" class="chosen-js-select">
                                 @foreach ($cards as $card)<option value="{{ $card->id }}" title="{{ $card->currency }}">...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
@@ -113,29 +122,76 @@
 
                 <div class="items__list">
                     <h2>Список токенов</h2>
-                    <form class="js-form" action="#" method="post">
-                        <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
-                        <div class="table-responsive">
-                            <table class="table" id="tokens_ssp_table">
-                                <thead>
-                                    <tr>
-                                        <td>Дата</td>
-                                        <td>Пользователь</td>
-                                        <td>Карта</td>
-                                        <td>Сумма</td>
-                                        <td>Валюта</td>
-                                        <td>Курс</td>
-                                        <td>Действие</td>
-                                        <td>Описание</td>
-                                        <td>Отзыв</td>
-                                        <td>Статус</td>
-                                        <td></td>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </form>
+
+                    <div style="margin-bottom: 50px;">
+                        <form class="form-inline" method="get">
+                            <h3>Фильтр:</h3>
+
+                            <div class="form-group" style="max-width: 300px">
+                                <label for="date">Дата</label>
+                                @if (isset($_GET['date']))
+                                    <input type="text" name="date" value="{{$_GET['date']}}" class="form-control pick_date" id="date">
+                                @else
+                                    <input type="text" name="date" class="form-control pick_date" id="date">
+                                @endif
+                            </div>
+
+                            @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
+                            <div class="form-group" style="max-width: 300px">
+                                <label for="user">Пользователь</label>
+                                <select name="user_id" id="user" class="chosen-js-select form-control">
+                                    <option value="">Все пользователи</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{$user->id}}" @if (isset($_GET['user_id']) && $user->id == $_GET['user_id']) selected @endif>{{$user->first_name}} {{$user->name}} {{$user->last_name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @endif
+
+                            <div class="form-group" style="max-width: 400px">
+                                <label for="card">Карта</label>
+                                <select name="card_id" id="card" class="chosen-js-select form-control">
+                                    <option value="">Все карты</option>
+                                    @foreach ($cards as $card)<option value="{{$card->id}}" @if (isset($_GET['card_id']) && $card->id == $_GET['card_id']) selected @endif>...{{substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4)}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Искать</button>
+                                <button type="submit" class="btn btn-default">
+                                    <a href="{{url('home/tokens')}}">Сбросить</a>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div>
+                        <form class="js-form" action="#" method="post">
+                            <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
+                            <div class="table-responsive">
+                                <table class="table" id="tokens_ssp_table">
+                                    <thead>
+                                        <tr>
+                                            <td>Дата</td>
+                                            <td>Пользователь</td>
+                                            <td>Карта</td>
+                                            <td>Сумма</td>
+                                            <td>Валюта</td>
+                                            <td>Курс</td>
+                                            <td>Действие</td>
+                                            <td>Описание</td>
+                                            <td>Отзыв</td>
+                                            <td>Статус</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
 
             </div>
@@ -152,28 +208,6 @@
         </audio>
     </div>
     <!-- end beep -->
-
-    <!-- Modal begin -->
-    <div class="modal fade" id="modal_window" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal end -->
 @endsection
 
 
@@ -216,7 +250,7 @@
                     {data: 'ask'},
                     {data: 'ans'},
                     {data: 'status'},
-                    {data: 'tools', searchable: false}
+                    {data: 'tools'}
                 ],
                 "columnDefs": [columnDefs_json],
                 "initComplete": function () {
@@ -271,7 +305,7 @@
                 });
             }
             checkTokens();
-            setInterval(checkTokens, 300000);
+            setInterval(checkTokens, 180000);
         });
     </script>
 @endsection

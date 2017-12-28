@@ -122,7 +122,7 @@
                         <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
                         <!-- begin table -->
                         <div class="table-responsive">
-                            <table class="table display js-table" cellspacing="0" width="100%">
+                            <table class="table display js-account-table" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
                                         <th>Пользователь</th>
@@ -170,4 +170,17 @@
         </div>
     </main>
     <!-- end main -->
+@endsection
+
+@section('scripts_end')
+<script>
+    $('.js-account-table').DataTable({
+        "lengthMenu": [ 10, 25, 50, 75, 100, 200, 500 ],
+        "responsive": true,
+        "columnDefs": [
+            {"targets": [4], "orderable": false},
+            {"targets": [4], "searchable": false}
+        ]
+    });
+</script>
 @endsection

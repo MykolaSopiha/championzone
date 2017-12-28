@@ -155,9 +155,7 @@
                             </tfoot>
                         </table>
                     </div>
-                    <div class="table-responsive" id="sub_table">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Possimus consequatur voluptas iure repellat quas, aliquam perspiciatis, officia sunt quos, tempore temporibus atque in deserunt amet voluptate ullam placeat saepe? Illo.
-                    </div>
+                    <div class="table-responsive" id="sub_table"></div>
 
                 </div>
             </div>
