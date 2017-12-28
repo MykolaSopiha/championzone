@@ -125,10 +125,9 @@
 
                     <div style="margin-bottom: 50px;">
                         <form class="form-inline" method="get">
-                            <h3>Фильтр:</h3>
 
                             <div class="form-group" style="max-width: 300px">
-                                <label for="date">Дата</label>
+                                <label for="date">Дата</label><br>
                                 @if (isset($_GET['date']))
                                     <input type="text" name="date" value="{{$_GET['date']}}" class="form-control pick_date" id="date">
                                 @else
@@ -138,7 +137,7 @@
 
                             @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
                             <div class="form-group" style="max-width: 300px">
-                                <label for="user">Пользователь</label>
+                                <label for="user">Пользователь</label><br>
                                 <select name="user_id" id="user" class="chosen-js-select form-control">
                                     <option value="">Все пользователи</option>
                                     @foreach ($users as $user)
@@ -149,7 +148,7 @@
                             @endif
 
                             <div class="form-group" style="max-width: 400px">
-                                <label for="card">Карта</label>
+                                <label for="card">Карта</label><br>
                                 <select name="card_id" id="card" class="chosen-js-select form-control">
                                     <option value="">Все карты</option>
                                     @foreach ($cards as $card)<option value="{{$card->id}}" @if (isset($_GET['card_id']) && $card->id == $_GET['card_id']) selected @endif>...{{substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4)}}</option>
@@ -157,7 +156,17 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" style="max-width: 400px">
+                                <label for="status">Статус</label><br>
+                                <select name="status" id="status" class="form-control">
+                                    <option value="">Все</option>
+                                    @foreach ($statuses as $s)
+                                    <option value="{{$s}}" @if (isset($_GET['status']) && $_GET['status'] == $s) selected="selected" @endif>{{ucfirst($s)}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div style="margin-top: 20px">
                                 <button type="submit" class="btn btn-primary">Искать</button>
                                 <button type="submit" class="btn btn-default">
                                     <a href="{{url('home/tokens')}}">Сбросить</a>

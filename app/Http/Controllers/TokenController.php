@@ -27,6 +27,7 @@ class TokenController extends Controller
     {
         $users = [];
         $cards_coditions = [];
+        $statuses = ['active', 'confirmed', 'trash'];
 
         if ( Auth::user()->status !== 'admin') {
             $cards_coditions[] = ['status', 'active'];
@@ -35,7 +36,7 @@ class TokenController extends Controller
             $users = DB::select('select id, name, first_name, last_name from users');
 
         $cards = DB::table('cards')->where($cards_coditions)->get();
-        return view('home/tokens', compact('cards', 'users'));
+        return view('home/tokens', compact('cards', 'users', 'statuses'));
     }
 
     /**
