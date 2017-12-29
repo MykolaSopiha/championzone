@@ -123,25 +123,25 @@
                             <thead>
                                 <tr>
                                     <th>День</th>
-                                    <th>Баланс, USD*</th>
-                                    <th>RUB*</th>
+                                    <th>Общий баланс, USD*</th>
+                                    <th>Рублевые токены, RUB*</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($statistics as $s)
                                 <tr>
                                     <td>
-                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}">
+                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}{{$get_req}}">
                                             {{$s['day']}}
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}&status=confirmed">
+                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}&status=confirmed{{$get_req}}">
                                             {{ number_format($s['cost'], 2, ".", " ") }}
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}&currency=RUB&status=confirmed">
+                                        <a href="{{url('home/tokens/')}}?date={{$s['day']}}&currency=RUB&status=confirmed{{$get_req}}">
                                             {{ number_format($s['cost_RUB'], 2, ".", " ") }}
                                         </a>
                                     </td>

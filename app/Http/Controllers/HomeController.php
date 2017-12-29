@@ -25,7 +25,7 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         if ( Auth::user()->status === 'accountant' ) {
             return redirect('/home/tokens');
@@ -45,6 +45,19 @@ class HomeController extends Controller
 
     public function statistics(Request $request)
     {
+        $get_req = "&";
+        if ($request->user != "") {
+            $get_req .= "user_id=".$request->user;
+        }
+        if ($request->card != "") {
+            $get_req .= "card_id=".$request->card;
+        }
+        if ($get_req == "&") {
+            $get_req = "";
+        }
+
+
+
         if (Auth::user()->status === 'farmer')
             return redirect('/home');
 
@@ -104,7 +117,7 @@ class HomeController extends Controller
             $total_RUB += $RUB;
         }
 
-        return view('home/statistics', compact('statistics', 'total', 'total_RUB', 'users', 'cards') );
+        return view('home/statistics', compact('statistics', 'total', 'total_RUB', 'users', 'cards', 'get_req') );
     }
 
     public function balance()
