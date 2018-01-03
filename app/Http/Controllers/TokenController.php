@@ -7,8 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use Validator;
 use App\Token;
+use App\User;
 use DB;
 use Auth;
+use Mail;
 
 class TokenController extends Controller
 {
@@ -25,18 +27,19 @@ class TokenController extends Controller
 
     public function index()
     {
-        $users = [];
+        $users_coditions = [];
         $cards_coditions = [];
         $statuses = ['active', 'confirmed', 'trash'];
         $currencies = ['RUB', 'USD', 'UAH', 'EUR'];
 
-        if ( Auth::user()->status !== 'admin') {
+        if (Auth::user()->status !== 'admin' && Auth::user()->status !== 'accountant') {
             $cards_coditions[] = ['status', 'active'];
             $cards_coditions[] = ['user_id', Auth::user()->id];
-        } else
-            $users = DB::select('select id, name, first_name, last_name from users');
+            $users_coditions[] = ['id', Auth::user()->id];
+        }
 
-        $cards = DB::table('cards')->where($cards_coditions)->get();
+        $users = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->where($users_coditions)->get();
+        $cards = DB::table('cards')->select('id', 'name', 'code', 'currency')->where($cards_coditions)->get();
         return view('home/tokens', compact('cards', 'users', 'statuses', 'currencies'));
     }
 
@@ -59,28 +62,40 @@ class TokenController extends Controller
     public function store(Request $request)
     {
 
-        $this->validate($request, [
-            'card'  => 'required|numeric|min:1'
-        ]);
-
         $token_card = DB::table('cards')->where('id', $request["card"])->limit(1)->get();
         $token_card = $token_card[0];
 
-        if ( !isset($request['ask']) ) {
+        if (!isset($request['ask'])) {
             $request['ask'] = '';
         }
 
-        if ( !isset($request['ans']) ) {
+        if (!isset($request['ans'])) {
             $request['ans'] = '';
         }
 
+        if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
+            $request['date'] = date("Y-m-d", strtotime($request["date"]));
+        } else {
+            $request['date']    = date("Y-m-d");
+            $request['user_id'] = intval(Auth::user()->id);
+        }
+
+        $this->validate($request, [
+            'card' => 'required|numeric|min:1',
+            'action' => 'required',
+            'value' => 'required|numeric',
+            'rate' => 'required|numeric',
+            'date' => 'required|date',
+            'user_id' => 'required|numeric|min:1',
+        ]);
+
         $token = new Token();
         $token->fill([
-            'date'      => date("Y-m-d"),
-            'user_id'   => intval(Auth::user()->id),
+            'date'      => $request['date'],
+            'user_id'   => $request['user_id'],
             'card_id'   => $request["card"],
             'card_code' => $token_card->code,
-            'value'     => intval( round($request["value"], 2)*100 ),
+            'value'     => intval(round($request["value"], 2)*100),
             'currency'  => $token_card->currency,
             'rate'      => $request['rate'],
             'action'    => $request['action'],
@@ -89,6 +104,34 @@ class TokenController extends Controller
             'status'    => 'active'
         ]);
         $token->save();
+
+        $user = DB::table('users')->select('name', 'first_name', 'last_name')->where('id', Auth::user()->id)->first();
+        
+        $actions_RU = [
+            'deposit'  => 'Пополнить',
+            'withdraw' => 'Списать',
+            'transfer' => 'Перевести'
+        ];
+        $request['action'] = $actions_RU[$request['action']];
+
+
+        //SEND MESSAGE begin
+        $accountants = User::select('id', 'name', 'first_name', 'last_name', 'email')->where('status', 'accountant')->get();
+        $user = DB::table('users')->select('name', 'first_name', 'last_name', 'email')->first();
+
+        // foreach ($accountants as $a) {
+        //     if ($a->isOnline()) return redirect('/home/tokens');
+        // }
+
+        // return dd($accountants);
+
+        foreach ($accountants as $user) {
+            Mail::send('emails.token', ['user' => $user, 'request' => $request, 'token_card' => $token_card], function ($message) use ($user) {
+                $message->from(env('MAIL_USERNAME'), 'зоначемпиона.com');
+                $message->to($user->email);
+            });
+        }
+        //SEND MESSAGE end
 
         return redirect('/home/tokens');
     }

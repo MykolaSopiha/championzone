@@ -41,22 +41,22 @@ class APIController extends Controller
 
 	public function getTokens(Request $request)
 	{
+
+		$conditions = [];
+
 		parse_str($request->data, $filter);
 
-		$coditions = [];
-
 		foreach ($filter as $key => $value) {
-			if ($value != "") $coditions[$key] = $value;
+			if ($value != "") $conditions[$key] = $value;
 		}
-
 		
 		$tokens = Token::select('id', 'date', 'user_id', 'card_id', 'card_code', 'value', 'currency', 'rate', 'action', 'ask', 'ans', 'status');
 
-		if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
-			$coditions[] = ['user_id', Auth::user()->id];
+		if ((Auth::user()->status !== 'admin') && (Auth::user()->status !== 'accountant')) {
+			$conditions[] = ['user_id', Auth::user()->id];
 		}
 
-		return DataTables::of($tokens)->where($coditions)->orderBy('id', 'desc')->addColumn('user_name', function($token)
+		return DataTables::of($tokens)->where($conditions)->orderBy('id', 'desc')->addColumn('user_name', function($token)
 			{
 				$user = DB::table('users')->where('id', $token->user_id)->limit(1)->get();
 				return $user[0]->name;
@@ -127,8 +127,20 @@ class APIController extends Controller
 		// getting total number records without any search
 		$totalData = DB::table('cards')->count();
 		// when there is no search parameter then total number rows = total number filtered rows.
-	 
+
 		$conditions = [];
+
+		parse_str($request->data, $filter);
+
+		foreach ($filter as $key => $value) {
+			if ($value != "") $conditions[] = [$key, '=', $value];
+		}
+
+		// return dd($conditions);
+
+		if (Auth::user()->status == 'mediabuyer') {
+			$conditions[] = ['cards.user_id', '=', Auth::user()->id];
+		}
 
 		// getting records as per search parameters
 		if( !empty($requestData['columns'][2]['search']['value']) ){   //code
@@ -147,9 +159,10 @@ class APIController extends Controller
 
 		} else {
 			$cards = Card::all();
-			return DataTables::of($cards)->editColumn('code', function($card)
+			return DataTables::queryBuilder(DB::table('cards')->where($conditions))->editColumn('code', function($card)
 			{
-				return "<a href='".url('/home/cards')."/".$card->id."'>".decrypt($card->code)."</a>";
+				$code = decrypt($card->code);
+				return "<a href='".url('/home/cards')."/".$card->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)."</a>";
 			})->addColumn('check', function ($card)
 			{
 				return "<input type='checkbox' class='shift_select' name='card[".$card->id."]'>";
@@ -176,8 +189,8 @@ class APIController extends Controller
 		}
 
 		foreach ($results as $res) {
-			// $res->check = "<input type='checkbox' class='shift_select' name='card[".$card->id."]'>";
-			$res->code = "<a href='".url('/home/cards')."/".$res->id."'>".decrypt($res->code)."</a>";
+			$code = decrypt($res->code);
+			$res->code = "<a href='".url('/home/cards')."/".$res->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)."</a>";
 			$res->date = substr($res->date, 0, 4)."-".substr($res->date, -2);
 			$res->check = "<input type='checkbox' class='shift_select' name='card[26]'>";
 			$user = DB::table('users')->where('id', $res->user_id)->limit(1)->get();

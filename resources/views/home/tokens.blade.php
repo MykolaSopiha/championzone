@@ -57,6 +57,27 @@
                             <h2>Добавить токен</h2>
                         </header>
 
+                        @if (Auth::user()->status == 'accountant' || Auth::user()->status == 'admin')
+                        <div class="form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
+                            <label for="date">Дата</label>
+                            <input id="date" class="pick_date" type="text" name="date" placeholder="Введите дату" required>
+                            @if ($errors->has('date'))
+                                <p>{{ $errors->first('date') }}</p>
+                            @endif
+                        </div>
+
+                        <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                            <label for="user_id">Пользователь</label>
+                            <select name="user_id" id="user_id" class="chosen-js-select" required>
+                                @foreach ($users as $user)<option value="{{$user->id}}">{{$user->first_name." ".$user->last_name." ".$user->name}}</option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('card'))
+                                <p>{{ $errors->first('card') }}</p>
+                            @endif
+                        </div>                        
+                        @endif
+
                         <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
                             <label for="card">Карта</label>
                             <select name="card" id="card" class="chosen-js-select">
@@ -81,7 +102,7 @@
 
                         <div class="form__item{{ $errors->has('value') ? ' form__item--error' : '' }}">
                             <label for="value">Количество денег</label>
-                            <input id="value" class="money_input" type="text" step="0.01" name="value">
+                            <input id="value" class="money_input" type="text" step="0.01" name="value" required>
                             @if ($errors->has('value'))
                                 <p>{{ $errors->first('value') }}</p>
                             @endif

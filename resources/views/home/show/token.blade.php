@@ -39,7 +39,7 @@
 
                 <div class="form__item{{ $errors->has('value') ? ' form__item--error' : '' }}">
                     <label for="value">Количество денег</label>
-                    <input id="value" class="money_input" type="number" step="0.01" name="value" value="{{ $token->value }}">
+                    <input id="value" class="money_input" type="text" step="0.01" name="value" value="{{ $token->value }}">
                     @if ($errors->has('value'))
                         <p>{{ $errors->first('value') }}</p>
                     @endif

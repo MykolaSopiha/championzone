@@ -45,6 +45,9 @@ class HomeController extends Controller
 
     public function statistics(Request $request)
     {
+        if (Auth::user()->status === 'farmer')
+            return redirect('/home');
+
         $get_req = "&";
         if ($request->user != "") {
             $get_req .= "user_id=".$request->user;
@@ -56,13 +59,8 @@ class HomeController extends Controller
             $get_req = "";
         }
 
-
-
-        if (Auth::user()->status === 'farmer')
-            return redirect('/home');
-
         $from = ($request->from != '') ? $request->from : '0000-00-00';
-        $to   = ($request->to != '') ? $request->to : date( "Y-m-d" );
+        $to   = ($request->to   != '') ? $request->to   : date( "Y-m-d" );
 
         $conditions = [
             [ 'date', '>=', $from ],

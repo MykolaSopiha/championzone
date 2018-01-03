@@ -20,9 +20,7 @@
                     @if ( Auth::user()->status != 'accountant' && Auth::user()->status != 'farmer' )
                     <li><a href="{{url('home/')}}">Главная</a></li>
                     @endif
-                    @if ( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->status === 'farmer' )
                     <li><a href="{{url('home/cards')}}">Карты</a></li>
-                    @endif
                     @if ( Auth::user()->status === 'admin' )
                     <li><a href="{{url('home/users')}}">Пользователи</a></li>
                     @endif

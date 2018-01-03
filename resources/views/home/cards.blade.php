@@ -6,17 +6,17 @@
         .ui-datepicker-calendar, .ui-datepicker-current {
             display: none !important;
         }
-        .chosen-container {
-            font-size: 18px !important
-        }
-        .chosen-single {
-            height: 70px !important;
-            line-height: 70px !important;
-            background: none !important;
-            text-align: center
-        }
         #all_cards tfoot {
             display: table-header-group;
+        }
+        .chosen-single {
+            height: 34px !important;
+            line-height: 34px !important;
+            background: none !important;
+            min-width: 150px;
+        }
+        .chosen-container {
+            min-width: 150px;
         }
     </style>
 @endsection
@@ -38,7 +38,8 @@
 
             <!-- begin items -->
             <div class="items">
-
+                
+                @if (Auth::user()->status != 'mediabuyer')
                 <!-- begin items__add -->
                 <div class="items__add">
                     <form class="form" id='add-card' method="POST" action="{{ url('/home/cards') }}">
@@ -132,27 +133,74 @@
                     </form>
                 </div>
                 <!-- end items__add -->
+                @endif
 
                 <!-- begin items__list -->
                 <div class="items__list">
+                    @if (Auth::user()->status != 'mediabuyer')
                     <h2>Список карт</h2>
+                    @endif
 
-                    <div class="dropdown js_card_types">
-                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
-                            <span class="type_name">Все карты</span>
-                            &nbsp;
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu type_list">
-                            <li><a href="#" class="type" data-type-code="">Все карты</a></li>
-                            <li><a href="#" class="type" data-type-code="0">Яндекс.Деньги</a></li>
-                            <li><a href="#" class="type" data-type-code="1">QIWI</a></li>
-                            <li><a href="#" class="type" data-type-code="2">Пластиковые карты</a></li>
-                        </ul>
+                    <div style="margin-bottom: 0px;">
+                        <form class="form-inline" method="get">
+
+                            @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
+                            <div class="form-group" style="max-width: 300px">
+                                <label for="user">Пользователь</label><br>
+                                <select name="user_id" id="user" class="chosen-js-select form-control">
+                                    <option value="">Все пользователи</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{$user->id}}" @if (isset($_GET['user_id']) && $user->id == $_GET['user_id']) selected @endif>{{$user->first_name." ".$user->last_name." ".$user->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            @endif
+
+                            <div class="form-group" style="max-width: 400px">
+                                <label for="card">Код</label><br>
+                                <select name="id" id="card" class="chosen-js-select form-control">
+                                    <option value="">Все карты</option>
+                                    @foreach ($cards as $card)<option value="{{$card->id}}" @if (isset($_GET['id']) && $card->id == $_GET['id']) selected @endif>...{{substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4)}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="max-width: 400px">
+                                <label for="type">Тип</label><br>
+                                <select name="type" id="type" class="form-control">
+                                    <option value="">Все</option>
+                                    @foreach ($types as $key => $val)
+                                    <option value="{{$key}}" @if (isset($_GET['type']) && $_GET['type'] != '' && $_GET['type'] == $key) selected="selected" @endif>
+                                        {{ucfirst($val)}}
+                                    </option>
+                                    @endforeach                                 
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="max-width: 400px">
+                                <label for="currency">Валюта</label><br>
+                                <select name="currency" id="currency" class="form-control">
+                                    <option value="">Все</option>
+                                    @foreach ($currencies as $c)
+                                    <option value="{{$c}}" @if (isset($_GET['currency']) && $_GET['currency'] == $c) selected="selected" @endif>{{$c}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div style="margin-top: 20px">
+                                <button type="submit" class="btn btn-primary">Искать</button>
+                                <button type="submit" class="btn btn-default">
+                                    <a href="{{url('home/cards')}}">Сбросить</a>
+                                </button>
+                            </div>
+                        </form>
                     </div>
+
+                    <br/>
 
                     <form class="js-form" action="{{url('/home/cards/multiple_action')}}" method="post">
 
+                        @if (Auth::user()->status != 'mediabuyer')
                         <!-- begin select-action -->
                         <div class="select-action">
                             <span>Действие:</span>
@@ -171,6 +219,7 @@
                             <button class="js-submit" type="submit">Выполнить</button>
                         </div>
                         <!-- end select-action -->
+                        @endif
 
                         <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
 
@@ -235,9 +284,19 @@
             $('#all_cards').DataTable( {
                 "processing": true,
                 "serverSide": true,
-                "ajax": "{{url('/api/cards')}}",
+                "ajax": {
+                    url: "{{url('/api/cards')}}",
+                    data: {
+                        data: window.location.search.toString().substr(1)
+                    }
+                },
                 "lengthMenu": [ 10, 25, 50, 75, 100, 200, 500 ],
                 "responsive": true,
+                @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant')
+                "searching": true,
+                @else
+                "searching": false,
+                @endif
                 "columns":[
                     {data: 'check', name: 'action', orderable: false, searchable: false},
                     {data: 'name'},
@@ -250,12 +309,17 @@
                     {data: 'type'}
                 ],
                 "columnDefs": [{
+                    @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant')
                     "targets": [8],
+                    @else
+                    "targets": [8, 7, 6, 0, 1],
+                    @endif
                     "visible": false,
                     "searchable": true
                 }],
                 "initComplete": function () {
                     let table = this;
+                    @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant')
                     table.api().column(2).every(function () {
                         var column = this;
                         var input = document.createElement("input");
@@ -264,7 +328,7 @@
                             column.search($(this).val(), false, false, true).draw();
                         });
                     });
-
+                    @endif
 
                     let $chkboxes = $('.shift_select');
                     let lastChecked = null;
