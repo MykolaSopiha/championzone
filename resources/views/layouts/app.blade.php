@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -32,18 +32,6 @@
     @yield('content')
     </div>
     <!-- end content -->
-
-    <!-- begin pre-loader -->
-<!--     <div class="pre-loader">
-        <div class="pre-loader__inner">
-            <div class="box1"></div>
-            <div class="box2"></div>
-            <div class="box3"></div>
-            <div class="box4"></div>
-            <div class="box5"></div>
-        </div>
-    </div> -->
-    <!-- end pre-loader -->
 
     <!-- begin Elixir Livereload -->
     <div class="Elixir Livereload">

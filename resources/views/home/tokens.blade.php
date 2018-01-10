@@ -7,7 +7,8 @@
         min-width: 0 !important
     }
     .chosen-js .chosen-container {
-        font-size: 18px !important
+        font-size: 18px !important;
+        width: 100% !important;
     }
     .chosen-js .chosen-single {
         height: 70px !important;
@@ -27,17 +28,22 @@
     .chosen-container {
         min-width: 150px;
     }
+    .transfer_dest {
+        color: blue;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 </style>
 @endsection
 
 
+<!-- begin header -->
+@section('page-name') Токены @endsection
+@include('layouts.headers.home')
+<!-- end header -->
+
+
 @section('content')
-
-    <!-- begin header -->
-    @section('page-name') Токены @endsection
-    @include('layouts.headers.home')
-    <!-- end header -->
-
 
     <!-- begin main -->
     <main class="main" role="main">
@@ -46,7 +52,6 @@
             <!-- begin items -->
             <div class="items">
 
-                @if (Auth::user()->status !== 'accountant')
                 <!-- begin items__add -->
                 <div class="items__add">
                     <form class="form" method="POST" action="{{ url('/home/tokens') }}">
@@ -60,7 +65,7 @@
                         @if (Auth::user()->status == 'accountant' || Auth::user()->status == 'admin')
                         <div class="form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
                             <label for="date">Дата</label>
-                            <input id="date" class="pick_date" type="text" name="date" placeholder="Введите дату" required>
+                            <input id="date" class="pick_date" type="text" name="date" placeholder="Введите дату" value="{{date('Y-m-d')}}" required>
                             @if ($errors->has('date'))
                                 <p>{{ $errors->first('date') }}</p>
                             @endif
@@ -69,7 +74,7 @@
                         <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
                             <label for="user_id">Пользователь</label>
                             <select name="user_id" id="user_id" class="chosen-js-select" required>
-                                @foreach ($users as $user)<option value="{{$user->id}}">{{$user->first_name." ".$user->last_name." ".$user->name}}</option>
+                                @foreach ($users as $user)<option value="{{$user->id}}" @if ($user->id == Auth::user()->id) selected @endif>{{$user->first_name." ".$user->last_name." ".$user->name}}</option>
                                 @endforeach
                             </select>
                             @if ($errors->has('card'))
@@ -80,7 +85,7 @@
 
                         <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
                             <label for="card">Карта</label>
-                            <select name="card" id="card" class="chosen-js-select">
+                            <select name="card_id" id="card" class="chosen-js-select">
                                 @foreach ($cards as $card)<option value="{{ $card->id }}" title="{{ $card->currency }}">...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
                                 @endforeach
                             </select>
@@ -94,9 +99,21 @@
                             <select name="action" id="action">
                                 <option value="deposit" >Пополнить</option>
                                 <option value="withdraw">Списать</option>
+                                <option value="transfer">Перевести</option>
                             </select>
                             @if ($errors->has('action'))
                                 <p>{{ $errors->first('action') }}</p>
+                            @endif
+                        </div>
+
+                        <div class="chosen-js second_card form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                            <label for="card">Куда перевести?</label>
+                            <select name="card2_id" id="card2" class="chosen-js-select">
+                                @foreach ($cards as $card)<option value="{{ $card->id }}" title="{{ $card->currency }}">...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('card'))
+                                <p>{{ $errors->first('card') }}</p>
                             @endif
                         </div>
 
@@ -117,7 +134,7 @@
                         </div>
 
                         <div class="form__item">
-                            <button type="button" id="get_rate">
+                            <button type="button" id="get_rate" class="btn btn-primary">
                                 <i class="fa fa-refresh fa-lg" aria-hidden="true"></i> Обновить курс
                             </button>
                         </div>
@@ -139,7 +156,6 @@
                     </form>
                 </div>
                 <!-- end items__add -->
-                @endif
 
                 <div class="items__list">
                     <h2>Список токенов</h2>
@@ -147,17 +163,17 @@
                     <div style="margin-bottom: 50px;">
                         <form class="form-inline" method="get">
 
-                            <div class="form-group" style="max-width: 300px">
-                                <label for="date">Дата</label><br>
+                            <div class="form-group">
+                                <label for="filter_date">Дата</label><br>
                                 @if (isset($_GET['date']))
-                                    <input type="text" name="date" value="{{$_GET['date']}}" class="form-control pick_date" id="date">
+                                    <input type="text" name="date" value="{{$_GET['date']}}" class="form-control" id="filter_date">
                                 @else
-                                    <input type="text" name="date" class="form-control pick_date" id="date">
+                                    <input type="text" name="date" class="form-control" id="filter_date">
                                 @endif
                             </div>
 
                             @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
-                            <div class="form-group" style="max-width: 300px">
+                            <div class="form-group">
                                 <label for="user">Пользователь</label><br>
                                 <select name="user_id" id="user" class="chosen-js-select form-control">
                                     <option value="">Все пользователи</option>
@@ -197,7 +213,7 @@
                                 </select>
                             </div>
 
-                            <div style="margin-top: 20px">
+                            <div class="form-group" style="margin-top: 24px; margin-left: 20px">
                                 <button type="submit" class="btn btn-primary">Искать</button>
                                 <button type="submit" class="btn btn-default">
                                     <a href="{{url('home/tokens')}}">Сбросить</a>
@@ -205,7 +221,6 @@
                             </div>
                         </form>
                     </div>
-
                     <div>
                         <form class="js-form" action="#" method="post">
                             <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
@@ -231,12 +246,9 @@
                             </div>
                         </form>
                     </div>
-
                 </div>
-
             </div>
             <!-- end items -->
-
         </div>
     </main>
     <!-- end main -->
@@ -248,6 +260,29 @@
         </audio>
     </div>
     <!-- end beep -->
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header" style="padding:35px 50px;">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4>Перевести деньги на карту:</h4>
+                </div>
+                <div class="modal-body text-center" style="padding:20px"></div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary pull-left" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Modal -->
+
 @endsection
 
 
@@ -255,8 +290,28 @@
     <script>
         $(document).ready(function() {
 
+            $('#filter_date').datepicker({
+                dateFormat: "yy-mm-dd",
+                changeDay: true,
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-5:+5",
+                showButtonPanel: false
+            });
+
+            $('select#action').on('change', function () {
+                let selected_val = $(this).val();
+
+                if (selected_val == 'transfer') {
+                    $('div.second_card').slideDown();
+                } else {
+                    $('div.second_card').slideUp();
+                }
+            });
+
             let user_status = "{{Auth::user()->status}}";
             let columnDefs_json = {};
+
             if (user_status != 'admin' && user_status != 'accountant') {
                 columnDefs_json = {
                     "targets": [1],
@@ -296,6 +351,13 @@
                 "initComplete": function () {
                 },
                 "drawCallback": function(settings) {
+
+                    $('.transfer_dest').on('click', function (e) {
+                        let dest_card = $(this).attr('data-card-code');
+                        $('.modal-body').html("<h2>" + dest_card + "</h2>");
+                        $('#myModal').modal('show');
+                    });
+
                     $(".token_status").each(function (index) {
                         if ($(this).html() == 'confirmed' ) {
                             $(this).closest('tr').css('background-color', 'rgb(144, 238, 144)');
@@ -304,6 +366,7 @@
                             $(this).closest('tr').css('background-color','rgb(250, 128, 114)');
                         }
                     });
+
                 }
             });
 

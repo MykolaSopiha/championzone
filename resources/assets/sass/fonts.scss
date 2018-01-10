@@ -24,3 +24,15 @@
        url('../fonts/roboto/roboto-v18-cyrillic_latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
        url('../fonts/roboto/roboto-v18-cyrillic_latin-700.svg#Roboto') format('svg'); /* Legacy iOS */
 }
+/* Font Awesome */
+@font-face {
+  font-family: 'FontAwesome';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/fontawesome/fontawesome-webfont.eot'); /* IE9 Compat Modes */
+  src: local('Font Awesome'), local('Font Awesome'),
+       url('../fonts/fontawesome/fontawesome-webfont.eot?#iefix') format('embedded-opentype'), IE6-IE8
+       url('../fonts/fontawesome/fontawesome-webfont.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/fontawesome/fontawesome-webfont.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/fontawesome/fontawesome-webfont.svg#fontawesomeregular') format('svg'); /* Legacy iOS */
+}

@@ -58,6 +58,10 @@
                     {data: 'status'},
                     {data: 'created_at'},
                     {data: 'edit', searchable: false}
+                ],
+                "columnDefs" : [
+                    {"targets": [8], "searchable": false},
+                    {"targets": [8], "orderable": false}
                 ]
             });
 

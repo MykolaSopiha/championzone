@@ -43,7 +43,7 @@
             </div>
 
             <div class="form__item">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn">
                     <i class="fa fa-btn fa-sign-in"></i> Войти
                 </button>
             </div>

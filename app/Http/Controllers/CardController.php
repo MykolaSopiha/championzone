@@ -311,15 +311,31 @@ class CardController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Request $request)
     {
-        $card = DB::select('select * from cards where id = ? limit 1', [ $id ] );
-        $card = $card[0];
+        if ($request->action == 'unchain') {
+
+            $tokens = DB::table('tokens')->where([
+                ['user_id', Auth::user()->id],
+                ['card_id', $id],
+                ['status', 'active']
+            ])->count();
+
+            if ($tokens == 0) {
+                DB::table('cards')->where('id', $id)->update(['user_id'=>null]);
+                return redirect('/home/cards');
+            } else {
+                return view('errors.unchain')->with('id', $id);
+            }
+
+        }
+
+        $card = DB::table('cards')->where('id', $id)->first();
 
         if ($card->status === 'active') {
-            DB::update("update cards set status = 'disable' where id = ? limit 1", [ $id ]);
+            DB::update("update cards set status = 'disable' where id = ? limit 1", [$id]);
         } elseif ($card->status === 'disable') {
-            DB::update("update cards set status = 'active' where id = ? limit 1", [ $id ]);
+            DB::update("update cards set status = 'active' where id = ? limit 1", [$id]);
         }
 
         return redirect('/home/cards');

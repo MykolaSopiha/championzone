@@ -151,21 +151,25 @@ $(document).ready(function () {
 	// END Initialization of datepicker END
 
 
-	// BEGIN Make 2 decimals for money value BEGIN
+	// BEGIN Make N decimals for money value BEGIN
 	$('.money_input').on('blur', function () {
 		var money = $(this).val();
-		money = Number.parseFloat(money);
-		money = (money).toFixed(2);
-		$(this).val(money);
+		if (money != "") {
+			money = Number.parseFloat(money);
+			money = (money).toFixed(2);
+			$(this).val(money);
+		}
 	});
 
 	$('.money_input2').on('blur', function () {
 		var money = $(this).val();
-		money = Number.parseFloat(money);
-		money = (money).toFixed(6);
-		$(this).val(money);
+		if (money != "") {
+			money = Number.parseFloat(money);
+			money = (money).toFixed(6);
+			$(this).val(money);
+		}
 	});
-	// END Make 2 decimals for money value END
+	// END Make N decimals for money value END
 
 
 	// BEGIN Current exchange rate BEGIN
@@ -390,7 +394,5 @@ $(document).ready(function () {
 			
 	});
 	// END Multiple assignment of cards  END
-
-
 
 });

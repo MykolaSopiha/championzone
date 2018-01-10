@@ -85,6 +85,10 @@
                 </div>
                 @endif
 
+<!--                 <div class="checkbox">
+                    <label><input type="checkbox" name="email-notification" value="">Уведомления на E-mail</label>
+                </div> -->
+
                 <div class="form__item">
                     <button type="submit">
                         <i class="fa fa-floppy-o" aria-hidden="true"></i> Сохранить

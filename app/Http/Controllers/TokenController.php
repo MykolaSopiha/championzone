@@ -62,8 +62,7 @@ class TokenController extends Controller
     public function store(Request $request)
     {
 
-        $token_card = DB::table('cards')->where('id', $request["card"])->limit(1)->get();
-        $token_card = $token_card[0];
+        $token_card = DB::table('cards')->select('code', 'currency')->where('id', $request["card_id"])->first();
 
         if (!isset($request['ask'])) {
             $request['ask'] = '';
@@ -80,20 +79,19 @@ class TokenController extends Controller
             $request['user_id'] = intval(Auth::user()->id);
         }
 
-        $this->validate($request, [
-            'card' => 'required|numeric|min:1',
+        $rules = [
+            'card_id' => 'required|numeric|min:1',
             'action' => 'required',
             'value' => 'required|numeric',
             'rate' => 'required|numeric',
             'date' => 'required|date',
             'user_id' => 'required|numeric|min:1',
-        ]);
+        ];
 
-        $token = new Token();
-        $token->fill([
+        $data = [
             'date'      => $request['date'],
             'user_id'   => $request['user_id'],
-            'card_id'   => $request["card"],
+            'card_id'   => $request["card_id"],
             'card_code' => $token_card->code,
             'value'     => intval(round($request["value"], 2)*100),
             'currency'  => $token_card->currency,
@@ -102,36 +100,49 @@ class TokenController extends Controller
             'ask'       => $request['ask'],
             'ans'       => $request['ans'],
             'status'    => 'active'
-        ]);
+        ];
+
+        if ($request['action'] == 'transfer') {
+
+            $rules['card2_id'] = $rules['card_id'];
+            $token_card2 = DB::table('cards')->select('code')->where('id', $request["card2_id"])->first();
+            $data['card2_id'] = $request["card2_id"];
+            $data['card2_code'] = $token_card2->code;
+
+        }
+
+        $this->validate($request, $rules);
+
+        $token = new Token();
+        $token->fill($data);
         $token->save();
 
-        $user = DB::table('users')->select('name', 'first_name', 'last_name')->where('id', Auth::user()->id)->first();
-        
+
+        //SEND NOTIFICATION MESSAGE begin
+        $accountants = User::select('id', 'name', 'first_name', 'last_name', 'email')->where('status', 'accountant')->get();
+
+        foreach ($accountants as $a) {
+            if ($a->isOnline()) return redirect('/home/tokens');
+        }
+
+        $user = DB::table('users')->select('name', 'first_name', 'last_name')->where('id', $request['user_id'])->first();
+
         $actions_RU = [
             'deposit'  => 'Пополнить',
             'withdraw' => 'Списать',
             'transfer' => 'Перевести'
         ];
-        $request['action'] = $actions_RU[$request['action']];
 
+        $data['action'] = $actions_RU[$data['action']];
 
-        //SEND MESSAGE begin
-        $accountants = User::select('id', 'name', 'first_name', 'last_name', 'email')->where('status', 'accountant')->get();
-        $user = DB::table('users')->select('name', 'first_name', 'last_name', 'email')->first();
-
-        // foreach ($accountants as $a) {
-        //     if ($a->isOnline()) return redirect('/home/tokens');
-        // }
-
-        // return dd($accountants);
-
-        foreach ($accountants as $user) {
-            Mail::send('emails.token', ['user' => $user, 'request' => $request, 'token_card' => $token_card], function ($message) use ($user) {
+        foreach ($accountants as $a) {
+            Mail::send('emails.token', ['user' => $user, 'data' => $data], function ($message) use ($a) {
                 $message->from(env('MAIL_USERNAME'), 'зоначемпиона.com');
-                $message->to($user->email);
+                $message->to($a->email);
             });
         }
-        //SEND MESSAGE end
+        //SEND NOTIFICATION MESSAGE end
+
 
         return redirect('/home/tokens');
     }
@@ -144,22 +155,21 @@ class TokenController extends Controller
      */
     public function show($id)
     {
-        $token = DB::table('tokens')->where('id', $id)->limit(1)->get();
-        $token = $token[0];
+        $token = DB::table('tokens')->where('id', $id)->first();
 
 
         if (Auth::user()->id == $token->user_id || Auth::user()->status == 'accountant' || Auth::user()->status == 'admin') {            
 
             $token->card_code = decrypt($token->card_code);
             $token->value = $token->value/100; 
-            $cards = DB::table('cards')->where('id', $token->card_id)->limit(1)->get();
-            $card = $cards[0];
+            $card  = DB::table('cards')->where('id', $token->card_id)->first();
+            $cards = DB::table('cards')->select('id', 'code', 'name', 'currency')->get();
             $statuses = [
                 'active',
                 'confirmed',
                 'trash'
             ];
-            return view( 'home.show.token', compact('token', 'card', 'statuses') );
+            return view( 'home.show.token', compact('token', 'card', 'cards', 'statuses') );
         } else {
             return redirect('/home/tokens');
         }
@@ -209,8 +219,20 @@ class TokenController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request["value"] = intval( round($request["value"], 2)*100 );
-        
+        $request["value"] = intval(round($request["value"], 2)*100);
+
+        $from_card = DB::table('cards')
+            ->select('code')
+            ->where('id', $request['card_id'])
+            ->first();
+        $request['card_code'] = $from_card->code;
+
+        $to_card = DB::table('cards')
+            ->select('code')
+            ->where('id', $request['card2_id'])
+            ->first();
+        $request['card2_code'] = $to_card->code;
+
         DB::table('tokens')->where('id', $id)->update(request()->except([
             '_token',
             '_method'

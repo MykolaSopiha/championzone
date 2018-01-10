@@ -29,13 +29,16 @@ class AccountController extends Controller
             $conditions[] = ['user_id', Auth::user()->id];
         }
 
+
         $users = DB::select('select id, name, first_name, last_name from users');
+
 
         $accounts = DB::table('accounts')
             ->where($conditions)
             ->join('users', 'accounts.user_id', '=', 'users.id')
             ->select('accounts.*', 'users.name as user_name')
             ->get();
+
 
         return view('home.accounts', compact('users', 'accounts'));
     }
@@ -69,6 +72,7 @@ class AccountController extends Controller
            'user.numeric' => 'The user id is incorrect.' 
         ]);
 
+
         $account = new Account();
         $account->fill([
             'info'      => $request['info'],
@@ -78,6 +82,7 @@ class AccountController extends Controller
             'currency'  => $request['currency'],
         ]);
         $account->save();
+
 
         return redirect('/home/accounts');
     }

@@ -149,6 +149,7 @@
                                 <label for="user">Пользователь</label><br>
                                 <select name="user_id" id="user" class="chosen-js-select form-control">
                                     <option value="">Все пользователи</option>
+                                    <option value="0" @if (isset($_GET['user_id']) && $_GET['user_id'] == '0') selected @endif>Назначить пользователя</option>
                                     @foreach ($users as $user)
                                         <option value="{{$user->id}}" @if (isset($_GET['user_id']) && $user->id == $_GET['user_id']) selected @endif>{{$user->first_name." ".$user->last_name." ".$user->name}}</option>
                                     @endforeach
@@ -187,7 +188,7 @@
                                 </select>
                             </div>
 
-                            <div style="margin-top: 20px">
+                            <div class="form-group" style="margin-top: 24px; margin-left: 20px">
                                 <button type="submit" class="btn btn-primary">Искать</button>
                                 <button type="submit" class="btn btn-default">
                                     <a href="{{url('home/cards')}}">Сбросить</a>
@@ -238,18 +239,6 @@
                                         <th>Действия</th>
                                     </tr>
                                 </thead>
-                                <tfoot>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                </tfoot>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -297,6 +286,7 @@
                 @else
                 "searching": false,
                 @endif
+                "ordering": true,
                 "columns":[
                     {data: 'check', name: 'action', orderable: false, searchable: false},
                     {data: 'name'},
@@ -308,15 +298,21 @@
                     {data: 'actions'},
                     {data: 'type'}
                 ],
-                "columnDefs": [{
-                    @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant')
-                    "targets": [8],
-                    @else
-                    "targets": [8, 7, 6, 0, 1],
-                    @endif
-                    "visible": false,
-                    "searchable": true
-                }],
+                "columnDefs": [
+                    {
+                        @if ((Auth::user()->status == 'admin' || Auth::user()->status == 'accountant'))
+                        "targets": [8],
+                        @else
+                        "targets": [0, 1, 6, 8],
+                        @endif
+                        "visible": false,
+                        "searchable": true
+                    },
+                    {
+                        "targets": [5, 7],
+                        "orderable": false
+                    }
+                ],
                 "initComplete": function () {
                     let table = this;
                     @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant')

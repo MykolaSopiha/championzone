@@ -127,7 +127,7 @@
                                     <tr>
                                         <th>Пользователь</th>
                                         <th>Информация</th>
-                                        <th>Цена</th>
+                                        <th>Стоимость</th>
                                         <th>Валюта</th>
                                         @if (Auth::user()->status === 'admin')
                                         <th></th>
@@ -138,11 +138,14 @@
                                     @foreach ($accounts as $a)
                                     <tr>
                                         <td>{{$a->user_name}}</td>
-                                        <td>{{$a->info}}</td>
+                                        <td>@if (strlen($a->info) > 50) {{substr($a->info, 0, 40)."..."}} @else {{$a->info}} @endif</td>
                                         <td>{{$a->price/100}}</td>
                                         <td>{{$a->currency}}</td>
                                         @if (Auth::user()->status === 'admin')
                                         <td>
+                                            <a href="#" data-info="{{htmlspecialchars($a->info)}}">
+                                                <i class="fa fa-search" aria-hidden="true"></i>
+                                            </a>
                                             <a href="{{url('/home/accounts')}}/{{$a->id}}">
                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                             </a>
@@ -168,6 +171,27 @@
             <!-- end items -->
 
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header" style="padding:35px 50px;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4>Перевести деньги на карту:</h4>
+                    </div>
+                    <div class="modal-body text-center" style="padding:20px"></div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary pull-left" data-dismiss="modal">Закрыть</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- Modal -->
+
     </main>
     <!-- end main -->
 @endsection
