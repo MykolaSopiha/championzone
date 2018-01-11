@@ -28,7 +28,7 @@
     .chosen-container {
         min-width: 150px;
     }
-    .transfer_dest {
+    .transfer_dest, .has_wallet {
         color: blue;
         cursor: pointer;
         text-decoration: underline;
@@ -263,15 +263,15 @@
 
 
 
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" role="dialog">
+    <!-- Modal for transfer destination card -->
+    <div class="modal fade" id="transferDest" role="dialog">
         <div class="modal-dialog">
 
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header" style="padding:35px 50px;">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4>Перевести деньги на карту:</h4>
+                    <h4></h4>
                 </div>
                 <div class="modal-body text-center" style="padding:20px"></div>
                 <div class="modal-footer">
@@ -281,7 +281,7 @@
 
         </div>
     </div>
-    <!-- Modal -->
+    <!-- Modal for transfer destination card -->
 
 @endsection
 
@@ -355,7 +355,15 @@
                     $('.transfer_dest').on('click', function (e) {
                         let dest_card = $(this).attr('data-card-code');
                         $('.modal-body').html("<h2>" + dest_card + "</h2>");
-                        $('#myModal').modal('show');
+                        $('.modal-header h4').html('Перевести деньги на карту:');
+                        $('#transferDest').modal('show');
+                    });
+
+                    $('.has_wallet').on('click', function (e) {
+                        let wallet = $(this).attr('data-wallet-code');
+                        $('.modal-body').html("<h2>" + wallet + "</h2>");
+                        $('.modal-header h4').html('Номер кошелька:');
+                        $('#transferDest').modal('show');
                     });
 
                     $(".token_status").each(function (index) {
@@ -379,6 +387,7 @@
             var tokens_count   = null;
             let checkTokensUrl = "{{url('/api/token_notify')}}?user_id={{Auth::user()->id}}&user_status={{Auth::user()->status}}";
 
+            @if ($user = Auth::user())
             const checkTokens = () => {
                 $.ajax({
                     url: checkTokensUrl,
@@ -409,6 +418,7 @@
             }
             checkTokens();
             setInterval(checkTokens, 180000);
+            @endif
         });
     </script>
 @endsection

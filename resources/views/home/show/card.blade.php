@@ -58,6 +58,16 @@
                         @endif
                     </div>
 
+                    @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant')
+                    <div class="form__item{{ $errors->has('code_hash') ? ' form__item--error' : '' }}">
+                        <label for="wallet">Номер кошелька</label>
+                        <input id="wallet" type="text" name="wallet" value="{{ $card->wallet }}" placeholder="16 digits only" required>
+                        @if ($errors->has('wallet'))
+                            <p>{{ $errors->first('wallet') }}</p>
+                        @endif
+                    </div>
+                    @endif
+
                     <div class="form__item{{ $errors->has('cw2') ? ' form__item--error' : '' }}">
                         <label for="cw2">CW2</label>
                         <input id="cw2" type="text" name="cw2" value="{{ $card->cw2 }}" placeholder="xxx" maxlength="3" required>
@@ -66,13 +76,13 @@
                         @endif
                     </div>
 
-                    <div class="form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
+<!--                     <div class="form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
                         <label for="date">Дата</label>
                         <input id="date" class="card_date" type="text" name="date" value="{{ substr($card->date, 0, -3) }}" placeholder="Введите дату" required>
                         @if ($errors->has('date'))
                             <p>{{ $errors->first('date') }}</p>
                         @endif
-                    </div>
+                    </div> -->
 
                     <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}">
                         <label for="currency">Валюта</label>

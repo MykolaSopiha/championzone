@@ -79,6 +79,14 @@
                             @endif
                         </div>
 
+                        <div class="form__item{{ $errors->has('wallet') ? ' form__item--error' : '' }}">
+                            <label for="wallet">Номер кошелька</label>
+                            <input id="wallet" type="text" name="wallet" value="{{ old('wallet') }}" placeholder="only numbers">
+                            @if ($errors->has('wallet'))
+                                <p>{{ $errors->first('wallet') }}</p>
+                            @endif
+                        </div>
+
                         <div class="form__item{{ $errors->has('cw2') ? ' form__item--error' : '' }}">
                             <label for="cw2">CW2</label>
                             <input id="cw2" type="text" name="cw2" placeholder="xxx" maxlength="3" required>
@@ -281,11 +289,7 @@
                 },
                 "lengthMenu": [ 10, 25, 50, 75, 100, 200, 500 ],
                 "responsive": true,
-                @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant')
-                "searching": true,
-                @else
                 "searching": false,
-                @endif
                 "ordering": true,
                 "columns":[
                     {data: 'check', name: 'action', orderable: false, searchable: false},

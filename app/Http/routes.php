@@ -1,5 +1,10 @@
 <?php
 
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Http\Request;
+use App\Http\Requests;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -42,7 +47,68 @@ Route::get('/api/test',  		'APIController@test');
 Route::get('/api/users',		'APIController@getUsers');
 Route::get('/api/cards',		'APIController@getCards');
 Route::get('/api/tokens',		'APIController@getTokens');
+
+
+Route::get('/api/token_notify',	'APIController@checkTokens');
+
+
 Route::any('/api/lead/create',	'APIController@createLead');
 Route::any('/api/lead/update',	'APIController@updateLead');
 Route::any('/api/lead/status', 	'APIController@statusLead');
-Route::get('/api/token_notify',	'APIController@checkTokens');
+
+Route::get('/wallets', function() {
+	return view('home.wallets');
+});
+
+Route::post('/wallets', function(Request $request) {
+
+	$text  = preg_replace('/[ ]{2,}|[\t]|[\r]/', ' ', trim($request->text));
+	$strings = explode("\n", $text);
+
+	$errors = [];
+
+	foreach ($strings as $str) {
+
+		$word = explode(' ', $str);
+		$errors[$str] = [];
+
+
+		// Validation BEGIN
+		if (strlen($word[0]) != 15) {
+			$errors[$str][] = 'Wallet code is incorrect!';
+		}
+
+		if (strlen($word[1]) != 16) {
+			if (strlen($word[1].$word[2].$word[3].$word[4]) == 16) {
+				$word[1] = $word[1].$word[2].$word[3].$word[4];
+			} else {
+				$errors[$str][] = 'Card code is incorrect!';
+			}
+		}
+
+		if (!is_numeric($word[0])) {
+			$errors[$str][] = 'Wallet code is not numeric!';
+		}
+
+		if (!is_numeric($word[1])) {
+			$errors[$str][] = 'Card code is not numeric!';
+		}
+
+		if (DB::table('cards')->where('code_hash', sha1($word[1].env('APP_SALT')))->count() == 0) {
+			$errors[$str][] = 'Card not found!';
+		}
+		// Validation END
+
+
+		foreach ($errors as &$err) {
+			if (empty($err)) {
+				DB::table('cards')->where('code_hash', sha1($word[1].env('APP_SALT')))->update(['wallet' => $word[0]]);
+				$err = 'done!';
+			}
+
+		}
+
+	}
+	return dd($errors);
+
+});

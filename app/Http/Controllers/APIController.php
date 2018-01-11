@@ -42,84 +42,99 @@ class APIController extends Controller
 	public function getTokens(Request $request)
 	{
 
-		$conditions = [];
-
 		parse_str($request->data, $filter);
+		$conditions = [];
 
 		foreach ($filter as $key => $value) {
 			if ($value != "") $conditions[$key] = $value;
 		}
 		
-		$tokens = Token::select('id', 'date', 'user_id', 'card_id', 'card_code', 'card2_id', 'card2_code', 'value', 'currency', 'rate', 'action', 'ask', 'ans', 'status');
-
 		if ((Auth::user()->status !== 'admin') && (Auth::user()->status !== 'accountant')) {
 			$conditions[] = ['user_id', Auth::user()->id];
 		}
 
-		return DataTables::of($tokens)->where($conditions)->orderBy('id', 'desc')->addColumn('user_name', function($token)
-			{
-				$user = DB::table('users')->where('id', $token->user_id)->limit(1)->get();
-				return $user[0]->name;
-			})->editColumn('card_code', function($token)
-			{
-				$code = decrypt($token->card_code);
-				return substr($code, 0, 4)."&nbsp;".substr($code, 4, 4)."&nbsp;".substr($code, 8, 4)."&nbsp;".substr($code, 12);
-			})->editColumn('value', function($token)
-			{
-				return number_format(floatval($token->value/100), 2, ".", "");
-			})->editColumn('rate', function($token)
-			{
-				return number_format(floatval($token->rate), 5, ".", "");
-			})->editColumn('action', function($token)
-			{
-				$actions_RU = [
-					'deposit'  => 'Пополнить',
-					'withdraw' => 'Списать',
-					'transfer' => 'Перевести'
-				];
-				$action = $actions_RU[$token->action];
+		$tokens = DB::table('tokens');
 
-				if ($token->action == 'transfer') {
-					$action = '<p class="transfer_dest" data-card-code="'.decrypt($token->card2_code).'">'.$action.'</p>';
-					$action .= "";
-				}
+		return DataTables::of($tokens)->where($conditions)->orderBy('id', 'desc')
+			->addColumn('user_name', function($token)
+				{
+					$user = DB::table('users')->where('id', $token->user_id)->limit(1)->get();
+					return $user[0]->name;
+				})
+			->editColumn('card_code', function($token)
+				{
+					$code = decrypt($token->card_code);
+					$code = substr($code, 0, 4)."&nbsp;".substr($code, 4, 4)."&nbsp;".substr($code, 8, 4)."&nbsp;".substr($code, 12);
 
-				return $action;
-			})->editColumn('status', function($token)
-			{
-				if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
-					return "<p class='token_status'>".$token->status."</p>";
-				} else {
-					return '<div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><span class="token_status">'.$token->status.'</span><span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=active">active</a>
-                                    </li>
-                                    <li>
-                                        <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=confirmed">confirmed</a>
-                                    </li>
-                                    <li>
-                                        <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=trash">trash</a>
-                                    </li>
-                                </ul>
-                            </div>';
-				}
-			})->addColumn('tools', function($token)
-			{
-				if ($token->status == 'active' || Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
-					return '<td>
-							<a href="'.url('home/tokens').'/'.$token->id.'">
-                                <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
-                            </a><br>
-                            <a class="remove-btn" href="'.url('home/tokens').'/'.$token->id.'">
-                                <i class="remove fa fa-times fa-lg" title="Удалить" aria-hidden="true"></i>
-                            </a>
-						</td>';
-				} else {
-					return '--';
-				}
-			})->make(true);
+					if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
+						$card = DB::table('cards')->select('wallet')->where('id', $token->card_id)->first();
+						if (trim($card->wallet) != '') {
+							return "<p class='has_wallet' data-wallet-code='".$card->wallet."'>".$code."</p>";
+						}
+					}
+					return $code;
+				})
+			->editColumn('value', function($token)
+				{
+					return number_format(floatval($token->value/100), 2, ".", "");
+				})
+			->editColumn('rate', function($token)
+				{
+					return number_format(floatval($token->rate), 5, ".", "");
+				})
+			->editColumn('action', function($token)
+				{
+					$actions_RU = [
+						'deposit'  => 'Пополнить',
+						'withdraw' => 'Списать',
+						'transfer' => 'Перевести'
+					];
+					$action = $actions_RU[$token->action];
+
+					if ($token->action == 'transfer') {
+						$action = '<p class="transfer_dest" data-card-code="'.decrypt($token->card2_code).'">'.$action.'</p>';
+						$action .= "";
+					}
+
+					return $action;
+				})
+			->editColumn('status', function($token)
+				{
+					if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
+						return "<p class='token_status'>".$token->status."</p>";
+					} else {
+						return '<div class="dropdown">
+	                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown"><span class="token_status">'.$token->status.'</span><span class="caret"></span></button>
+	                                <ul class="dropdown-menu">
+	                                    <li>
+	                                        <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=active">active</a>
+	                                    </li>
+	                                    <li>
+	                                        <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=confirmed">confirmed</a>
+	                                    </li>
+	                                    <li>
+	                                        <a href="'.url("/home/tokens/").'/'.$token->id.'/edit?status=trash">trash</a>
+	                                    </li>
+	                                </ul>
+	                            </div>';
+					}
+				})
+			->addColumn('tools', function($token)
+				{
+					if ($token->status == 'active' || Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
+						return '<td>
+								<a href="'.url('home/tokens').'/'.$token->id.'">
+	                                <i class="fa fa-pencil fa-lg" aria-hidden="true"></i>
+	                            </a><br>
+	                            <a class="remove-btn" href="'.url('home/tokens').'/'.$token->id.'">
+	                                <i class="remove fa fa-times fa-lg" title="Удалить" aria-hidden="true"></i>
+	                            </a>
+							</td>';
+					} else {
+						return '--';
+					}
+				})
+			->make(true);
 
 	}
 
@@ -168,9 +183,9 @@ class APIController extends Controller
 			return DataTables::queryBuilder(DB::table('cards')->where($conditions))->editColumn('code', function($card) {
 				$code = decrypt($card->code);
 				if (Auth::user()->status == 'mediabuyer') {
-					return substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4);
+					return substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($card->cw2).")";
 				} else {
-					return "<a href='".url('/home/cards')."/".$card->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)."</a>";
+					return "<a href='".url('/home/cards')."/".$card->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($card->cw2).")"."</a>";
 				}
 			})->addColumn('check', function ($card)
 			{
@@ -219,9 +234,9 @@ class APIController extends Controller
 		foreach ($results as $res) {
 			$code = decrypt($res->code);
 			if (Auth::user()->status == 'mediabuyer') {
-				$res->code = substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4);
+				$res->code = substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($res->cw2).")";
 			} else {
-				$res->code = "<a href='".url('/home/cards')."/".$res->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)."</a>";
+				$res->code = "<a href='".url('/home/cards')."/".$res->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($res->cw2).")"."</a>";
 			}
 			
 			$res->date = substr($res->date, 0, 4)."-".substr($res->date, -2);
@@ -260,7 +275,7 @@ class APIController extends Controller
 		$coditions = [];
 		$coditions[] = ['status', 'active'];
 
-		if ($request->user_status != "farmer") {
+		if ($request->user_status != "farmer" && isset($request->user_id)) {
 			if ($request->user_status == 'mediabuyer') {
 				$coditions[] = ['user_id', $request->user_id];
 			}

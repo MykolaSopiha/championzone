@@ -73,9 +73,10 @@ class CardController extends Controller
 
         // Validation params BEGIN
         $rules = [
-            'name'      => 'required|max:255|unique:cards',
+            // 'name'      => 'required|max:255|unique:cards',
             'code'      => 'required|numeric|digits:16',
             'code_hash' => 'required|unique:cards',
+            'wallet'    => 'numeric',
             'cw2'       => 'required|numeric|digits:3',
             'date'      => 'required|date',
             'user'      => 'required|numeric|min:1',
@@ -350,17 +351,6 @@ class CardController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // DB::update("update cards set user_id = ? where id = ?", [ $request->user ,$id ]);
-        
-        // return redirect('/home/cards');
-
-        
-        // DB::table('cards')->where('id', $id)->update(request()->except([
-        //     '_token',
-        //     '_method'
-        // ]));
-
-        // return redirect('/home/cards');
 
         $salt = env('APP_SALT');
 
@@ -396,6 +386,10 @@ class CardController extends Controller
 
         if ($request['user'] != "") {
             DB::table('cards')->where('id', $id)->update(['user_id' => $request['user']]);
+        }
+
+        if ($request['wallet'] != "") {
+            DB::table('cards')->where('id', $id)->update(['wallet' => $request['wallet']]);
         }
 
         return redirect('/home/cards'.'/'.$request['user_id']);
