@@ -35,7 +35,7 @@ class UserController extends Controller
     public function show($id)
     {
         $ref_link = url('register/?ref=').$id;
-        $data = User::findOrFail($id);
+        $data = User::find($id);
         $patron = [];
 
         if ($data['ref_id'] != 0) {
@@ -102,18 +102,4 @@ class UserController extends Controller
         return redirect('/home/users/'.$id);
     }
 
-    public function ssp() {
-        return Datatables::of(User::query())->addColumn('edit', function($user)
-        {
-            return "<a href='".url('/home/users/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>";
-        })->addColumn('balance', function($user)
-        {
-            $accounts = DB::table('accounts')->where('user_id', $user->id)->get();
-            $balance = 0;
-            foreach ($accounts as $acc) {
-                $balance += $acc->price*$acc->rate/100;
-            }
-            return round($balance, 2);
-        })->make(true);
-    }
 }

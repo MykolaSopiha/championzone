@@ -55,6 +55,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::get('test',  		'APIController@test');
     Route::get('cards',		    'APIController@getCards');
     Route::get('tokens',		'APIController@getTokens');
+    Route::get('users', 		'APIController@getUsers');
 
 
     Route::any('lead/create',      'LeadController@store');

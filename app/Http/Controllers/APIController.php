@@ -14,8 +14,151 @@ use Auth;
 
 class APIController extends Controller
 {
+    public function getUsers(Request $request) {
+        return Datatables::of(User::query())->addColumn('edit', function($user)
+        {
+            return "<a href='".url('/home/users/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>";
+        })->addColumn('balance', function($user)
+        {
+            $accounts = DB::table('accounts')->where('user_id', $user->id)->get();
+            $balance = 0;
+            foreach ($accounts as $acc) {
+                $balance += $acc->price*$acc->rate/100;
+            }
+            return round($balance, 2);
+        })->make(true);
+    }
 
-	public function getTokens(Request $request)
+    public function getCards(Request $request)
+    {
+
+        // storing  request (ie, get/post) global array to a variable
+        $requestData= $_REQUEST;
+
+        // getting total number records without any search
+        $totalData = DB::table('cards')->count();
+        // when there is no search parameter then total number rows = total number filtered rows.
+
+        $conditions = [];
+
+        parse_str($request->data, $filter);
+
+        foreach ($filter as $key => $value) {
+            if ($value != "") $conditions[] = [$key, '=', $value];
+        }
+
+        // return dd($conditions);
+
+        if (Auth::user()->status == 'mediabuyer') {
+            $conditions[] = ['cards.user_id', '=', Auth::user()->id];
+        }
+
+        // getting records as per search parameters
+        if( !empty($requestData['columns'][2]['search']['value']) ){   //code
+
+            $code_hash = sha1($requestData['columns'][2]['search']['value'].env('APP_SALT'));
+            $conditions[] = array( 'code_hash', $code_hash );
+            $results = DB::table('cards')->where($conditions)->get();
+            $totalFiltered = DB::table('cards')->where('code_hash', $code_hash)->count();
+
+        } elseif ( !empty($requestData['search']['value']) && (strlen($requestData['search']['value']) == 16) && is_numeric($requestData['search']['value']) ) {
+
+            $code_hash = sha1($requestData['search']['value'].env('APP_SALT'));
+            $conditions[] = array( 'code_hash', $code_hash );
+            $results = DB::table('cards')->where($conditions)->get();
+            $totalFiltered = DB::table('cards')->where('code_hash', $code_hash)->count();
+
+        } else {
+            $cards = Card::all();
+            return DataTables::queryBuilder(DB::table('cards')->where($conditions))->editColumn('code', function($card) {
+                $code = decrypt($card->code);
+                if (Auth::user()->status == 'mediabuyer') {
+                    return substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($card->cw2).")";
+                } else {
+                    return "<a href='".url('/home/cards')."/".$card->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($card->cw2).")"."</a>";
+                }
+            })->addColumn('check', function ($card)
+            {
+                return "<input type='checkbox' class='shift_select' name='card[".$card->id."]'>";
+            }, 0)->editColumn('user_id', function($card)
+            {
+                $user = DB::table('users')->where('id', $card->user_id)->first();
+                if (empty($user)) {
+                    return "<a href='".url('home/cards')."/".$card->id."#card_user'>".'Назначить пользователя'."</a>";
+                } else {
+                    return "<a href='".url('home/cards')."/".$card->id."#card_user'>".$user->name."</a>";
+                }
+            })->editColumn('date', function($card)
+            {
+                return $card->date = substr($card->date, 0, 4)."-".substr($card->date, -2);
+            })->addColumn('actions', function($card)
+            {
+                if (Auth::user()->status == 'mediabuyer') {
+
+                    // user toolbar
+                    $acts = "<a href='".url('/home/cards/')."/".$card->id."/edit?action=unchain' title='Отвязать'>";
+                    $acts .= '<i class="fa fa-chain-broken" aria-hidden="true"></i>';
+                    $acts .= '</a>';
+
+                    return $acts;
+
+
+                } else {
+
+                    //admin & accountant toolbar
+                    $acts = "<a href='".url('/home/cards/')."/".$card->id."/edit'>";
+                    if ($card->status === 'active') {
+                        $acts .= '<i class="switch fa fa-toggle-on fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
+                    } else {
+                        $acts .= '<i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
+                    }
+                    $acts .= '</a>';
+
+                    return $acts."<a class='remove-btn' href=".url('/home/cards/')."/".$card->id."><i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i></a>";
+
+                }
+
+            })->make(true);
+        }
+
+        foreach ($results as $res) {
+            $code = decrypt($res->code);
+            if (Auth::user()->status == 'mediabuyer') {
+                $res->code = substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($res->cw2).")";
+            } else {
+                $res->code = "<a href='".url('/home/cards')."/".$res->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($res->cw2).")"."</a>";
+            }
+
+            $res->date = substr($res->date, 0, 4)."-".substr($res->date, -2);
+            $res->check = "<input type='checkbox' class='shift_select' name='card[26]'>";
+            $user = DB::table('users')->where('id', $res->user_id)->limit(1)->get();
+            $user = $user[0];
+            $res->user_id = "<a href='".url('home/cards')."/".$res->id."'>".$user->name."</a>";
+
+            $acts = "<a href='".url('/home/cards/')."/".$res->id."/edit'>";
+            if ($res->status === 'active') {
+                $acts .= '<i class="switch fa fa-toggle-on fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
+            } else {
+                $acts .= '<i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
+            }
+            $acts .= '</a>';
+
+            $res->actions = $acts;
+
+            $res->actions .= "<a class='remove-btn' href=".url('/home/cards/')."/".$res->id."><i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i></a>";
+        }
+
+        $json_data = array(
+            "draw"            => intval( $requestData['draw'] ),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
+            "recordsTotal"    => intval( $totalData ),  // total number of records
+            "recordsFiltered" => intval( $totalFiltered ), // total number of records after searching, if there is no searching then totalFiltered = totalData
+            "data"            => $results   // total data array
+        );
+
+        return $json_data;
+    }
+
+    public function getTokens(Request $request)
 	{
 
 		parse_str($request->data, $filter);
@@ -24,7 +167,7 @@ class APIController extends Controller
 		foreach ($filter as $key => $value) {
 			if ($value != "") $conditions[$key] = $value;
 		}
-		
+
 		if ((Auth::user()->status !== 'admin') && (Auth::user()->status !== 'accountant')) {
 			$conditions[] = ['user_id', Auth::user()->id];
 		}
@@ -115,139 +258,7 @@ class APIController extends Controller
 
 	}
 
-
-	public function getCards(Request $request)
-	{
-
-		// storing  request (ie, get/post) global array to a variable
-		$requestData= $_REQUEST;
-
-		// getting total number records without any search
-		$totalData = DB::table('cards')->count();
-		// when there is no search parameter then total number rows = total number filtered rows.
-
-		$conditions = [];
-
-		parse_str($request->data, $filter);
-
-		foreach ($filter as $key => $value) {
-			if ($value != "") $conditions[] = [$key, '=', $value];
-		}
-
-		// return dd($conditions);
-
-		if (Auth::user()->status == 'mediabuyer') {
-			$conditions[] = ['cards.user_id', '=', Auth::user()->id];
-		}
-
-		// getting records as per search parameters
-		if( !empty($requestData['columns'][2]['search']['value']) ){   //code
-
-			$code_hash = sha1($requestData['columns'][2]['search']['value'].env('APP_SALT'));
-			$conditions[] = array( 'code_hash', $code_hash );
-			$results = DB::table('cards')->where($conditions)->get();
-			$totalFiltered = DB::table('cards')->where('code_hash', $code_hash)->count();
-
-		} elseif ( !empty($requestData['search']['value']) && (strlen($requestData['search']['value']) == 16) && is_numeric($requestData['search']['value']) ) {
-
-			$code_hash = sha1($requestData['search']['value'].env('APP_SALT'));
-			$conditions[] = array( 'code_hash', $code_hash );
-			$results = DB::table('cards')->where($conditions)->get();
-			$totalFiltered = DB::table('cards')->where('code_hash', $code_hash)->count();
-
-		} else {
-			$cards = Card::all();
-			return DataTables::queryBuilder(DB::table('cards')->where($conditions))->editColumn('code', function($card) {
-				$code = decrypt($card->code);
-				if (Auth::user()->status == 'mediabuyer') {
-					return substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($card->cw2).")";
-				} else {
-					return "<a href='".url('/home/cards')."/".$card->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($card->cw2).")"."</a>";
-				}
-			})->addColumn('check', function ($card)
-			{
-				return "<input type='checkbox' class='shift_select' name='card[".$card->id."]'>";
-			}, 0)->editColumn('user_id', function($card)
-			{
-				$user = DB::table('users')->where('id', $card->user_id)->first();
-				if (empty($user)) {
-					return "<a href='".url('home/cards')."/".$card->id."#card_user'>".'Назначить пользователя'."</a>";
-				} else {
-					return "<a href='".url('home/cards')."/".$card->id."#card_user'>".$user->name."</a>";
-				}
-			})->editColumn('date', function($card)
-			{
-				return $card->date = substr($card->date, 0, 4)."-".substr($card->date, -2);
-			})->addColumn('actions', function($card)
-			{
-				if (Auth::user()->status == 'mediabuyer') {
-
-					// user toolbar
-					$acts = "<a href='".url('/home/cards/')."/".$card->id."/edit?action=unchain' title='Отвязать'>";
-					$acts .= '<i class="fa fa-chain-broken" aria-hidden="true"></i>';
-					$acts .= '</a>';
-
-					return $acts;
-
-
-				} else {
-
-					//admin & accountant toolbar
-					$acts = "<a href='".url('/home/cards/')."/".$card->id."/edit'>";
-					if ($card->status === 'active') {
-						$acts .= '<i class="switch fa fa-toggle-on fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
-					} else {
-						$acts .= '<i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
-					}
-					$acts .= '</a>';
-
-					return $acts."<a class='remove-btn' href=".url('/home/cards/')."/".$card->id."><i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i></a>";
-
-				}
-
-			})->make(true);
-		}
-
-		foreach ($results as $res) {
-			$code = decrypt($res->code);
-			if (Auth::user()->status == 'mediabuyer') {
-				$res->code = substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($res->cw2).")";
-			} else {
-				$res->code = "<a href='".url('/home/cards')."/".$res->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($res->cw2).")"."</a>";
-			}
-
-			$res->date = substr($res->date, 0, 4)."-".substr($res->date, -2);
-			$res->check = "<input type='checkbox' class='shift_select' name='card[26]'>";
-			$user = DB::table('users')->where('id', $res->user_id)->limit(1)->get();
-			$user = $user[0];
-			$res->user_id = "<a href='".url('home/cards')."/".$res->id."'>".$user->name."</a>";
-
-			$acts = "<a href='".url('/home/cards/')."/".$res->id."/edit'>";
-			if ($res->status === 'active') {
-				$acts .= '<i class="switch fa fa-toggle-on fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
-			} else {
-				$acts .= '<i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
-			}
-			$acts .= '</a>';
-
-			$res->actions = $acts;
-
-			$res->actions .= "<a class='remove-btn' href=".url('/home/cards/')."/".$res->id."><i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i></a>";
-		}
-
-		$json_data = array(
-			"draw"            => intval( $requestData['draw'] ),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-			"recordsTotal"    => intval( $totalData ),  // total number of records
-			"recordsFiltered" => intval( $totalFiltered ), // total number of records after searching, if there is no searching then totalFiltered = totalData
-			"data"            => $results   // total data array
-		);
-
-		return $json_data;
-	}
-
-
-
-	public function checkTokens(Request $request)
+    public function checkTokens(Request $request)
 	{
 		$coditions = [];
 		$coditions[] = ['status', 'active'];
@@ -261,9 +272,7 @@ class APIController extends Controller
 		return 0;
 	}
 
-
-
-	public function createLead(Request $request)
+    public function createLead(Request $request)
 	{
 
 		if (!isset($_POST['name']) || !isset($_POST['phone']))
@@ -273,7 +282,7 @@ class APIController extends Controller
 				header("Location: /");
 
 		$data = json_decode(array_keys(json_decode($_POST['result'], true))[0]);
-        
+
 		$lead = new Lead();
 		$lead->fill([
 			'offer_id' => $data->offer_id,
@@ -295,5 +304,4 @@ class APIController extends Controller
 		return 500;
 
 	}
-
 }
