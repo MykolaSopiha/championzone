@@ -1,7 +1,7 @@
 var elixir = require('laravel-elixir');
 
 require('laravel-elixir-svgstore');
-require('laravel-elixir-webpack');
+require('laravel-elixir-webpack-official');
 require('laravel-elixir-livereload');
 
 var svgminPlugins = [
@@ -23,7 +23,7 @@ var svgminPlugins = [
 
 elixir(function(mix) {
 	mix.sass('app.sass')
-		.webpack('app.js')
+		.babel('app.js', 'public/js/app.js')
 		.svgstore('resources/assets/svg', 'public/img/', 'sprite.svg', svgminPlugins)
 		.livereload();
 });

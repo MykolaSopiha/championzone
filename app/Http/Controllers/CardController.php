@@ -66,6 +66,7 @@ class CardController extends Controller
     public function store(Request $request)
     {
         $request['date']      = $request["date"]."/1";
+        $request["code_hash"] = $request["code"];
 
         // Validation params BEGIN
         $rules = [
