@@ -23,7 +23,7 @@ var svgminPlugins = [
 
 elixir(function(mix) {
 	mix.sass('app.sass')
-		.webpack('app.js')
+		.browserify('app.js')
 		.svgstore('resources/assets/svg', 'public/img/', 'sprite.svg', svgminPlugins)
 		.livereload();
 });
