@@ -1,8 +1,8 @@
 window.$ = window.jQuery = require('jquery');
 window.$ = $.extend(require('jquery-ui-bundle'));
-var dt = require('datatables');
-var bootstrap = require('bootstrap-sass');
-var chosen_js = require('chosen-js');
+let dt = require('datatables');
+let bootstrap = require('bootstrap-sass');
+let chosen_js = require('chosen-js');
 
 
 
@@ -20,15 +20,91 @@ $(document).ready(function () {
 	// END Menu
 
 
+
+    // BEGIN copy to clipboard on click
+    const copyToClipboard = function (elem) {
+        // create hidden text element, if it doesn't already exist
+		let target;
+        let targetId = "_hiddenCopyText_";
+        let isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
+        let origSelectionStart, origSelectionEnd;
+        if (isInput) {
+            // can just use the original source element for the selection and copy
+            target = elem;
+            origSelectionStart = elem.selectionStart;
+            origSelectionEnd = elem.selectionEnd;
+        } else {
+            // must use a temporary form element for the selection and copy
+            target = document.getElementById(targetId);
+            if (!target) {
+                let target = document.createElement("textarea");
+                target.style.position = "absolute";
+                target.style.left = "-9999px";
+                target.style.top = "0";
+                target.id = targetId;
+                document.body.appendChild(target);
+            }
+            target.textContent = elem.textContent;
+        }
+        // select the content
+        let currentFocus = document.activeElement;
+        target.focus();
+        target.setSelectionRange(0, target.value.length);
+
+        // copy the selection
+        let succeed;
+        try {
+            succeed = document.execCommand("copy");
+        } catch(e) {
+            succeed = false;
+        }
+        // restore original focus
+        if (currentFocus && typeof currentFocus.focus === "function") {
+            currentFocus.focus();
+        }
+
+        if (isInput) {
+            // restore prior selection
+            elem.setSelectionRange(origSelectionStart, origSelectionEnd);
+        } else {
+            // clear temporary content
+            target.textContent = "";
+        }
+        return succeed;
+    };
+
+    if (document.getElementById("copyButton")) {
+        document.getElementById("copyButton").addEventListener("click", function() {
+            copyToClipboard(document.getElementById("copyTarget"));
+        });
+    }
+    // END copy to clipboard on click
+
+
+    // BEGIN Bootstrap popover init
+    $('[data-toggle="popover"]').popover({
+        delay: {
+            "show": 300,
+            "hide": 100
+        }
+	});
+    $('[data-hide-popover="true"]').click(function () {
+        setTimeout(function () {
+            $('.popover').fadeOut('slow');
+        }, 1000);
+    });
+    // END Bootstrap popover init
+
+
 	// BEGIN Card type select
 	const checkCardType = function (el) {
 
-		var payment_sys = $(el).val();
-		var $inputs     = $('input#date, input#cw2');
-		var $blocks     = $inputs.parent('div');
-		var $options    = $('select#currency option:not([value="USD"],[value="RUB"])');
+		let payment_sys = $(el).val();
+		let $inputs     = $('input#date, input#cw2');
+		let $blocks     = $inputs.parent('div');
+		let $options    = $('select#currency option:not([value="USD"],[value="RUB"])');
 
-		if (payment_sys == '1') {
+		if (payment_sys === '1') {
 			$inputs.removeAttr('required');
 			$blocks.slideUp();
 			$options.attr('disabled','disabled');
@@ -38,17 +114,19 @@ $(document).ready(function () {
 			$options.removeAttr('disabled');
 		}
 
-	}
-	$('.card_type input[name="type"]').on('click', function () {
+	};
+
+	$('.card_type').find('input[name="type"]').on('click', function () {
 		checkCardType(this);
 	});
 
-	var payment_sys = $('.card_type input[name="type"]').val();
-	var $inputs     = $('input#date, input#cw2');
-	var $blocks     = $inputs.parent('div');
-	var $options    = $('select#currency option:not([value="USD"],[value="RUB"])');
+	let payment_sys = $('.card_type input[name="type"]').val();
+	let $inputs     = $('input#date, input#cw2');
+	let $blocks     = $inputs.parent('div');
+	// language=JQuery-CSS
+    let $options    = $('select#currency option:not([value="USD"],[value="RUB"])');
 
-	if (payment_sys == '1') {
+	if (payment_sys === '1') {
 		$inputs.removeAttr('required');
 		$blocks.slideUp();
 		$options.attr('disabled','disabled');
@@ -64,9 +142,9 @@ $(document).ready(function () {
 	// BEGIN Turn off hover effects on touch screens. BEGIN
 	const isTouchDevice = function() {
 		return ('ontouchstart' in window) || navigator.maxTouchPoints;
-	}
+	};
 
-	if ( isTouchDevice() == false ) {
+	if ( isTouchDevice() === false ) {
 		$('body').addClass('no-touch');
 	}
 	// END Turn off hover effects on touch screens. END
@@ -74,27 +152,27 @@ $(document).ready(function () {
 
 
 	// BEGIN Post request function BEGIN
-	const post = function(path, method, parameters) {
-		var $form = $("<form></form>");
-
-		$form.attr("method", method);
-		$form.attr("action", path);
-
-		$.each(parameters, function(key, value) {
-			var $field = $("<input></input>");
-
-			$field.attr("type", "hidden");
-			$field.attr("name", key);
-			$field.attr("value", value);
-
-			$form.append($field);
-		});
-
-		// The form needs to be a part of the document in
-		// order for us to be able to submit it.
-		$(document.body).append($form);
-		$form.submit();
-	}
+	// const post = function(path, method, parameters) {
+	// 	let $form = $("<form></form>");
+    //
+	// 	$form.attr("method", method);
+	// 	$form.attr("action", path);
+    //
+	// 	$.each(parameters, function(key, value) {
+	// 		let $field = $("<input/>");
+    //
+	// 		$field.attr("type", "hidden");
+	// 		$field.attr("name", key);
+	// 		$field.attr("value", value);
+    //
+	// 		$form.append($field);
+	// 	});
+    //
+	// 	// The form needs to be a part of the document in
+	// 	// order for us to be able to submit it.
+	// 	$(document.body).append($form);
+	// 	$form.submit();
+	// };
 	// END Post request function END
 
 
@@ -111,14 +189,14 @@ $(document).ready(function () {
 					return ($('#ui-datepicker-div').html().indexOf('ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all ui-state-hover') > -1);
 				}
 				if (isDonePressed()){
-					var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
-					var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+					let month = $("#ui-datepicker-div").find(".ui-datepicker-month :selected").val();
+					let year = $("#ui-datepicker-div").find(".ui-datepicker-year :selected").val();
 					$(this).datepicker('setDate', new Date(year, month, 1)).trigger('change');
 					$('.date-picker').focusout()//Added to remove focus from datepicker input box on selecting date
 				}
 			},
 			beforeShow : function(input, inst) {
-				inst.dpDiv.addClass('month_year_datepicker')
+				inst.dpDiv.addClass('month_year_datepicker');
 				if ((datestr = $(this).val()).length > 0) {
 					year = datestr.substring(datestr.length-4, datestr.length);
 					month = datestr.substring(0, 2);
@@ -153,8 +231,8 @@ $(document).ready(function () {
 
 	// BEGIN Make N decimals for money value BEGIN
 	$('.money_input').on('blur', function () {
-		var money = $(this).val();
-		if (money != "") {
+		let money = $(this).val();
+		if (money !== "") {
 			money = Number.parseFloat(money);
 			money = (money).toFixed(2);
 			$(this).val(money);
@@ -162,8 +240,8 @@ $(document).ready(function () {
 	});
 
 	$('.money_input2').on('blur', function () {
-		var money = $(this).val();
-		if (money != "") {
+		let money = $(this).val();
+		if (money !== "") {
 			money = Number.parseFloat(money);
 			money = (money).toFixed(6);
 			$(this).val(money);
@@ -174,10 +252,9 @@ $(document).ready(function () {
 
 	// BEGIN Current exchange rate BEGIN
 	const NBU_rate = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
-	var current_rate = 1;
 
 	const checkExchangeRate = function() {
-		var currency = $('#card option:selected').attr('title');
+		let currency = $('#card').find('option:selected').attr('title');
 		if (currency === 'USD') {
 			$('#rate').val(1);
 		} else {
@@ -196,7 +273,7 @@ $(document).ready(function () {
 
 			if (currency === 'EUR') {
 				$.getJSON(NBU_rate, function(result){
-					var USD = 1, EUR = 1;
+					let USD = 1, EUR = 1;
 					$.each(result, function(i, field){
 						if (field.r030 === 840) {
 							USD = field.rate;
@@ -213,7 +290,7 @@ $(document).ready(function () {
 
 			if (currency === 'RUB') {
 				$.getJSON(NBU_rate, function(result){
-					var USD = 1, RUB = 1;
+					let USD = 1, RUB = 1;
 					$.each(result, function(i, field){
 						if (field.r030 === 840) {
 							USD = field.rate;
@@ -229,14 +306,14 @@ $(document).ready(function () {
 			}
 
 		}
-	}
+	};
 
 	$('#get_rate').on('click', checkExchangeRate);
 	$('select#card').on('change', checkExchangeRate);
 	checkExchangeRate();
 	
 	$('select#acc_currency').on('change', function () {
-		var currency = $(this).val();
+		let currency = $(this).val();
 		if (currency === 'USD') {
 			$('#rate').val(1);
 		} else {
@@ -255,7 +332,7 @@ $(document).ready(function () {
 
 			if (currency === 'EUR') {
 				$.getJSON(NBU_rate, function(result){
-					var USD = 1, EUR = 1;
+					let USD = 1, EUR = 1;
 					$.each(result, function(i, field){
 						if (field.r030 === 840) {
 							USD = field.rate;
@@ -272,7 +349,7 @@ $(document).ready(function () {
 
 			if (currency === 'RUB') {
 				$.getJSON(NBU_rate, function(result){
-					var USD = 1, RUB = 1;
+					let USD = 1, RUB = 1;
 					$.each(result, function(i, field){
 						if (field.r030 === 840) {
 							USD = field.rate;
@@ -318,8 +395,8 @@ $(document).ready(function () {
 	// BEGIN Select all checkboxes in table BEGIN
 	const selectManyCheckboxes = function () {
 
-		var form = $(this).closest('form');
-		var all_checkbxs = form.find("input[type='checkbox']");
+		let form = $(this).closest('form');
+		let all_checkbxs = form.find("input[type='checkbox']");
 
 		if ( $(this).prop('checked') === false ) {
 			all_checkbxs.prop('checked', false);
@@ -328,7 +405,7 @@ $(document).ready(function () {
 		}
 
 		return all_checkbxs;
-	}
+	};
 
 	$('.table').on('click', '.all_select', selectManyCheckboxes);
 	// END Select all checkboxes in table END
@@ -350,12 +427,11 @@ $(document).ready(function () {
 	// BEGIN Delete resource request BEGIN
 	$('.js-form').on('click', '.remove-btn', function (e) {
 		e.preventDefault();
-		var url = $(this).attr('href');
-		var form = $('.js-form').attr({
+		let url = $(this).attr('href');
+		let form = $('.js-form').attr({
 			'action':url
 		});
-		var token = $(form).find('#token').val();
-		var deleteInput = $('<input>').attr({
+		let deleteInput = $('<input>').attr({
 			'type' : 'hidden',
 			'name' : '_method',
 			'value' : 'delete'
@@ -369,13 +445,9 @@ $(document).ready(function () {
 
 	// BEGIN Delete resource request BEGIN
 	$('.js-submit').on('click', function (e) {
-
 		e.preventDefault();
-		var form = $('.js-form');
-		var action = $('.js-action').val();
-
+		let form = $('.js-form');
 		form.submit();
-
 	});
 	// END Delete resource request END
 
@@ -386,7 +458,7 @@ $(document).ready(function () {
 	users_select.hide();
 
 	$('.js-action').change(function () {
-		if ( $(this).val() == '1' ) {
+		if ( $(this).val() === '1' ) {
 			users_select.show();
 		} else {
 			users_select.hide();

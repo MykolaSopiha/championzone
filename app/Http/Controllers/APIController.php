@@ -15,30 +15,6 @@ use Auth;
 class APIController extends Controller
 {
 
-    public function test()
-	{
-		return DataTables::eloquent(App\Card::query())->editColumn('code', '{{decrypt($code)}}')->make(true);
-	}
-
-
-	public function getUsers() {
-		$users = User::select('id','name', 'first_name', 'last_name', 'terra_id', 'status', 'created_at');
-		return DataTables::of($users)->addColumn('edit', function($user)
-			{
-				if ( is_null($user->terra_id) ) $user->terra_id = '';
-				return "<a href='".url('/home/users/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>";
-			})->addColumn('balance', function($user)
-			{
-				$accounts = DB::table('accounts')->where('user_id', $user->id)->get();
-				$balance = 0;
-				foreach ($accounts as $acc) {
-					$balance += $acc->price*$acc->rate/100;
-				}
-				return round($balance, 2);
-			})->make(true);
-	}
-
-
 	public function getTokens(Request $request)
 	{
 
@@ -67,8 +43,9 @@ class APIController extends Controller
 					$code = substr($code, 0, 4)."&nbsp;".substr($code, 4, 4)."&nbsp;".substr($code, 8, 4)."&nbsp;".substr($code, 12);
 
 					if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
-						$card = DB::table('cards')->select('wallet')->where('id', $token->card_id)->first();
-						if (trim($card->wallet) != '') {
+//						$card = DB::table('cards')->select('wallet')->where('id', $token->card_id)->first();
+                        $card = Card::select('wallet')->where('id', $token->card_id)->first();
+						if (trim($card['wallet']) != '') {
 							return "<p class='has_wallet' data-wallet-code='".$card->wallet."'>".$code."</p>";
 						}
 					}
@@ -238,7 +215,7 @@ class APIController extends Controller
 			} else {
 				$res->code = "<a href='".url('/home/cards')."/".$res->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($res->cw2).")"."</a>";
 			}
-			
+
 			$res->date = substr($res->date, 0, 4)."-".substr($res->date, -2);
 			$res->check = "<input type='checkbox' class='shift_select' name='card[26]'>";
 			$user = DB::table('users')->where('id', $res->user_id)->limit(1)->get();
@@ -259,7 +236,7 @@ class APIController extends Controller
 		}
 
 		$json_data = array(
-			"draw"            => intval( $requestData['draw'] ),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw. 
+			"draw"            => intval( $requestData['draw'] ),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
 			"recordsTotal"    => intval( $totalData ),  // total number of records
 			"recordsFiltered" => intval( $totalFiltered ), // total number of records after searching, if there is no searching then totalFiltered = totalData
 			"data"            => $results   // total data array

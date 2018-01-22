@@ -15,6 +15,7 @@
         <form class="form" method="POST" action="{{ url('/register') }}">
             
             {{ csrf_field() }}
+            <input type="hidden" name="ref_id" value="{{isset($_GET['ref']) ? $_GET['ref'] : 0}}">
 
             <header class="form__header">
                 <h1>Давайте начнем</h1>

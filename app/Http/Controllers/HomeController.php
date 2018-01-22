@@ -36,13 +36,6 @@ class HomeController extends Controller
         }
     }
 
-    public function users()
-    {
-        if (Auth::user()->status === 'admin')
-            return view('home.users');
-        return redirect('/home');
-    }
-
     public function statistics(Request $request)
     {
         if (Auth::user()->status === 'farmer')

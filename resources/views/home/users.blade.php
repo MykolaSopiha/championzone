@@ -46,7 +46,7 @@
             $('#all_users').DataTable( {
                 "processing": true,
                 "serverSide": true,
-                "ajax": "{{url('/api/users')}}",
+                "ajax": "{{url('/home/users/ssp')}}",
                 "responsive": true,
                 "columns":[
                     {data: 'id'},

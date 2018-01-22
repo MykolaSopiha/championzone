@@ -8,6 +8,7 @@ use Validator;
 use App\Cost;
 use Auth;
 use DB;
+use View;
 
 class CostController extends Controller
 {
@@ -19,11 +20,12 @@ class CostController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $currencies = config('assets.currencies');
+        View::share(compact('currencies'));
     }
 
     public function index()
     {
-
         if (Auth::user()->status === 'admin') {
             $costs = DB::select("select * from costs");
             $cards = DB::select("select * from cards");
@@ -33,7 +35,6 @@ class CostController extends Controller
             $cards = DB::select("select * from cards where user_id = ?", [Auth::user()->id]);
             $users = DB::select("select * from users where id = ?",      [Auth::user()->id]);
         }
-
         foreach ($costs as $cost) {
             $cost->value = $cost->value/100;
             $cost->card_name = "";
@@ -48,7 +49,6 @@ class CostController extends Controller
                 }
             }
         }
-
         foreach ($costs as $cost) {
             foreach ($users as $user) {
                 if ($cost->user_id == $user->id) {
@@ -57,7 +57,6 @@ class CostController extends Controller
                 }
             }
         }
-
         //return dd( compact('costs', 'cards') );
         return view('home/costs', compact('costs', 'cards') );
     }
@@ -83,20 +82,23 @@ class CostController extends Controller
 
         $this->validate($request, [
             'date'  => 'required|date',
-            'card'  => 'required|numeric|min:1',
+            'card'  => 'sometimes|numeric|min:1',
             'value' => 'required|numeric',
-            'rate'  => 'required|numeric'
+            'rate'  => 'required|numeric',
+            'info'  => 'required'
         ]);
 
         $cost = new Cost();
         $cost->fill([
             'date'      => date( "Y-m-d", strtotime($request["date"]) ),
-            'card_id'   => $request["card"],
+            'card_id'   => 0,
             'value'     => intval( round($request["value"], 2)*100 ),
             'rate'      => $request["rate"],
-            'user_id'   => Auth::user()->id
+            'user_id'   => Auth::user()->id,
+            'info'      => $request["info"]
         ]);
         $cost->save();
+
         return redirect('/home/costs');
     }
 
@@ -142,6 +144,7 @@ class CostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Cost::find($id)->destroy($id);
+        return redirect('home/costs');
     }
 }

@@ -159,7 +159,7 @@
                                     <option value="">Все пользователи</option>
                                     <option value="0" @if (isset($_GET['user_id']) && $_GET['user_id'] == '0') selected @endif>Назначить пользователя</option>
                                     @foreach ($users as $user)
-                                        <option value="{{$user->id}}" @if (isset($_GET['user_id']) && $user->id == $_GET['user_id']) selected @endif>{{$user->first_name." ".$user->last_name." ".$user->name}}</option>
+                                        <option value="{{$user['id']}}" @if (isset($_GET['user_id']) && $user['id'] == $_GET['user_id']) selected @endif>{{$user['first_name']." ".$user['last_name']." ".$user['name']}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -169,7 +169,7 @@
                                 <label for="card">Код</label><br>
                                 <select name="id" id="card" class="chosen-js-select form-control">
                                     <option value="">Все карты</option>
-                                    @foreach ($cards as $card)<option value="{{$card->id}}" @if (isset($_GET['id']) && $card->id == $_GET['id']) selected @endif>...{{substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4)}}</option>
+                                    @foreach ($cards as $card)<option value="{{$card->id}}" @if (isset($_GET['id']) && $card->id == $_GET['id']) selected @endif>...{{substr(($card->code), -8, -4)." ".substr(($card->code), -4)}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -178,11 +178,11 @@
                                 <label for="type">Тип</label><br>
                                 <select name="type" id="type" class="form-control">
                                     <option value="">Все</option>
-                                    @foreach ($types as $key => $val)
+                                    @foreach ($card_types as $key => $val)
                                     <option value="{{$key}}" @if (isset($_GET['type']) && $_GET['type'] != '' && $_GET['type'] == $key) selected="selected" @endif>
                                         {{ucfirst($val)}}
                                     </option>
-                                    @endforeach                                 
+                                    @endforeach
                                 </select>
                             </div>
 
@@ -191,7 +191,7 @@
                                 <select name="currency" id="currency" class="form-control">
                                     <option value="">Все</option>
                                     @foreach ($currencies as $c)
-                                    <option value="{{$c}}" @if (isset($_GET['currency']) && $_GET['currency'] == $c) selected="selected" @endif>{{$c}}</option>
+                                        <option value="{{$c}}" @if (isset($_GET['currency']) && $_GET['currency'] == $c) selected="selected" @endif>{{$c}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -210,24 +210,24 @@
                     <form class="js-form" action="{{url('/home/cards/multiple_action')}}" method="post">
 
                         @if (Auth::user()->status != 'mediabuyer')
-                        <!-- begin select-action -->
-                        <div class="select-action">
-                            <span>Действие:</span>
-                            <select class="js-action" name="card_action">
-                                <option selected="">--</option>
-                                <option value="1">Назначить пользователя</option>
-                                <option value="2">Активировать</option>
-                                <option value="3">Заморозить</option>
-                                <option value="4">Удалить</option>
-                            </select>
-                            <select class="js-users" name="card_user">
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                @endforeach
-                            </select>
-                            <button class="js-submit" type="submit">Выполнить</button>
-                        </div>
-                        <!-- end select-action -->
+                            <!-- begin select-action -->
+                            <div class="select-action">
+                                <span>Действие:</span>
+                                <select class="js-action" name="card_action">
+                                    <option selected="">--</option>
+                                    <option value="1">Назначить пользователя</option>
+                                    <option value="2">Активировать</option>
+                                    <option value="3">Заморозить</option>
+                                    <option value="4">Удалить</option>
+                                </select>
+                                <select class="js-users" name="card_user">
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                                <button class="js-submit" type="submit">Выполнить</button>
+                            </div>
+                            <!-- end select-action -->
                         @endif
 
                         <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">

@@ -22,7 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'terra_id',
-        'status'
+        'status',
+        'ref_id'
     ];
 
     /**
@@ -31,6 +32,16 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = ['password', 'remember_token'];
+
+    public function card()
+    {
+        return $this->hasMany('App\Phone', 'user_id');
+    }
+
+    public function cost()
+    {
+        return $this->hasMany('App\Cost',  'user_id');
+    }
 
     public function isOnline()
     {

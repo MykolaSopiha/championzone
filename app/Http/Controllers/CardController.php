@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
@@ -9,6 +10,7 @@ use Validator;
 use App\Card;
 use DB;
 use Auth;
+use View;
 
 
 class CardController extends Controller
@@ -17,6 +19,10 @@ class CardController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $currencies = config('assets.currencies');
+        $card_types = config('assets.card_types');
+
+        View::share(compact('card_types', 'currencies'));
     }
 
     /**
@@ -26,20 +32,13 @@ class CardController extends Controller
      */
     public function index()
     {
-        $currencies = ['RUB', 'USD', 'UAH', 'EUR'];
-        $types = [
-            0 => 'Яндекс.Деньги',
-            1 => 'QIWI',
-            2 => 'Пластиковая'
-        ];
-        $cards_coditions = [];
+        $users = User::select('id', 'name', 'first_name', 'last_name')->get();
 
         if (Auth::user()->status == "mediabuyer") {
-            $cards_coditions[] = ['user_id', Auth::user()->id];
+            $cards = Card::where('user_id', Auth::user()->id);
+        } else {
+            $cards = Card::all();
         }
-
-        $users = DB::select('select id, name, first_name, last_name from users');
-        $cards = DB::table('cards')->select('id', 'name', 'code', 'status')->where($cards_coditions)->get();
 
         return view('/home/cards', compact('users', 'cards', 'types', 'currencies'));
     }
@@ -66,14 +65,10 @@ class CardController extends Controller
 
     public function store(Request $request)
     {
-        $salt = env('APP_SALT');
         $request['date']      = $request["date"]."/1";
-        $request["code_hash"] = sha1($request["code"].$salt);
-
 
         // Validation params BEGIN
         $rules = [
-            // 'name'      => 'required|max:255|unique:cards',
             'code'      => 'required|numeric|digits:16',
             'code_hash' => 'required|unique:cards',
             'wallet'    => 'numeric',
@@ -91,7 +86,7 @@ class CardController extends Controller
         ];
 
         $err_msg = [
-            'code_hash.unique' => 'The card code has already been taken.',
+            'code_hash.unique' => 'The card code already been taken.',
             'type.numeric'     => 'The card type is incorrect.'
         ];
         // Validation params END
@@ -100,9 +95,9 @@ class CardController extends Controller
         // Data to store BEGIN
         $data = [
             'name'      => $request["name"],
-            'code'      => encrypt($request["code"]),
+            'code'      => $request["code"],
             'code_hash' => $request["code_hash"],
-            'cw2'       => encrypt($request["cw2"]),
+            'cw2'       => $request["cw2"],
             'date'      => date("Y/m/d", strtotime($request["date"])),
             'currency'  => $request["currency"],
             'user_id'   => $request["user"],
@@ -111,7 +106,7 @@ class CardController extends Controller
         ];
 
         $QIWI_data = [
-            'cw2'  => encrypt('QIWI'),
+            'cw2'  => 'QIWI',
             'date' => date("Y-m-d")
         ];
         // Data to store END
@@ -123,10 +118,7 @@ class CardController extends Controller
         }
 
         $this->validate($request, $rules, $err_msg);
-
-        $card = new Card();
-        $card->fill($data);
-        $card->save();
+        Card::create($data);
 
         return redirect('/home/cards');
     }
@@ -134,7 +126,7 @@ class CardController extends Controller
 
 
     public function multiplepage() {
-        $users = DB::table('users')->get();
+        $users = User::select('id', 'name', 'first_name', 'last_name')->get();
         return view('home.multiple_page', compact('users'));
     }
 
@@ -221,15 +213,17 @@ class CardController extends Controller
 
                 //EVERYTHING IS OK
                 $card = new Card();
-                $card->fill([
-                    'date'      => $date,
-                    'code'      => encrypt($code),
-                    'code_hash' => sha1("".$code.$salt),
-                    'cw2'       => encrypt($cw2),
-                    'currency'  => 'RUB',
-                    'user_id'   => $request->card_user,
-                    'info'      => $info
-                ]);
+                if (DB::table('cards')->where('code_hash', '=', sha1($code.$salt))->count() == 0) {
+                    $card->fill([
+                        'date'      => $date,
+                        'code'      => encrypt($code),
+                        'code_hash' => sha1($code.$salt),
+                        'cw2'       => encrypt($cw2),
+                        'currency'  => 'RUB',
+                        'user_id'   => $request->card_user,
+                        'info'      => $info
+                    ]);
+                }
                 $card->save();
 
                 $errors[$index] = '';
@@ -291,19 +285,14 @@ class CardController extends Controller
      */
     public function show($id)
     {
-        $card  = DB::table('cards')->where('id', $id)->first();
-        $card->code = decrypt($card->code);
-        $card->cw2  = (is_null($card->cw2)) ? null : decrypt($card->cw2);
+        $card  = Card::findOrFail($id);
+        $card->code = ($card->code);
+        $card->cw2  = (is_null($card->cw2)) ? null : ($card->cw2);
         $card->date = date("Y/m/d", strtotime($card->date));
 
         $users = DB::table('users')->get();
-        $card_types = [
-            ['0', 'Яндекс.Деньги'],
-            ['1', 'QIWI'],
-            ['2', 'Пластиковая карта']
-        ];
         
-        return view('home.show.card', compact('card', 'card_types', 'users') );
+        return view('home.show.card', compact('card','users', 'currencies') );
     }
 
     /**
@@ -351,48 +340,27 @@ class CardController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         $salt = env('APP_SALT');
 
-        if ($request['name'] != "") {
-            $this->validate($request, ['name' => 'required|max:255']);
-            DB::table('cards')->where('id', $id)->update(['name' => $request['name']]);
-        }
+        $data = $request->except(['_token', '_method']);
+        $data['code_hash'] = sha1($request["code"].$salt);
 
-        if ($request['type'] != "") {
-            $this->validate($request, ['type' => 'required|numeric|min:0']);
-            DB::table('cards')->where('id', $id)->update(['type' => $request['type']]);
-        }
+        $rules = [
+            'name' => 'max:255',
+            'type' => 'required|numeric|min:0',
+            'code' => 'required|max:255',
+            'cw2'  => 'required|max:255',
+            'date' => 'required|date',
+        ];
 
-        if ($request['code'] != "") {
-            $this->validate($request, ['code' => 'required|max:255']);
-            DB::table('cards')->where('id', $id)->update(['code' => encrypt($request['code'])]);
-            DB::table('cards')->where('id', $id)->update(['code_hash' => sha1("".$request["code"].$salt)]);
-        }
+        $data['code'] = encrypt($request['code']);
+        $data['cw2']  = encrypt($request['cw2']);
+        // $data['date'] = date( "Y-m-d", strtotime($request['date']));
 
-        if ($request['cw2'] != "") {
-            $this->validate($request, ['code' => 'required|max:255']);
-            DB::table('cards')->where('id', $id)->update(['cw2' => encrypt($request['cw2'])]);
-        }
+        Card::findOrFail($id)->fill($data);
+        DB::table('cards')->where('id', $id)->update($data);
 
-        if (isset($request['date'])) {
-            $this->validate($request, ['date' => 'required']);
-            DB::table('cards')->where('id', $id )->update(['date' => date( "Y-m-d", strtotime($request['date']))]);
-        }
-
-        if ($request['currency'] != "") {
-            DB::table('cards')->where('id', $id)->update(['currency' => $request['currency']]);
-        }
-
-        if ($request['user'] != "") {
-            DB::table('cards')->where('id', $id)->update(['user_id' => $request['user']]);
-        }
-
-        if ($request['wallet'] != "") {
-            DB::table('cards')->where('id', $id)->update(['wallet' => $request['wallet']]);
-        }
-
-        return redirect('/home/cards'.'/'.$request['user_id']);
+        return redirect('/home/cards'.'/'.$id);
     }
 
     /**
@@ -403,13 +371,70 @@ class CardController extends Controller
      */
     public function destroy($id)
     {
-        if ( is_array($id) ) {
-            foreach ($id as $i) {
-                DB::table('cards')->where('id', $i)->delete();
-            }
+        if (is_array($id)) {
+            DB::table('cards')->whereIn('id', $id)->delete();
         } else {
             DB::table('cards')->where('id', $id)->delete();
         }
+
         return redirect('/home/cards');
+    }
+
+
+    public function setWallets() {
+        return view('home.wallets');
+    }
+
+
+    public function addWallets(Request $request) {
+
+        $text  = preg_replace('/[ ]{2,}|[\t]|[\r]/', ' ', trim($request->text));
+        $strings = explode("\n", $text);
+
+        $errors = [];
+
+        foreach ($strings as $str) {
+
+            $word = explode(' ', $str);
+            $errors[$str] = [];
+
+
+            // Validation BEGIN
+            if (strlen($word[0]) != 15) {
+                $errors[$str][] = 'Wallet code is incorrect!';
+            }
+
+            if (strlen($word[1]) != 16) {
+                if (strlen($word[1].$word[2].$word[3].$word[4]) == 16) {
+                    $word[1] = $word[1].$word[2].$word[3].$word[4];
+                } else {
+                    $errors[$str][] = 'Card code is incorrect!';
+                }
+            }
+
+            if (!is_numeric($word[0])) {
+                $errors[$str][] = 'Wallet code is not numeric!';
+            }
+
+            if (!is_numeric($word[1])) {
+                $errors[$str][] = 'Card code is not numeric!';
+            }
+
+            if (DB::table('cards')->where('code_hash', sha1($word[1].env('APP_SALT')))->count() == 0) {
+                $errors[$str][] = 'Card not found!';
+            }
+            // Validation END
+
+
+            foreach ($errors as &$err) {
+                if (empty($err)) {
+                    DB::table('cards')->where('code_hash', sha1($word[1].env('APP_SALT')))->update(['wallet' => $word[0]]);
+                    $err = 'done!';
+                }
+
+            }
+
+        }
+        return dd($errors);
     }
 }

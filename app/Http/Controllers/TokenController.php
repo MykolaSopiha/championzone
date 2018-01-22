@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Card;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
@@ -38,8 +39,16 @@ class TokenController extends Controller
             $users_coditions[] = ['id', Auth::user()->id];
         }
 
-        $users = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->where($users_coditions)->get();
-        $cards = DB::table('cards')->select('id', 'name', 'code', 'currency')->where($cards_coditions)->get();
+        $users = DB::table('users')
+            ->select('id', 'name', 'first_name', 'last_name')
+            ->where($users_coditions)
+            ->get();
+
+        $cards = DB::table('cards')
+            ->select('id', 'name', 'code', 'currency')
+            ->where($cards_coditions)
+            ->get();
+
         return view('home/tokens', compact('cards', 'users', 'statuses', 'currencies'));
     }
 
@@ -61,7 +70,6 @@ class TokenController extends Controller
      */
     public function store(Request $request)
     {
-
         $token_card = DB::table('cards')->select('code', 'currency')->where('id', $request["card_id"])->first();
 
         if (!isset($request['ask'])) {
@@ -89,12 +97,12 @@ class TokenController extends Controller
         ];
 
         $data = [
+            'value'     => intval(round($request["value"], 2)*100),
+            'currency'  => $token_card->currency,
+            'card_code' => $token_card->code,
             'date'      => $request['date'],
             'user_id'   => $request['user_id'],
             'card_id'   => $request["card_id"],
-            'card_code' => $token_card->code,
-            'value'     => intval(round($request["value"], 2)*100),
-            'currency'  => $token_card->currency,
             'rate'      => $request['rate'],
             'action'    => $request['action'],
             'ask'       => $request['ask'],

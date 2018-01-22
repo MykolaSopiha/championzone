@@ -7,22 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Lead extends Model
 {
 	protected $fillable = [
-		"tleads_id",
+		"tleads_id", // rename to affiliate_id
 		"offer_id",
 		"stream_id",
-		"tuser_id",
+		"tuser_id",  // rename to user_id
 		"name",
 		"phone",
 		"tz",
 		"address",
 		"country",
 		"check_sum",
-		"status",
-		"cost",
-		"comment",
-		"action",
-		"fields",
-		"date_create",
 		"utm_source",
 		"utm_medium",
 		"utm_campaign",
@@ -35,5 +29,11 @@ class Lead extends Model
 		"sub_id_4",
 		"ip",
 		"user_agent",
+		"status",
+		"cost",
+		"comment",
+		"action",
+		"fields",
+		"date_create",
 	];
 }
