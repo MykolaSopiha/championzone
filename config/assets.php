@@ -15,6 +15,8 @@ return [
         2 => 'Пластиковая'
     ],
 
+    'token_statuses' => ['active', 'confirmed', 'trash']
+
 ];
 
 ?>

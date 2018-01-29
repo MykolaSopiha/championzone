@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Card;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
-use Validator;
 use App\Token;
 use App\User;
+use App\Card;
+use Validator;
 use DB;
 use Auth;
 use Mail;
+use View;
 
 class TokenController extends Controller
 {
@@ -23,6 +24,11 @@ class TokenController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
+        $currencies = config('assets.currencies');
+        $statuses   = config('assets.token_statuses');
+
+        View::share(compact('statuses', 'currencies'));
     }
 
 
@@ -30,8 +36,6 @@ class TokenController extends Controller
     {
         $users_coditions = [];
         $cards_coditions = [];
-        $statuses = ['active', 'confirmed', 'trash'];
-        $currencies = ['RUB', 'USD', 'UAH', 'EUR'];
 
         if (Auth::user()->status !== 'admin' && Auth::user()->status !== 'accountant') {
             $cards_coditions[] = ['status', 'active'];

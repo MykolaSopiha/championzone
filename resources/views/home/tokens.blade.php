@@ -54,7 +54,7 @@
 
                 <!-- begin items__add -->
                 <div class="items__add">
-                    <form class="form" method="POST" action="{{ url('/home/tokens') }}">
+                    <form class="form new-token" method="POST" action="{{ url('/home/tokens') }}">
 
                         {{ csrf_field() }}
 
@@ -283,12 +283,39 @@
     </div>
     <!-- Modal for transfer destination card -->
 
+    <!-- Modal for transfer destination card -->
+    <div class="modal fade" id="newTicket" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header" style="padding:35px 50px;">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4>Проверьте данные</h4>
+                </div>
+                <div class="modal-body text-center" style="padding:20px"></div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary pull-left" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Modal for transfer destination card -->
+
 @endsection
 
 
 @section('scripts_end')
     <script>
         $(document).ready(function() {
+
+            // $('.new-token').click(function (e) {
+            //     e.preventDefault();
+            //
+            //     let ticketModal = $('.newTicket');
+            //     ticketModal.modal();
+            // });
 
             $('#filter_date').datepicker({
                 dateFormat: "yy-mm-dd",

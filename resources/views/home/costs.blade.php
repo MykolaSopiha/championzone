@@ -1,12 +1,6 @@
 @extends('layouts.app')
 
 
-@section('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" />
-@endsection
-
-
 <!-- begin header -->
 @section('page-name') Расходы @endsection
 @include('layouts.headers.home')
@@ -23,12 +17,15 @@
 
                 <!-- begin items__add -->
                 <div class="items__add">
-                    <form class="form" method="POST" action="{{ url('/home/costs') }}">
+                    <form class="form" method="POST" action="{{url('/home/costs')}}">
 
-                        {{ csrf_field() }}
+                        {{csrf_field()}}
+
+                        <input id="rate" type="hidden" class="readonly" name="rate" value="{{old('rate')}}" readonly required>
 
                         <header class="form__header">
                             <h2>Добавить запись</h2>
+                            @if (Auth::user()->status == 'admin') <a href="{{url('/home/costtypes')}}">Добавить статьи расходов</a> @endif
                         </header>
 
                         <div class="form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
@@ -36,6 +33,18 @@
                             <input id="date" class="pick_date" type="text" name="date" placeholder="Введите дату" required>
                             @if ($errors->has('date'))
                                 <p>{{ $errors->first('date') }}</p>
+                            @endif
+                        </div>
+
+                        <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}">
+                            <label for="cost_type_id">Статья расходов</label>
+                            <select name="cost_type_id" id="cost_type_id">
+                                @foreach ($costtypes as $costtype)
+                                    <option value="{{$costtype->id}}" title="{{$costtype->description}}">{{$costtype->name}}</option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('card'))
+                                <p>{{ $errors->first('card') }}</p>
                             @endif
                         </div>
 
@@ -57,20 +66,6 @@
                             @if ($errors->has('value'))
                                 <p>{{ $errors->first('value') }}</p>
                             @endif
-                        </div>
-
-                        <div class="form__item{{ $errors->has('rate') ? ' form__item--error' : '' }}">
-                            <label for="rate">Курс относительно USD</label>
-                            <input id="rate" type="text" name="rate" value="{{ old('rate') }}" readonly required>
-                            @if ($errors->has('rate'))
-                                <p>{{ $errors->first('rate') }}</p>
-                            @endif
-                        </div>
-
-                        <div class="form__item">
-                            <button type="button" id="get_rate">
-                                <i class="fa fa-refresh fa-lg" aria-hidden="true"></i> Обновить курс
-                            </button>
                         </div>
 
                         <div class="form__item{{ $errors->has('info') ? ' form__item--error' : '' }}">
@@ -102,8 +97,8 @@
                                 <thead>
                                     <tr>
                                         <td>Дата</td>
+                                        <td>Назначение</td>
                                         <td>Объем</td>
-                                        <td>Курс</td>
                                         <td>Описание</td>
                                         <td>Пользователь</td>
                                         <td></td>
@@ -112,12 +107,12 @@
                                 <tbody>
                                     @foreach ($costs as $cost)
                                         <tr>
-                                            <td>{{ $cost->date }}</td>
-                                            <td>{{ number_format($cost->value, 2, ',', ' ') }}</td>
-                                            <td>{{ number_format($cost->rate,  6, ',', ' ') }}</td>
-                                            <td>{{ $cost->info }}</td>
-                                            <td>{{ $cost->user_name }}</td>
-                                            <td><a href="{{url('home/costs/').'/'.$cost->id}}" class="remove-btn"><i class="fa fa-times" aria-hidden="true"></i></a></td>
+                                            <td>{{$cost->date}}</td>
+                                            <td>{{$cost->cost_type_name}}</td>
+                                            <td>{{$cost->value}} ({{$cost->currency}})</td>
+                                            <td>{{$cost->info}}</td>
+                                            <td>{{$cost->user->name}}</td>
+                                            <td><a href="{{route('home:home.costs.destroy', $cost->id)}}" class="remove-btn"><i class="fa fa-times" aria-hidden="true"></i></a></td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -140,7 +135,12 @@
 @section('scripts_end')
     <script>
         $(document).ready(function() {
-            $('#costs_list').DataTable({});
+            $('#costs_list').DataTable({
+                "columnDefs": [{
+                        "targets": [5],
+                        "orderable": false
+                }]
+            });
         });
     </script>
 @endsection

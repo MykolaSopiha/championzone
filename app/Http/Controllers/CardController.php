@@ -32,10 +32,10 @@ class CardController extends Controller
      */
     public function index()
     {
-        $users = User::select('id', 'name', 'first_name', 'last_name')->get();
+        $users = User::select('id', 'name', 'first_name', 'last_name')->where('status', '<>', 'deleted')->get();
 
         if (Auth::user()->status == "mediabuyer") {
-            $cards = Card::where('user_id', Auth::user()->id);
+            $cards = Card::where('user_id', Auth::user()->id)->get();
         } else {
             $cards = Card::all();
         }
@@ -372,11 +372,7 @@ class CardController extends Controller
      */
     public function destroy($id)
     {
-        if (is_array($id)) {
-            DB::table('cards')->whereIn('id', $id)->delete();
-        } else {
-            DB::table('cards')->where('id', $id)->delete();
-        }
+        Card::findOrFail($id)->delete();
 
         return redirect('/home/cards');
     }

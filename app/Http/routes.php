@@ -1,10 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Http\Request;
-use App\Http\Requests;
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -20,36 +15,44 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
 Route::auth();
-
 
 Route::get('/home', 'HomeController@index');
 
-
-Route::group(['prefix' => 'home'], function () {
-    Route::get('users', 		   'UserController@index');
-    Route::get('users/{id}',	   'UserController@show');
-    Route::get('users/{id}/edit',  'UserController@edit');
-    Route::post('users/{id}',      'UserController@store');
-    Route::get('users/ssp',		   'UserController@ssp');
+Route::group(['prefix' => 'home', 'as' => 'home:'], function () {
 
     Route::get('statistics', 	'HomeController@statistics');
     Route::get('balance', 	    'HomeController@balance');
     Route::get('motivation',    'HomeController@motivation');
     Route::get('wiki', 		    'HomeController@wiki');
-    Route::post('statistics',   'HomeController@date_range');
+
+
+    Route::group(['prefix' => 'users', 'as' => 'users.'], function () {
+        Route::get('/',             ['uses' => 'UserController@index',  'as' => 'index']);
+        Route::get('/{id}',         ['uses' => 'UserController@show',   'as' => 'view']);
+        Route::get('/{id}/edit',    ['uses' => 'UserController@edit',   'as' => 'edit']);
+        Route::get('/{id}/delete',  ['uses' => 'UserController@delete', 'as' => 'delete']);
+        Route::post('/{id}',        ['uses' => 'UserController@store',  'as' => 'save']);
+        Route::get('/ssp',          ['uses' => 'UserController@ssp',    'as' => 'ssp']);
+    });
 
     Route::resource('tokens',    'TokenController');
     Route::resource('cards',     'CardController');
-    Route::resource('costs',     'CostController');
     Route::resource('accounts',  'AccountController');
+    Route::resource('costs',     'CostController');
+
+
+    Route::group(['prefix' => 'costtypes', 'as' => 'costtypes.'], function () {
+        Route::get('/',            ['uses' => 'CostController@costTypes',  'as' => 'index']);
+        Route::post('/',           ['uses' => 'CostController@saveType',   'as' => 'save']);
+        Route::get('/{id}/delete', ['uses' => 'CostController@deleteType', 'as' => 'delete']);
+    });
+
 
     Route::get('multiple',  	 'CardController@multiplepage');
     Route::post('multiple',  	 'CardController@multipleadd');
     Route::post('cards/multiple_action',  'CardController@multiple_action');
 });
-
 
 Route::group(['prefix' => 'api'], function () {
     Route::get('test',  		'APIController@test');
@@ -65,6 +68,8 @@ Route::group(['prefix' => 'api'], function () {
     Route::get('token_notify',	'APIController@checkTokens');
 });
 
-
 Route::get('/wallets',  'CardController@setWallets');
 Route::post('/wallets', 'CardController@addWallets');
+
+Route::get('/setroleslist', 'UserController@setroleslist');
+Route::get('/setrole',      'UserController@setrole');

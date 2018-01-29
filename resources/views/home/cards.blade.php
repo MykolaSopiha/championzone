@@ -10,28 +10,37 @@
             display: table-header-group;
         }
         .chosen-single {
+            height: 70px !important;
+            line-height: 70px !important;
+            background: none !important;
+            min-width: 150px;
+            font-size: 18px;
+            text-align: center;
+            border-radius: 10px !important;
+        }
+        .chosen-container {
+            min-width: 150px;
+        }
+        .filter .chosen-single {
             height: 34px !important;
             line-height: 34px !important;
             background: none !important;
             min-width: 150px;
-        }
-        .chosen-container {
-            min-width: 150px;
+            font-size: 14px;
+            text-align: left;
+            border-radius: 4px !important;
         }
     </style>
 @endsection
 
 
+<!-- begin header -->
+@section('page-name') Карты @endsection
+@include('layouts.headers.home')
+<!-- end header -->
+
+
 @section('content')
-
-
-    <!-- begin header -->
-    @section('page-name') Карты @endsection
-    @include('layouts.headers.home')
-    <!-- end header -->
-
-
-
     <!-- begin main -->
     <main class="main" role="main">
         <div class="main-inner">
@@ -54,8 +63,8 @@
                         <div class="form__item{{ $errors->has('name') ? ' form__item--error' : '' }}">
                             <label for="name">Название</label>
                             <input id="name" type="text" name="name" value="{{ old('name') }}" placeholder="Чемпионская">
-                            @if ($errors->has('name'))
-                                <p>{{ $errors->first('name') }}</p>
+                            @if (!$errors->has('name'))
+                                <p class="text-warning">{{ $errors->first('name') }}</p>
                             @endif
                         </div>
 
@@ -149,7 +158,7 @@
                     <h2>Список карт</h2>
                     @endif
 
-                    <div style="margin-bottom: 0px;">
+                    <div class="filter" style="margin-bottom: 0px;">
                         <form class="form-inline" method="get">
 
                             @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')

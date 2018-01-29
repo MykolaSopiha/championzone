@@ -24,6 +24,14 @@ class Card extends Model
         'cw2'
     ];
 
+    public function cost() {
+        return $this->hasMany('App\Cost', 'card_id', 'id');
+    }
+
+    public function token() {
+        return $this->hasMany('App\Token', 'card_id', 'id');
+    }
+
     public function user()
     {
         return $this->belongsTo('App\User');

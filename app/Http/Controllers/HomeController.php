@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use Auth;
 use DB;
+use App\User;
 
 class HomeController extends Controller
 {

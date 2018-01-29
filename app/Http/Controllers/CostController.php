@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Card;
+use App\CostType;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Validator;
@@ -26,39 +28,9 @@ class CostController extends Controller
 
     public function index()
     {
-        if (Auth::user()->status === 'admin') {
-            $costs = DB::select("select * from costs");
-            $cards = DB::select("select * from cards");
-            $users = DB::select("select * from users");
-        } else {
-            $costs = DB::select("select * from costs where user_id = ?", [Auth::user()->id]);
-            $cards = DB::select("select * from cards where user_id = ?", [Auth::user()->id]);
-            $users = DB::select("select * from users where id = ?",      [Auth::user()->id]);
-        }
-        foreach ($costs as $cost) {
-            $cost->value = $cost->value/100;
-            $cost->card_name = "";
-            $cost->currency  = "";
-            $cost->card_code = "";
-            foreach ($cards as $card) {
-                if ($cost->card_id == $card->id) {
-                    $cost->card_name = $card->name;
-                    $cost->card_code = decrypt($card->code);
-                    $cost->currency = $card->currency;
-                    break;
-                }
-            }
-        }
-        foreach ($costs as $cost) {
-            foreach ($users as $user) {
-                if ($cost->user_id == $user->id) {
-                    $cost->user_name = $user->name;
-                    break;
-                }
-            }
-        }
-        //return dd( compact('costs', 'cards') );
-        return view('home/costs', compact('costs', 'cards') );
+        $costs = Cost::all();
+        $costtypes = CostType::all();
+        return view('home/costs', compact('costs', 'costtypes'));
     }
 
     /**
@@ -71,6 +43,41 @@ class CostController extends Controller
         //
     }
 
+    public function costTypes()
+    {
+        if (Auth::user()->status != 'admin')
+            return redirect('home/costs');
+
+        $cost_types = CostType::all();
+
+        return view('home.costtypes', compact('cost_types'));
+    }
+
+    public function saveType(Request $request)
+    {
+        if (Auth::user()->status != 'admin')
+            return redirect('home/costs');
+
+        $this->validate($request, [
+            'name' => 'required|max:255',
+        ]);
+
+        $data = $request->except('_token');
+
+        CostType::create($data);
+
+        return redirect('home/costtypes');
+    }
+
+    public function deleteType($id)
+    {
+        if (Auth::user()->status != 'admin')
+            return redirect('home/costs');
+
+        CostType::findOrFail($id)->delete();
+        return redirect('home/costtypes');
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -79,27 +86,24 @@ class CostController extends Controller
      */
     public function store(Request $request)
     {
+        $data = $request->except('_token');
 
         $this->validate($request, [
-            'date'  => 'required|date',
-            'card'  => 'sometimes|numeric|min:1',
-            'value' => 'required|numeric',
-            'rate'  => 'required|numeric',
-            'info'  => 'required'
+            'date'     => 'required|date',
+            'card_id'  => 'sometimes|numeric|min:1',
+            'user_id'  => 'sometimes|numeric|min:1',
+            'value'    => 'required|numeric',
+            'rate'     => 'required|numeric'
         ]);
 
-        $cost = new Cost();
-        $cost->fill([
-            'date'      => date( "Y-m-d", strtotime($request["date"]) ),
-            'card_id'   => 0,
-            'value'     => intval( round($request["value"], 2)*100 ),
-            'rate'      => $request["rate"],
-            'user_id'   => Auth::user()->id,
-            'info'      => $request["info"]
-        ]);
-        $cost->save();
+        $data['card_id'] = (is_null($request["card_id"])) ? 0 : $request["card_id"];
+        $data['user_id'] = (is_null($request["user_id"])) ? Auth::user()->id : $request["user_id"];
+        $data['value'] = intval(round($data['value'], 2)*100);
 
-        return redirect('/home/costs');
+        return dd($data);
+        Cost::create($data);
+
+        return redirect()->route('home:home.costs.index');
     }
 
     /**
@@ -144,7 +148,7 @@ class CostController extends Controller
      */
     public function destroy($id)
     {
-        Cost::find($id)->destroy($id);
+        Cost::destroy($id);
         return redirect('home/costs');
     }
 }

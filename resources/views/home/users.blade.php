@@ -26,7 +26,7 @@
                             <td>Баланс, USD</td>
                             <td>Статус</td>
                             <td>Зарегистрирован</td>
-                            <td>Изменить</td>
+                            <td></td>
                         </tr>
                     </thead>
                     <tbody></tbody>

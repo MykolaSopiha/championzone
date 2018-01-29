@@ -10,6 +10,7 @@ use Validator;
 use View;
 use Auth;
 use DB;
+use App\Role;
 
 
 use App\Card;
@@ -100,6 +101,41 @@ class UserController extends Controller
         }
 
         return redirect('/home/users/'.$id);
+    }
+
+    public function setroleslist() {
+        $roles = [
+            'admin',
+            'mediabuyer',
+            'accountant',
+            'farmer'
+        ];
+
+        foreach ($roles as $role) {
+            if (DB::table('roles')->where('name', $role)->count() == 0)
+                DB::table('roles')->insert(['name' => $role, 'description' => '']);
+        }
+
+        return 'hi';
+    }
+
+    public function setrole() {
+        $users = User::all();
+
+        foreach ($users as $user) {
+            DB::table('role_user')->insert([
+                'user_id' => $user->id,
+                'role_id' => Role::select('name', 'id')->where('name', '=', $user->status)->first()->id
+            ]);
+        }
+
+        return 'hi';
+    }
+
+    public function delete($id)
+    {
+        User::findOrFail($id)->delete();
+        return redirect()->route('home:users.index');
     }
 
 }

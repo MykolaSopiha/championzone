@@ -17,7 +17,9 @@ class APIController extends Controller
     public function getUsers(Request $request) {
         return Datatables::of(User::query())->addColumn('edit', function($user)
         {
-            return "<a href='".url('/home/users/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>";
+            return "<a href='".url('/home/users/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>&nbsp".
+                "<a href='".url('/home/users/')."/".$user->id."/delete'><i class=\"fa fa-ban\" aria-hidden=\"true\"></i></a>";
+
         })->addColumn('balance', function($user)
         {
             $accounts = DB::table('accounts')->where('user_id', $user->id)->get();
@@ -33,7 +35,7 @@ class APIController extends Controller
     {
 
         // storing  request (ie, get/post) global array to a variable
-        $requestData= $_REQUEST;
+        $requestData = $_REQUEST;
 
         // getting total number records without any search
         $totalData = DB::table('cards')->count();
