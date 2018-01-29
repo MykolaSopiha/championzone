@@ -54,7 +54,7 @@
                     {data: 'first_name'},
                     {data: 'last_name'},
                     {data: 'terra_id'},
-                    {data: 'balance'},
+                    {data: 'balance', searchable: false},
                     {data: 'status'},
                     {data: 'created_at'},
                     {data: 'edit', searchable: false}
