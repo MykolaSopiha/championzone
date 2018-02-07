@@ -28,7 +28,7 @@
 
                             <div class="form__item{{ $errors->has('name') ? ' form__item--error' : '' }}">
                                 <label for="name">Название</label>
-                                <input id="name" type="text" name="name" value="{{ old('name') }}" placeholder="Чемпионская">
+                                <input id="name" type="text" name="name" value="{{ old('name') }}" placeholder="">
                                 @if ($errors->has('name'))
                                     <p>{{ $errors->first('name') }}</p>
                                 @endif

@@ -1,13 +1,43 @@
 @extends('layouts.app')
 
 
-<!-- begin header -->
-@section('page-name') Расходы @endsection
-@include('layouts.headers.home')
-<!-- end header -->
+@section('styles')
+    <style>
+        .chosen-single {
+            height: 70px !important;
+            line-height: 70px !important;
+            background: none !important;
+            min-width: 150px;
+            font-size: 18px;
+            text-align: center;
+            border-radius: 10px !important;
+        }
+        .chosen-container {
+            min-width: 150px;
+        }
+        .filter .chosen-single {
+            height: 34px !important;
+            line-height: 34px !important;
+            background: none !important;
+            min-width: 150px;
+            font-size: 14px;
+            text-align: left;
+            borer-radius: 4px !important;
+        }
+    </style>
+@endsection
+
+
+
 
 
 @section('content')
+
+    <!-- begin header -->
+    @section('page-name') Расходы @endsection
+    @include('layouts.headers.home')
+    <!-- end header -->
+
     <!-- begin main -->
     <main class="main" role="main">
         <div class="main-inner">
@@ -25,8 +55,26 @@
 
                         <header class="form__header">
                             <h2>Добавить запись</h2>
-                            @if (Auth::user()->status == 'admin') <a href="{{url('/home/costtypes')}}">Добавить статьи расходов</a> @endif
+                            @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') <a href="{{url('/home/costtypes')}}">Добавить статьи расходов</a> @endif
                         </header>
+
+                        @if (Auth::user()->status == 'accountant')
+                        <div class="form__item{{ $errors->has('user_id') ? ' form__item--error' : '' }}">
+                            <label for="user">Пользователь</label>
+                            <select name="user_id" id="user" class="chosen-js-select">
+                                @foreach ($users as $user)
+                                    @if ($user->first_name == "" || $user->last_name == "")
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @else
+                                        <option value="{{ $user->id }}">{{ $user->first_name." ".$user->last_name }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                            @if ($errors->has('user_id'))
+                                <p>{{ $errors->first('user_id') }}</p>
+                            @endif
+                        </div>
+                        @endif
 
                         <div class="form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
                             <label for="date">Дата</label>
@@ -97,6 +145,7 @@
                                 <thead>
                                     <tr>
                                         <td>Дата</td>
+                                        <td>Пользователь</td>
                                         <td>Назначение</td>
                                         <td>Объем</td>
                                         <td>Описание</td>
@@ -108,7 +157,8 @@
                                     @foreach ($costs as $cost)
                                         <tr>
                                             <td>{{$cost->date}}</td>
-                                            <td>{{$cost->cost_type_name}}</td>
+                                            <td>{{$cost->user->name}}</td>
+                                            <td>{{$cost->costType->name}}</td>
                                             <td>{{$cost->value}} ({{$cost->currency}})</td>
                                             <td>{{$cost->info}}</td>
                                             <td>{{$cost->user->name}}</td>

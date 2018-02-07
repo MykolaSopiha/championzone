@@ -28,7 +28,7 @@
                         <li><a href="{{url('home/teams')}}">Команды</a></li>
                     @endif
 
-                    @if ( Auth::user()->status === 'admin' )
+                    @if ( Auth::user()->status === 'admin' || Auth::user()->status != 'accountant')
                         <li><a href="{{url('home/costs')}}">Расходы</a></li>
                     @endif
 

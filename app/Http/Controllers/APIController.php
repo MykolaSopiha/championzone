@@ -151,14 +151,14 @@ class APIController extends Controller
                 $myTeam[] = $user->id;
             }
 
-            $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam);
+            $tokens = DB::table('tokens')->whereIn('tokens.user_id', $myTeam);
         } else {
-            $cards = DB::table('cards')->where($conditions);
+            $tokens = DB::table('tokens')->where($conditions);
+//            return dd($conditions);
         }
 
-		$tokens = DB::table('tokens');
 
-		return DataTables::of($tokens)->where($conditions)->whereIn('user_id', $myTeam)->orderBy('id', 'desc')
+		return DataTables::queryBuilder($tokens)->orderBy('id', 'desc')
 			->addColumn('user_name', function($token)
 				{
 					$user = DB::table('users')->where('id', $token->user_id)->limit(1)->get();

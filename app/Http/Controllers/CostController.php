@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Card;
 use App\CostType;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Validator;
@@ -28,9 +29,10 @@ class CostController extends Controller
 
     public function index()
     {
+        $users = User::all();
         $costs = Cost::all();
         $costtypes = CostType::all();
-        return view('home/costs', compact('costs', 'costtypes'));
+        return view('home/costs', compact('costs', 'costtypes', 'users'));
     }
 
     /**
@@ -45,7 +47,7 @@ class CostController extends Controller
 
     public function costTypes()
     {
-        if (Auth::user()->status != 'admin')
+        if (Auth::user()->status != 'admin' && Auth::user()->status != 'accountant')
             return redirect('home/costs');
 
         $cost_types = CostType::all();
@@ -55,7 +57,7 @@ class CostController extends Controller
 
     public function saveType(Request $request)
     {
-        if (Auth::user()->status != 'admin')
+        if (Auth::user()->status != 'admin' && Auth::user()->status != 'accountant')
             return redirect('home/costs');
 
         $this->validate($request, [
