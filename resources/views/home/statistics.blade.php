@@ -43,7 +43,7 @@
                             <h2>Фильтр расходов</h2>
                         </header>
 
-                        @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
+                        @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->TeamLead())
                         <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
                             <label for="user">Пользователь</label><br>
                             <select name="user" id="user" class="chosen-js-select">

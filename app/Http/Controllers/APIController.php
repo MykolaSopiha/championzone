@@ -14,21 +14,25 @@ use Auth;
 
 class APIController extends Controller
 {
-    public function getUsers(Request $request) {
+    public function getUsers(Request $request)
+    {
         return Datatables::of(User::query())->addColumn('edit', function($user)
-        {
-            return "<a href='".url('/home/users/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>&nbsp".
-                "<a href='".url('/home/users/')."/".$user->id."/delete'><i class=\"fa fa-ban\" aria-hidden=\"true\"></i></a>";
+            {
+                $name = ($user->first_name != "" || $user->last_name != "") ? $user->first_name." ".$user->last_name : $user->name;
+                $role = $user->status;
 
-        })->addColumn('balance', function($user)
-        {
-            $accounts = DB::table('accounts')->where('user_id', $user->id)->get();
-            $balance = 0;
-            foreach ($accounts as $acc) {
-                $balance += $acc->price*$acc->rate/100;
-            }
-            return round($balance, 2);
-        })->make(true);
+                return "<a href='".url('/home/users/')."/"."$user->id'><i class='fa fa-pencil' aria-hidden='true'></i></a>&nbsp".
+                    "<a class='delete-user' data-name='{$name}' data-role='{$role}' href='".url('/home/users/')."/".$user->id."/delete'><i class=\"fa fa-ban\" aria-hidden=\"true\"></i></a>";
+
+            })->addColumn('balance', function($user)
+            {
+                $accounts = DB::table('accounts')->where('user_id', $user->id)->get();
+                $balance = 0;
+                foreach ($accounts as $acc) {
+                    $balance += $acc->price*$acc->rate/100;
+                }
+                return round($balance, 2);
+            })->make(true);
     }
 
     public function getCards(Request $request)
@@ -46,118 +50,80 @@ class APIController extends Controller
         parse_str($request->data, $filter);
 
         foreach ($filter as $key => $value) {
-            if ($value != "") $conditions[] = [$key, '=', $value];
+            if ($value != "" && $key != 'user_id') $conditions[] = [$key, '=', $value];
         }
 
-        // return dd($conditions);
-
-        if (Auth::user()->status == 'mediabuyer') {
+        if (Auth::user()->status == 'mediabuyer' && !Auth::user()->TeamLead()) {
             $conditions[] = ['cards.user_id', '=', Auth::user()->id];
         }
 
-        // getting records as per search parameters
-        if( !empty($requestData['columns'][2]['search']['value']) ){   //code
+        $myTeam = [];
+        $myTeam[] = Auth::user()->id;
 
-            $code_hash = sha1($requestData['columns'][2]['search']['value'].env('APP_SALT'));
-            $conditions[] = array( 'code_hash', $code_hash );
-            $results = DB::table('cards')->where($conditions)->get();
-            $totalFiltered = DB::table('cards')->where('code_hash', $code_hash)->count();
+        if (Auth::user()->TeamLead()) {
+            $users = DB::table('users')->where([
+                ['team_id', Auth::user()->team_id],
+                ['id', '<>', Auth::user()->id]
+            ])->get();
 
-        } elseif ( !empty($requestData['search']['value']) && (strlen($requestData['search']['value']) == 16) && is_numeric($requestData['search']['value']) ) {
+            foreach ($users as $user) {
+                $myTeam[] = $user->id;
+            }
 
-            $code_hash = sha1($requestData['search']['value'].env('APP_SALT'));
-            $conditions[] = array( 'code_hash', $code_hash );
-            $results = DB::table('cards')->where($conditions)->get();
-            $totalFiltered = DB::table('cards')->where('code_hash', $code_hash)->count();
-
+            $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam);
         } else {
-            $cards = Card::all();
-            return DataTables::queryBuilder(DB::table('cards')->where($conditions))->editColumn('code', function($card) {
-                $code = decrypt($card->code);
-                if (Auth::user()->status == 'mediabuyer') {
-                    return substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($card->cw2).")";
-                } else {
-                    return "<a href='".url('/home/cards')."/".$card->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($card->cw2).")"."</a>";
-                }
-            })->addColumn('check', function ($card)
-            {
-                return "<input type='checkbox' class='shift_select' name='card[".$card->id."]'>";
-            }, 0)->editColumn('user_id', function($card)
-            {
-                $user = DB::table('users')->where('id', $card->user_id)->first();
-                if (empty($user)) {
-                    return "<a href='".url('home/cards')."/".$card->id."#card_user'>".'Назначить пользователя'."</a>";
-                } else {
-                    return "<a href='".url('home/cards')."/".$card->id."#card_user'>".$user->name."</a>";
-                }
-            })->editColumn('date', function($card)
-            {
-                return $card->date = substr($card->date, 0, 4)."-".substr($card->date, -2);
-            })->addColumn('actions', function($card)
-            {
-                if (Auth::user()->status == 'mediabuyer') {
-
-                    // user toolbar
-                    $acts = "<a href='".url('/home/cards/')."/".$card->id."/edit?action=unchain' title='Отвязать'>";
-                    $acts .= '<i class="fa fa-chain-broken" aria-hidden="true"></i>';
-                    $acts .= '</a>';
-
-                    return $acts;
-
-
-                } else {
-
-                    //admin & accountant toolbar
-                    $acts = "<a href='".url('/home/cards/')."/".$card->id."/edit'>";
-                    if ($card->status === 'active') {
-                        $acts .= '<i class="switch fa fa-toggle-on fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
-                    } else {
-                        $acts .= '<i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
-                    }
-                    $acts .= '</a>';
-
-                    return $acts."<a class='remove-btn' href=".url('/home/cards/')."/".$card->id."><i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i></a>";
-
-                }
-
-            })->make(true);
+            $cards = DB::table('cards')->where($conditions);
         }
 
-        foreach ($results as $res) {
-            $code = decrypt($res->code);
+
+        return DataTables::queryBuilder($cards)->editColumn('code', function($card) {
+            $code = decrypt($card->code);
             if (Auth::user()->status == 'mediabuyer') {
-                $res->code = substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($res->cw2).")";
+                return substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($card->cw2).")";
             } else {
-                $res->code = "<a href='".url('/home/cards')."/".$res->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($res->cw2).")"."</a>";
+                return "<a href='".url('/home/cards')."/".$card->id."'>".substr($code, 0, 4)." ".substr($code, 4, 4)." ".substr($code, 8, 4)." ".substr($code, 12, 4)." (".decrypt($card->cw2).")"."</a>";
+            }
+        })->addColumn('check', function ($card)
+        {
+            return "<input type='checkbox' class='shift_select' name='card[".$card->id."]'>";
+        }, 0)->editColumn('user_id', function($card)
+        {
+            $user = DB::table('users')->where('id', $card->user_id)->first();
+            if (empty($user)) {
+                return "<a href='".url('home/cards')."/".$card->id."'>".'Назначить пользователя'."</a>";
+            } else {
+                return "<a href='".url('home/cards')."/".$card->id."'>".$user->name."</a>";
+            }
+        })->editColumn('date', function($card)
+        {
+            return $card->date = substr($card->date, 0, 4)."-".substr($card->date, -2);
+        })->addColumn('actions', function($card)
+        {
+            if (Auth::user()->status == 'mediabuyer') {
+
+                // user toolbar
+                $acts = "<a href='".url('/home/cards/')."/".$card->id."/edit?action=unchain' title='Отвязать'>";
+                $acts .= '<i class="fa fa-chain-broken" aria-hidden="true"></i>';
+                $acts .= '</a>';
+
+                return $acts;
+
+            } else {
+
+                //admin & accountant toolbar
+                $acts = "<a href='".url('/home/cards/')."/".$card->id."/edit'>";
+                if ($card->status === 'active') {
+                    $acts .= '<i class="switch fa fa-toggle-on fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
+                } else {
+                    $acts .= '<i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
+                }
+                $acts .= '</a>';
+
+                return $acts."<a class='remove-btn' href=".url('/home/cards/')."/".$card->id."><i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i></a>";
+
             }
 
-            $res->date = substr($res->date, 0, 4)."-".substr($res->date, -2);
-            $res->check = "<input type='checkbox' class='shift_select' name='card[26]'>";
-            $user = DB::table('users')->where('id', $res->user_id)->limit(1)->get();
-            $user = $user[0];
-            $res->user_id = "<a href='".url('home/cards')."/".$res->id."'>".$user->name."</a>";
-
-            $acts = "<a href='".url('/home/cards/')."/".$res->id."/edit'>";
-            if ($res->status === 'active') {
-                $acts .= '<i class="switch fa fa-toggle-on fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
-            } else {
-                $acts .= '<i class="switch fa fa-toggle-off fa-lg" title="Вкл/Выкл" aria-hidden="true"></i>';
-            }
-            $acts .= '</a>';
-
-            $res->actions = $acts;
-
-            $res->actions .= "<a class='remove-btn' href=".url('/home/cards/')."/".$res->id."><i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i></a>";
-        }
-
-        $json_data = array(
-            "draw"            => intval( $requestData['draw'] ),   // for every request/draw by clientside , they send a number as a parameter, when they recieve a response/data they first check the draw number, so we are sending same number in draw.
-            "recordsTotal"    => intval( $totalData ),  // total number of records
-            "recordsFiltered" => intval( $totalFiltered ), // total number of records after searching, if there is no searching then totalFiltered = totalData
-            "data"            => $results   // total data array
-        );
-
-        return $json_data;
+        })->make(true);
     }
 
     public function getTokens(Request $request)
@@ -170,13 +136,29 @@ class APIController extends Controller
 			if ($value != "") $conditions[$key] = $value;
 		}
 
-		if ((Auth::user()->status !== 'admin') && (Auth::user()->status !== 'accountant')) {
+		if ((Auth::user()->status !== 'admin') && (Auth::user()->status !== 'accountant') && !Auth::user()->TeamLead()) {
 			$conditions[] = ['user_id', Auth::user()->id];
 		}
 
+        $myTeam[] = Auth::user()->id;
+        if (Auth::user()->TeamLead()) {
+            $users = DB::table('users')->where([
+                ['team_id', Auth::user()->team_id],
+                ['id', '<>', Auth::user()->id]
+            ])->get();
+
+            foreach ($users as $user) {
+                $myTeam[] = $user->id;
+            }
+
+            $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam);
+        } else {
+            $cards = DB::table('cards')->where($conditions);
+        }
+
 		$tokens = DB::table('tokens');
 
-		return DataTables::of($tokens)->where($conditions)->orderBy('id', 'desc')
+		return DataTables::of($tokens)->where($conditions)->whereIn('user_id', $myTeam)->orderBy('id', 'desc')
 			->addColumn('user_name', function($token)
 				{
 					$user = DB::table('users')->where('id', $token->user_id)->limit(1)->get();

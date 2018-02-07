@@ -37,28 +37,28 @@ class Card extends Model
         return $this->belongsTo('App\User');
     }
 
-    public function getCodeAttribute($value)
-    {
-        return decrypt($value);
-    }
+//    public function getCodeAttribute($value)
+//    {
+//        return decrypt($value);
+//    }
 
-    public function getCw2Attribute($value)
-    {
-        return decrypt($value);
-    }
+//    public function getCw2Attribute($value)
+//    {
+//        return decrypt($value);
+//    }
 
-    public function setCodeAttribute($value)
-    {
-        $this->attributes['code'] = encrypt($value);
-    }
+//    public function setCodeAttribute($value)
+//    {
+//        $this->attributes['code'] = encrypt($value);
+//    }
+//
+//    public function setCw2Attribute($value)
+//    {
+//        $this->attributes['cw2'] = encrypt($value);
+//    }
 
-    public function setCw2Attribute($value)
-    {
-        $this->attributes['cw2'] = encrypt($value);
-    }
-
-    public function setCodeHashAttribute($value)
-    {
-        $this->attributes['code_hash'] = sha1($value.env('APP_SALT'));
-    }
+//    public function setCodeHashAttribute($value)
+//    {
+//        $this->attributes['code_hash'] = sha1($value.env('APP_SALT'));
+//    }
 }

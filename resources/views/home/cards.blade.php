@@ -28,7 +28,7 @@
             min-width: 150px;
             font-size: 14px;
             text-align: left;
-            border-radius: 4px !important;
+            borer-radius: 4px !important;
         }
     </style>
 @endsection
@@ -136,7 +136,7 @@
                                     @endif
                                 @endforeach
                             </select>
-                            @if ($errors->has('date'))
+                            @if ($errors->has('user'))
                                 <p>{{ $errors->first('user') }}</p>
                             @endif
                         </div>
@@ -178,7 +178,7 @@
                                 <label for="card">Код</label><br>
                                 <select name="id" id="card" class="chosen-js-select form-control">
                                     <option value="">Все карты</option>
-                                    @foreach ($cards as $card)<option value="{{$card->id}}" @if (isset($_GET['id']) && $card->id == $_GET['id']) selected @endif>...{{substr(($card->code), -8, -4)." ".substr(($card->code), -4)}}</option>
+                                    @foreach ($cards as $card)<option value="{{$card->id}}" @if (isset($_GET['id']) && $card->id == $_GET['id']) selected @endif>...{{substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4)}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -315,6 +315,8 @@
                     {
                         @if ((Auth::user()->status == 'admin' || Auth::user()->status == 'accountant'))
                         "targets": [8],
+                        @elseif (Auth::user()->TeamLead())
+                        "targets": [0, 1, 8],
                         @else
                         "targets": [0, 1, 6, 8],
                         @endif

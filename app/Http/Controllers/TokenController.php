@@ -53,6 +53,15 @@ class TokenController extends Controller
             ->where($cards_coditions)
             ->get();
 
+        if (Auth::user()->TeamLead()) {
+            $myTeam = [];
+            $users = DB::table('users')->where('team_id', Auth::user()->team_id)->get();
+            foreach ($users as $user) {
+                $myTeam[] = $user->id;
+            }
+            $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam)->get();
+        }
+
         return view('home/tokens', compact('cards', 'users', 'statuses', 'currencies'));
     }
 
@@ -86,6 +95,8 @@ class TokenController extends Controller
 
         if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
             $request['date'] = date("Y-m-d", strtotime($request["date"]));
+        } elseif (Auth::user()->TeamLead()) {
+            $request['date']    = date("Y-m-d");
         } else {
             $request['date']    = date("Y-m-d");
             $request['user_id'] = intval(Auth::user()->id);
@@ -170,7 +181,7 @@ class TokenController extends Controller
         $token = DB::table('tokens')->where('id', $id)->first();
 
 
-        if (Auth::user()->id == $token->user_id || Auth::user()->status == 'accountant' || Auth::user()->status == 'admin') {            
+        if (Auth::user()->id == $token->user_id || Auth::user()->status == 'accountant' || Auth::user()->status == 'admin' || Auth::user()->TeamLead()) {
 
             $token->card_code = decrypt($token->card_code);
             $token->value = $token->value/100; 

@@ -36,6 +36,32 @@
         </div>
     </main>
     <!-- end main -->
+
+
+    <!-- Modal for user delete -->
+    <div class="modal fade" id="deleteUser" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header" style="padding:35px 50px;">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4>Вы уверены, что хотите удалить пользователя?</h4>
+                </div>
+                <div class="modal-body text-center" style="padding:20px">
+                    <h4 class="user-name"></h4>
+                    <h5 class="user-role"></h5>
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-danger  pull-left" id="deleteBtn">Удалить</a>
+                    <button type="button" class="btn btn-primary pull-left" data-dismiss="modal">Отмена</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Modal for user delete -->
+
 @endsection
 
 
@@ -62,7 +88,19 @@
                 "columnDefs" : [
                     {"targets": [8], "searchable": false},
                     {"targets": [8], "orderable": false}
-                ]
+                ],
+                "drawCallback" : function () {
+                    $('.delete-user').click(function (e) {
+                        e.preventDefault();
+                        let modal = $('#deleteUser');
+
+                        modal.find('.user-name').html($(this).attr('data-name'));
+                        modal.find('.user-role').html($(this).attr('data-role'));
+                        modal.find('#deleteBtn').attr('href', $(this).attr('href'));
+
+                        modal.modal();
+                    });
+                }
             });
 
         });

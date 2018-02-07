@@ -100,7 +100,6 @@ class CostController extends Controller
         $data['user_id'] = (is_null($request["user_id"])) ? Auth::user()->id : $request["user_id"];
         $data['value'] = intval(round($data['value'], 2)*100);
 
-        return dd($data);
         Cost::create($data);
 
         return redirect()->route('home:home.costs.index');

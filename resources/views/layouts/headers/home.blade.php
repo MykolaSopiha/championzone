@@ -25,6 +25,10 @@
 
                     @if ( Auth::user()->status === 'admin' )
                         <li><a href="{{url('home/users')}}">Пользователи</a></li>
+                        <li><a href="{{url('home/teams')}}">Команды</a></li>
+                    @endif
+
+                    @if ( Auth::user()->status === 'admin' )
                         <li><a href="{{url('home/costs')}}">Расходы</a></li>
                     @endif
 
@@ -37,6 +41,8 @@
                         <li><a href="{{url('home/accounts')}}">Аккаунты</a></li>
                         {{--<li><a href="{{url('home/wiki')}}">Wiki</a></li>--}}
                     @endif
+
+
                 </ul>
             </nav>
 

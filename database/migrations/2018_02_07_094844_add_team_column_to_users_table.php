@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddRefColumnToUsersTable extends Migration
+class AddTeamColumnToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class AddRefColumnToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('ref_id');
+            $table->integer('team_id')->unsigned();
         });
     }
 
@@ -25,7 +25,7 @@ class AddRefColumnToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('ref_id');
+            $table->dropColumn('team_id');
         });
     }
 }

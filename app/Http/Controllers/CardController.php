@@ -34,8 +34,16 @@ class CardController extends Controller
     {
         $users = User::select('id', 'name', 'first_name', 'last_name')->where('status', '<>', 'deleted')->get();
 
-        if (Auth::user()->status == "mediabuyer") {
+        if (Auth::user()->status == "mediabuyer" && !Auth::user()->TeamLead()) {
             $cards = Card::where('user_id', Auth::user()->id)->get();
+        } elseif (Auth::user()->TeamLead()) {
+            $myTeam = [];
+            $users = DB::table('users')->where('team_id', Auth::user()->team_id)->get();
+            foreach ($users as $user) {
+                $myTeam[] = $user->id;
+            }
+            $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam)->get();
+
         } else {
             $cards = Card::all();
         }
@@ -292,6 +300,10 @@ class CardController extends Controller
         $card->date = date("Y/m/d", strtotime($card->date));
 
         $users = DB::table('users')->get();
+
+        if (Auth::user()->TeamLead() && Auth::user()->status != 'admin') {
+            $users = DB::table('users')->where('team_id', Auth::user()->team_id)->get();
+        }
         
         return view('home.show.card', compact('card','users', 'currencies') );
     }

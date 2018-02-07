@@ -79,8 +79,23 @@ class HomeController extends Controller
             ->join('users', 'tokens.user_id', '=', 'users.id')
             ->select('tokens.*', 'users.name as user_name')
             ->get();
-        $users  = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->get();
-        $cards  = DB::table('cards')->select('id', 'name', 'code', 'currency', 'user_id')->where($card_conditions)->get();
+
+        if (Auth::user()->TeamLead()) {
+            $users  = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->where('team_id', Auth::user()->team_id)->get();
+        } else {
+            $users  = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->get();
+        }
+
+        if (Auth::user()->TeamLead()) {
+            $myTeam = [];
+            $users = DB::table('users')->where('team_id', Auth::user()->team_id)->get();
+            foreach ($users as $user) {
+                $myTeam[] = $user->id;
+            }
+            $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam)->get();
+        } else {
+            $cards  = DB::table('cards')->select('id', 'name', 'code', 'currency', 'user_id')->where($card_conditions)->get();
+        }
 
         $fee = 1.1; // transaction fee ~10%
         $total = 0;

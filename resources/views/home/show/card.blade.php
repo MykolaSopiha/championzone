@@ -45,7 +45,7 @@
 
                 <div class="form__item{{ $errors->has('code_hash') ? ' form__item--error' : '' }}">
                     <label for="code">Номер карты</label>
-                    <input id="code" type="text" name="code" value="{{ $card->code }}" placeholder="16 digits only" required>
+                    <input id="code" type="text" name="code" value="{{ decrypt($card->code) }}" placeholder="16 digits only" required>
                     @if ($errors->has('code_hash'))
                         <p>{{ $errors->first('code_hash') }}</p>
                     @endif
@@ -63,7 +63,7 @@
 
                 <div class="form__item{{ $errors->has('cw2') ? ' form__item--error' : '' }}">
                     <label for="cw2">CW2</label>
-                    <input id="cw2" type="text" name="cw2" value="{{ $card->cw2 }}" placeholder="xxx" maxlength="3" required>
+                    <input id="cw2" type="text" name="cw2" value="{{ decrypt($card->cw2) }}" placeholder="xxx" maxlength="3" required>
                     @if ($errors->has('cw2'))
                         <p>{{ $errors->first('cw2') }}</p>
                     @endif

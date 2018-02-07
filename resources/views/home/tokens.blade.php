@@ -70,7 +70,9 @@
                                 <p>{{ $errors->first('date') }}</p>
                             @endif
                         </div>
+                        @endif
 
+                        @if (Auth::user()->status == 'accountant' || Auth::user()->status == 'admin' || Auth::user()->TeamLead())
                         <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
                             <label for="user_id">Пользователь</label>
                             <select name="user_id" id="user_id" class="chosen-js-select" required>
@@ -172,7 +174,7 @@
                                 @endif
                             </div>
 
-                            @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
+                            @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->TeamLead())
                             <div class="form-group">
                                 <label for="user">Пользователь</label><br>
                                 <select name="user_id" id="user" class="chosen-js-select form-control">
@@ -310,13 +312,6 @@
     <script>
         $(document).ready(function() {
 
-            // $('.new-token').click(function (e) {
-            //     e.preventDefault();
-            //
-            //     let ticketModal = $('.newTicket');
-            //     ticketModal.modal();
-            // });
-
             $('#filter_date').datepicker({
                 dateFormat: "yy-mm-dd",
                 changeDay: true,
@@ -336,10 +331,10 @@
                 }
             });
 
-            let user_status = "{{Auth::user()->status}}";
+            let user_status = {{(Auth::user()->status == 'admin' || Auth::user()->status == 'admin' || Auth::user()->TeamLead()) ? "true" : "false"}};
             let columnDefs_json = {};
 
-            if (user_status != 'admin' && user_status != 'accountant') {
+            if (!user_status) {
                 columnDefs_json = {
                     "targets": [1],
                     "visible": false,

@@ -27,7 +27,7 @@ class User extends Authenticatable
         'password',
         'terra_id',
         'status',
-        'ref_id'
+        'team_id'
     ];
 
     /**
@@ -65,7 +65,7 @@ class User extends Authenticatable
      */
     public function hasAnyRole($roles)
     {
-        return null !== $this->roles()->whereIn(‘name’, $roles)->first();
+        return null !== $this->roles()->whereIn('name', $roles)->first();
     }
 
     /**
@@ -90,19 +90,41 @@ class User extends Authenticatable
 
     public function cost()
     {
-        return $this->hasMany('App\Cost',  'user_id', 'id');
+        return $this->hasMany('App\Cost', 'user_id', 'id');
     }
+
+    public function team()
+    {
+        return $this->hasOne('App\Team', 'id', 'team_id');
+    }
+
+    public function leader()
+    {
+        return $this->belongsTo('App\Team', 'id', 'team_lead_id');
+    }
+
+    public function TeamLead()
+    {
+        return null !== $this->team()->where('team_lead_id', $this->id)->first();
+    }
+
+//    public function myTeam()
+//    {
+//        if ($this->TeamLead()) {
+//            return
+//        }
+//    }
 
     public function isOnline()
     {
-        return Cache::has('user-is-online-'.$this->id);
+        return Cache::has('user-is-online-' . $this->id);
     }
 
     public static function boot()
     {
         parent::boot();
 
-        self::created(function($user){
+        self::created(function ($user) {
             DB::table('role_user')->insert([
                 'user_id' => $user->id
             ]);
