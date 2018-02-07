@@ -65,7 +65,7 @@
                         </div>
 
                         <div class="form__item{{ $errors->has('team_lead_id') ? ' form__item--error' : '' }}">
-                            <label for="team_lead">Пользователь</label>
+                            <label for="team_lead">Лидер команды</label>
                             <select name="team_lead_id" id="team_lead" class="chosen-js-select">
                                 @foreach ($users as $user)
                                     @if ($user->first_name == "" || $user->last_name == "")
