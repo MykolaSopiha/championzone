@@ -173,7 +173,7 @@ class APIController extends Controller
 //						$card = DB::table('cards')->select('wallet')->where('id', $token->card_id)->first();
                         $card = Card::select('wallet')->where('id', $token->card_id)->first();
 						if (trim($card['wallet']) != '') {
-							return "<p class='has_wallet' data-wallet-code='".$card->wallet."'>".$code."</p>";
+							return "<p class='has_wallet' data-wallet-code='".decrypt($card->wallet)."'>".$code."</p>";
 						}
 					}
 					return $code;

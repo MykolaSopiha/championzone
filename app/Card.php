@@ -41,7 +41,7 @@ class Card extends Model
 //    {
 //        return decrypt($value);
 //    }
-
+//
 //    public function getCw2Attribute($value)
 //    {
 //        return decrypt($value);
@@ -55,6 +55,11 @@ class Card extends Model
     public function setCw2Attribute($value)
     {
         $this->attributes['cw2'] = encrypt($value);
+    }
+
+    public function setWalletAttribute($value)
+    {
+        $this->attributes['wallet'] = encrypt($value);
     }
 
 //    public function setCodeHashAttribute($value)

@@ -54,7 +54,7 @@
                 @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant')
                 <div class="form__item{{ $errors->has('code_hash') ? ' form__item--error' : '' }}">
                     <label for="wallet">Номер кошелька</label>
-                    <input id="wallet" type="text" name="wallet" value="{{ $card->wallet }}" placeholder="16 digits only">
+                    <input id="wallet" type="text" name="wallet" value="{{ ($card->wallet) }}" placeholder="16 digits only">
                     @if ($errors->has('wallet'))
                         <p>{{ $errors->first('wallet') }}</p>
                     @endif

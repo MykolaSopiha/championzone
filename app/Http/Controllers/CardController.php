@@ -294,17 +294,20 @@ class CardController extends Controller
      */
     public function show($id)
     {
-        $card  = Card::findOrFail($id);
-        $card->code = ($card->code);
+        $card  = DB::table('cards')->where('id', $id)->first();
+
+        $card->code = (is_null($card->code)) ? null : ($card->code);
         $card->cw2  = (is_null($card->cw2)) ? null : ($card->cw2);
+        $card->wallet  = (($card->wallet) == "") ? null : decrypt($card->cw2);
         $card->date = date("Y/m/d", strtotime($card->date));
+//        return dd($card);
 
         $users = DB::table('users')->get();
 
         if (Auth::user()->TeamLead() && Auth::user()->status != 'admin') {
             $users = DB::table('users')->where('team_id', Auth::user()->team_id)->get();
         }
-        
+
         return view('home.show.card', compact('card','users', 'currencies') );
     }
 
@@ -368,9 +371,10 @@ class CardController extends Controller
 
         $data['code'] = encrypt($request['code']);
         $data['cw2']  = encrypt($request['cw2']);
+        $data['wallet']  = encrypt($request['wallet']);
         // $data['date'] = date( "Y-m-d", strtotime($request['date']));
 
-        Card::findOrFail($id)->fill($data);
+//        Card::findOrFail($id)->fill($data);
         DB::table('cards')->where('id', $id)->update($data);
 
         return redirect('/home/cards'.'/'.$id);
