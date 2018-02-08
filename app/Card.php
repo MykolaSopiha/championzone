@@ -47,15 +47,15 @@ class Card extends Model
 //        return decrypt($value);
 //    }
 
-//    public function setCodeAttribute($value)
-//    {
-//        $this->attributes['code'] = encrypt($value);
-//    }
-//
-//    public function setCw2Attribute($value)
-//    {
-//        $this->attributes['cw2'] = encrypt($value);
-//    }
+    public function setCodeAttribute($value)
+    {
+        $this->attributes['code'] = encrypt($value);
+    }
+
+    public function setCw2Attribute($value)
+    {
+        $this->attributes['cw2'] = encrypt($value);
+    }
 
 //    public function setCodeHashAttribute($value)
 //    {

@@ -105,7 +105,7 @@ class CardController extends Controller
         $data = [
             'name'      => $request["name"],
             'code'      => $request["code"],
-            'code_hash' => $request["code_hash"],
+            'code_hash' => sha1($request["code_hash"].env('APP_SALT')),
             'cw2'       => $request["cw2"],
             'date'      => date("Y/m/d", strtotime($request["date"])),
             'currency'  => $request["currency"],
