@@ -38,9 +38,8 @@
 
 
 @section('content')
-
 <!-- begin header -->
-@section('page-name') Расходы @endsection
+@section('page-name') Команды @endsection
 @include('layouts.headers.home')
 <!-- end header -->
 

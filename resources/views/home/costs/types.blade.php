@@ -2,7 +2,6 @@
 
 
 @section('content')
-
     <!-- begin header -->
     @section('page-name') Расходы @endsection
     @include('layouts.headers.home')
@@ -100,3 +99,4 @@
 
     </main>
     <!-- end main -->
+@endsection

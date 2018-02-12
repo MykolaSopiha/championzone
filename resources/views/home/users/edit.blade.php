@@ -9,13 +9,15 @@
     </style>
 @endsection
 
-<!-- begin header -->
-@section('page-name') {{ $user->name }} @endsection
-@include('layouts.headers.home')
-<!-- end header -->
-
 
 @section('content')
+
+    <!-- begin header -->
+    @section('page-name') {{ $user->name }} @endsection
+    @include('layouts.headers.home')
+    <!-- end header -->
+
+
     <!-- begin main -->
     <main class="main" role="main">
         <div class="container">

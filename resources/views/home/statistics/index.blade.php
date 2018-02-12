@@ -17,12 +17,10 @@
 
 
 @section('content')
-
     <!-- begin header -->
     @section('page-name') Статистика @endsection
     @include('layouts.headers.home')
     <!-- end header -->
-
 
 
     <!-- begin main -->
@@ -163,138 +161,18 @@
                 </div>
             </div>
 
-<!--             <div class="table-responsive" style="margin-top: 30px;">
-                <table class="table" id="tokens_table">
-                    <thead>
-                        <tr>
-                            <td>Дата</td>
-                            <td>Пользователь</td>
-                            <td>Карта</td>
-                            <td>Сумма</td>
-                            <td>Валюта</td>
-                            <td>Курс</td>
-                            <td>Действие</td>
-                            <td>Описание</td>
-                            <td>Отзыв</td>
-                            <td>Статус</td>
-                            <td></td>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div> -->
-
-            <!-- Modal -->
-<!--             <div class="modal fade" id="myModal" role="dialog">
-                <div class="modal-dialog"> -->
-
-                    <!-- Modal content-->
-<!--                     <div class="modal-content">
-                        <div class="modal-header" style="padding:35px 50px;">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4>Токены</h4>
-                        </div>
-                        <div class="modal-body" style="padding:20px">
-                            <div class="table-responsive">
-                                <table class="table" id="tokens_table">
-                                    <thead>
-                                        <tr>
-                                            <td>Дата</td>
-                                            <td>Пользователь</td>
-                                            <td>Карта</td>
-                                            <td>Сумма</td>
-                                            <td>Валюта</td>
-                                            <td>Курс</td>
-                                            <td>Действие</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary pull-left" data-dismiss="modal">Ок</button>
-                            <button type="submit" class="btn btn-default pull-left" data-dismiss="modal">Перейти</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div> -->
-            <!-- Modal --> 
-
-
         </div>
     </main>
     <!-- end main -->
-
 @endsection
 
 
 @section('scripts_end')
     <script>
         $(document).ready(function() {
-
-            // $('#statistics_list a').click(function (e) {
-            //     e.preventDefault();
-            // });
-
-            // $('#myModal').modal('show');
-
             $('#statistics_list').DataTable({
                 "order": [[ 0, "desc" ]]
             });
-
-            // let user_status = "{{Auth::user()->status}}";
-            // let columnDefs_json = {};
-            // if (user_status != 'admin' && user_status != 'accountant') {
-            //     columnDefs_json = {
-            //         "targets": [1],
-            //         "visible": false,
-            //         "searchable": true
-            //     };
-            // }
-
-            // let $table = $('#tokens_table').DataTable({
-            //     "processing": true,
-            //     "serverSide": true,
-            //     "searching": false,
-            //     "ajax": {
-            //         url: "{{url('/api/tokens')}}",
-            //         data: {
-            //             data: window.location.search.toString().substr(1)
-            //         }
-            //     },
-            //     "responsive": true,
-            //     "ordering": false,
-            //     "lengthMenu": [ 10, 25, 50, 75, 100, 200, 500 ],
-            //     "columns":[
-            //         {data: 'date'},
-            //         {data: 'user_name'},
-            //         {data: 'card_code'},
-            //         {data: 'value'},
-            //         {data: 'currency'},
-            //         {data: 'rate'},
-            //         {data: 'action'},
-            //         {data: 'ask'},
-            //         {data: 'ans'},
-            //         {data: 'status'},
-            //         {data: 'tools'}
-            //     ],
-            //     "columnDefs": [columnDefs_json],
-            //     "initComplete": function () {
-            //     },
-            //     "drawCallback": function(settings) {
-            //         $(".token_status").each(function (index) {
-            //             if ($(this).html() == 'confirmed' ) {
-            //                 $(this).closest('tr').css('background-color', 'rgb(144, 238, 144)');
-            //             }
-            //             if ($(this).html() == 'trash' ) {
-            //                 $(this).closest('tr').css('background-color','rgb(250, 128, 114)');
-            //             }
-            //         });
-            //     }
-            // });
-
         });
     </script>
 @endsection
