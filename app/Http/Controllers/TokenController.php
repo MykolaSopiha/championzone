@@ -48,10 +48,8 @@ class TokenController extends Controller
             ->where($users_coditions)
             ->get();
 
-        $cards = DB::table('cards')
-            ->select('id', 'name', 'code', 'currency')
-            ->where($cards_coditions)
-            ->get();
+        $cards = Card::where($cards_coditions)->get();
+//        return dd($cards[1733]->code);
 
         if (Auth::user()->TeamLead() && Auth::user()->status != 'admin') {
             $myTeam = [];
