@@ -18,12 +18,10 @@
 
 @section('content')
 
-
     <!-- begin header -->
     @section('page-name') Аккаунты @endsection
     @include('layouts.headers.home')
     <!-- end header -->
-
 
 
     <!-- begin main -->

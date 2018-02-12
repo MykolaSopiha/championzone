@@ -1,12 +1,6 @@
 @extends('layouts.app')
 
 
-<!-- begin header -->
-@section('page-name') Токены @endsection
-@include('layouts.headers.home')
-<!-- end header -->
-
-
 @section('styles')
 <style>
     .chosen-single {
@@ -25,6 +19,11 @@
 
 <!-- begin content -->
 @section('content')
+
+    <!-- begin header -->
+    @section('page-name') Токены @endsection
+    @include('layouts.headers.home')
+    <!-- end header -->
 
     <!-- begin main -->
     <main role="main">

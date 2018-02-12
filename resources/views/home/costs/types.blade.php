@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 
-<!-- begin header -->
-@section('page-name') Расходы @endsection
-@include('layouts.headers.home')
-<!-- end header -->
-
-
 @section('content')
+
+    <!-- begin header -->
+    @section('page-name') Расходы @endsection
+    @include('layouts.headers.home')
+    <!-- end header -->
+
     <!-- begin main -->
     <main class="main" role="main">
         <div class="main-inner">
