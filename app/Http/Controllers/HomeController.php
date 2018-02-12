@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Token;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
@@ -70,15 +71,12 @@ class HomeController extends Controller
         if ($request->user != '')
             $conditions[] = ['user_id', '=', $request->user];
 
-        if (Auth::user()->status === 'mediabuyer') {
+        if (Auth::user()->status === 'mediabuyer' && !Auth::user()->TeamLead()) {
             $conditions[]      = ['user_id', Auth::user()->id];
             $card_conditions[] = ['user_id', Auth::user()->id];
-        }
+        } elseif(Auth::user()->TeamLead()) {
 
-        $tokens = DB::table('tokens')->where($conditions)
-            ->join('users', 'tokens.user_id', '=', 'users.id')
-            ->select('tokens.*', 'users.name as user_name')
-            ->get();
+        }
 
         if (Auth::user()->TeamLead()) {
             $users  = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->where('team_id', Auth::user()->team_id)->get();
@@ -86,8 +84,8 @@ class HomeController extends Controller
             $users  = DB::table('users')->select('id', 'name', 'first_name', 'last_name')->get();
         }
 
+        $myTeam = [];
         if (Auth::user()->TeamLead()) {
-            $myTeam = [];
             $users = DB::table('users')->where('team_id', Auth::user()->team_id)->get();
             foreach ($users as $user) {
                 $myTeam[] = $user->id;
@@ -96,6 +94,23 @@ class HomeController extends Controller
         } else {
             $cards  = DB::table('cards')->select('id', 'name', 'code', 'currency', 'user_id')->where($card_conditions)->get();
         }
+
+        if (Auth::user()->TeamLead()) {
+            $tokens = DB::table('tokens')->where($conditions)
+                ->whereIn('tokens.user_id', $myTeam)
+                ->join('users', 'tokens.user_id', '=', 'users.id')
+                ->select('tokens.*', 'users.name as user_name')
+                ->get();
+        } elseif (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
+            $tokens = Token::all();
+        } else {
+            $tokens = DB::table('tokens')->where($conditions)
+                ->join('users', 'tokens.user_id', '=', 'users.id')
+                ->select('tokens.*', 'users.name as user_name')
+                ->get();
+        }
+
+//        return dd($myTeam, $conditions);
 
         $fee = 1.1; // transaction fee ~10%
         $total = 0;

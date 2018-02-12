@@ -144,7 +144,7 @@ class APIController extends Controller
                 $myTeam[] = $user->id;
             }
 
-            $tokens = DB::table('tokens')->whereIn('tokens.user_id', $myTeam);
+            $tokens = DB::table('tokens')->where($conditions)->whereIn('tokens.user_id', $myTeam);
         } else {
             $tokens = DB::table('tokens')->where($conditions);
         }

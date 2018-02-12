@@ -85,7 +85,7 @@
                 <div id="card_user" class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
                     <label for="user">Пользователь</label>
                     <select name="user_id" id="user">
-                        <option value=""></option>
+                        <option value="">Без пользователя</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}" {{ ($card->user_id == $user->id) ? 'selected' : ''}}>{{ $user->name }}</option>
                         @endforeach

@@ -42,7 +42,7 @@ class CardController extends Controller
             foreach ($users as $user) {
                 $myTeam[] = $user->id;
             }
-            $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam)->get();
+            $cards = Card::whereIn('cards.user_id', $myTeam)->get();
 
         } else {
             $cards = Card::all();

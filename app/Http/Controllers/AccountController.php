@@ -30,8 +30,8 @@ class AccountController extends Controller
             $conditions[] = ['user_id', Auth::user()->id];
         }
 
-        $users = User::where($conditions)->get();
-        $accounts = Account::all();
+        $users = User::all();
+        $accounts = Account::where($conditions)->get();
 
         return view('home.accounts.index', compact('users', 'accounts'));
     }

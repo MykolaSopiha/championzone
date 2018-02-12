@@ -49,7 +49,6 @@ class TokenController extends Controller
             ->get();
 
         $cards = Card::where($cards_coditions)->get();
-//        return dd($cards[1733]->code);
 
         if (Auth::user()->TeamLead() && Auth::user()->status != 'admin') {
             $myTeam = [];
@@ -57,7 +56,7 @@ class TokenController extends Controller
             foreach ($users as $user) {
                 $myTeam[] = $user->id;
             }
-            $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam)->get();
+            $cards = Card::whereIn('cards.user_id', $myTeam)->get();
         }
 
         return view('home.tokens.index', compact('cards', 'users', 'statuses', 'currencies'));
