@@ -99,7 +99,7 @@
                         <select name="card_id" id="card" class="chosen-js-select">
                             @foreach ($cards as $card)
                                 <option value="{{ $card->id }}" title="{{ $card->currency }}">
-                                    ...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }}
+                                    ...{{ substr($card->code, -8, -4)." ".substr($card->code, -4) }}
                                     ({{ $card->currency }}) {{ $card->name }}</option>
                             @endforeach
                         </select>
@@ -125,7 +125,7 @@
                         <select name="card2_id" id="card2" class="chosen-js-select">
                             @foreach ($cards as $card)
                                 <option value="{{ $card->id }}" title="{{ $card->currency }}">
-                                    ...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }}
+                                    ...{{ substr($card->code, -8, -4)." ".substr($card->code, -4) }}
                                     ({{ $card->currency }}) {{ $card->name }}</option>
                             @endforeach
                         </select>
@@ -212,7 +212,7 @@
                                 @foreach ($cards as $card)
                                     <option value="{{$card->id}}"
                                             @if (isset($_GET['card_id']) && $card->id == $_GET['card_id']) selected @endif>
-                                        ...{{substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4)}}</option>
+                                        ...{{substr($card->code, -8, -4)." ".substr($card->code, -4)}}</option>
                                 @endforeach
                             </select>
                         </div>
