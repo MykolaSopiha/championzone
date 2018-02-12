@@ -19,6 +19,7 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
         $roles = config('roles');
         View::share(compact('roles'));
     }
@@ -26,7 +27,7 @@ class UserController extends Controller
     public function index()
     {
         if (Auth::user()->status === 'admin')
-            return view('home.users');
+            return view('home.users.index');
         return redirect('/home');
     }
 
@@ -36,7 +37,7 @@ class UserController extends Controller
         $teams = Team::all();
         $userTeam = Team::find($user->team_id);
 
-        return view('home.show.account', compact('user', 'teams', 'userTeam'));
+        return view('home.users.edit', compact('user', 'teams', 'userTeam'));
     }
 
     public function store(Request $request, $id)
@@ -47,37 +48,19 @@ class UserController extends Controller
             'last_name' => 'sometimes|max:255',
             'terra_id' => 'sometimes|numeric|min:0',
             'birthday' => 'sometimes|date',
-            'ref_id' => 'sometimes|numeric|min:0|not_in:' . Auth::user()->id
         ];
 
-        $err_msg = [
+        $this->validate($request, $rules);
+        User::findOrFail($id)->update($request->all());
 
-        ];
-
-        $this->validate($request, $rules, $err_msg);
-
-        if ($request['terra_id'] == '') {
-            $data = $request->except('terra_id');
-        } else {
-            $data = $request->all();
-        }
-
-        User::findOrFail($id)->update($data);
-
-        return redirect('/home/users/' . $request['user_id']);
+        return back()->with('Data stored!');
     }
 
     public function edit($id, Request $request)
     {
-        if (Auth::user()->status != 'admin' || Auth::user()->id != $id)
-            return redirect('/home/users/' . $request['user_id']);
-
-
-        if ($request->has('removeref')) {
-            User::findOrFail($id)->update(['ref_id' => 0]);
-        }
-
-        return redirect('/home/users/' . $id);
+        $user = User::findOrFail($id);
+        $teams = Team::all();
+        return view('home.users.edit', compact('user', 'teams'));
     }
 
     public function setroleslist()
@@ -113,8 +96,7 @@ class UserController extends Controller
 
     public function delete($id)
     {
-        User::findOrFail($id)->delete();
-        return redirect()->route('home:users.index');
+        User::findOrFail($id)->destroy($id);
+        return redirect()->route('home.users.index')->with(['success' => 'User deleted!']);
     }
-
 }

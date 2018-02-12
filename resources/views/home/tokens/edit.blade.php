@@ -59,6 +59,16 @@
                         </div>
 
                         @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant')
+                            <div class="form-group form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
+                                <label for="date" class="col-sm-4 control-label">Дата</label>
+                                <div class="col-sm-8">
+                                    <input id="date" class="form-control pick_date" type="text" name="date" placeholder="Введите дату" value="{{ $token->date }}" required>
+                                </div>
+                                @if ($errors->has('date'))
+                                    <p>{{ $errors->first('date') }}</p>
+                                @endif
+                            </div>
+
                             <div class="form-group form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}">
                                 <label for="currency" class="col-sm-4 control-label">Валюта</label>
                                 <div class="col-sm-8">

@@ -55,7 +55,7 @@
 
                         <header class="form__header">
                             <h2>Добавить запись</h2>
-                            @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') <a href="{{url('/home/costtypes')}}">Добавить статьи расходов</a> @endif
+                            @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') <a href="{{route('home:cost.types.index')}}">Добавить статьи расходов</a> @endif
                         </header>
 
                         @if (Auth::user()->status == 'accountant')

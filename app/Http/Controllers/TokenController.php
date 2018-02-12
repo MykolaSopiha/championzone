@@ -62,7 +62,7 @@ class TokenController extends Controller
             $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam)->get();
         }
 
-        return view('home/tokens', compact('cards', 'users', 'statuses', 'currencies'));
+        return view('home.tokens.index', compact('cards', 'users', 'statuses', 'currencies'));
     }
 
     /**
@@ -180,7 +180,6 @@ class TokenController extends Controller
     {
         $token = DB::table('tokens')->where('id', $id)->first();
 
-
         if (Auth::user()->id == $token->user_id || Auth::user()->status == 'accountant' || Auth::user()->status == 'admin' || Auth::user()->TeamLead()) {
 
             $token->card_code = decrypt($token->card_code);
@@ -192,9 +191,9 @@ class TokenController extends Controller
                 'confirmed',
                 'trash'
             ];
-            return view( 'home.show.token', compact('token', 'card', 'cards', 'statuses') );
+            return view( 'home.tokens.edit', compact('token', 'card', 'cards', 'statuses') );
         } else {
-            return redirect('/home/tokens');
+            return redirect()->route('home.tokens.index');
         }
 
     }

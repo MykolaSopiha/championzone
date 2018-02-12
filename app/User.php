@@ -98,6 +98,11 @@ class User extends Authenticatable
         return $this->hasOne('App\Team', 'id', 'team_id');
     }
 
+    public function account()
+    {
+        return $this->hasMany('App\Account');
+    }
+
     public function leader()
     {
         return $this->belongsTo('App\Team', 'id', 'team_lead_id');

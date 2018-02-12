@@ -36,7 +36,7 @@ class CardController extends Controller
 
         if (Auth::user()->status == "mediabuyer" && !Auth::user()->TeamLead()) {
             $cards = Card::where('user_id', Auth::user()->id)->get();
-        } elseif (Auth::user()->TeamLead()) {
+        } elseif (Auth::user()->TeamLead() && Auth::user()->status != "admin") {
             $myTeam = [];
             $users = DB::table('users')->where('team_id', Auth::user()->team_id)->get();
             foreach ($users as $user) {
@@ -48,7 +48,7 @@ class CardController extends Controller
             $cards = Card::all();
         }
 
-        return view('/home/cards', compact('users', 'cards', 'types', 'currencies'));
+        return view('home.cards.index', compact('users', 'cards', 'types', 'currencies'));
     }
 
 
@@ -105,7 +105,7 @@ class CardController extends Controller
         $data = [
             'name'      => $request["name"],
             'code'      => $request["code"],
-            'code_hash' => sha1($request["code_hash"].env('APP_SALT')),
+            'wallet'    => $request["wallet"],
             'cw2'       => $request["cw2"],
             'date'      => date("Y/m/d", strtotime($request["date"])),
             'currency'  => $request["currency"],
@@ -132,14 +132,10 @@ class CardController extends Controller
         return redirect('/home/cards');
     }
 
-
-
     public function multiplepage() {
         $users = User::select('id', 'name', 'first_name', 'last_name')->get();
-        return view('home.multiple_page', compact('users'));
+        return view('home.cards.multiple', compact('users'));
     }
-
-
 
     public function multipleadd(Request $request) {
 
@@ -225,9 +221,8 @@ class CardController extends Controller
                 if (DB::table('cards')->where('code_hash', '=', sha1($code.$salt))->count() == 0) {
                     $card->fill([
                         'date'      => $date,
-                        'code'      => encrypt($code),
-                        'code_hash' => sha1($code.$salt),
-                        'cw2'       => encrypt($cw2),
+                        'code'      => $code,
+                        'cw2'       => $cw2,
                         'currency'  => 'RUB',
                         'user_id'   => $request->card_user,
                         'info'      => $info
@@ -244,7 +239,7 @@ class CardController extends Controller
         }
 
         $users = DB::table('users')->get();
-        return view('home.multiple_page', compact('errors', 'users') );
+        return view('home.cards.multiple', compact('errors', 'users') );
     }
 
 
@@ -294,21 +289,14 @@ class CardController extends Controller
      */
     public function show($id)
     {
-        $card  = DB::table('cards')->where('id', $id)->first();
-
-        $card->code = (is_null($card->code)) ? null : ($card->code);
-        $card->cw2  = (is_null($card->cw2)) ? null : ($card->cw2);
-        $card->wallet  = (($card->wallet) == "") ? null : decrypt($card->cw2);
-        $card->date = date("Y/m/d", strtotime($card->date));
-//        return dd($card);
-
-        $users = DB::table('users')->get();
+        $card  = Card::find($id);
+        $users = User::all();
 
         if (Auth::user()->TeamLead() && Auth::user()->status != 'admin') {
-            $users = DB::table('users')->where('team_id', Auth::user()->team_id)->get();
+            $users = User::where('team_id', Auth::user()->team_id)->get();
         }
 
-        return view('home.show.card', compact('card','users', 'currencies') );
+        return view('home.cards.edit', compact('card','users', 'currencies') );
     }
 
     /**
@@ -374,8 +362,8 @@ class CardController extends Controller
         $data['wallet']  = encrypt($request['wallet']);
         // $data['date'] = date( "Y-m-d", strtotime($request['date']));
 
-//        Card::findOrFail($id)->fill($data);
-        DB::table('cards')->where('id', $id)->update($data);
+        Card::findOrFail($id)->update($data);
+//        DB::table('cards')->where('id', $id)->update($data);
 
         return redirect('/home/cards'.'/'.$id);
     }

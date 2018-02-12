@@ -1,9 +1,9 @@
 window.$ = window.jQuery = require('jquery');
 window.$ = $.extend(require('jquery-ui-bundle'));
-let dt = require('datatables');
-let bootstrap = require('bootstrap-sass');
-let chosen_js = require('chosen-js');
-
+require('datatables');
+require('bootstrap-sass');
+require('chosen-js');
+require('select2');
 
 
 $(document).ready(function () {
@@ -24,10 +24,10 @@ $(document).ready(function () {
     // BEGIN copy to clipboard on click
     const copyToClipboard = function (elem) {
         // create hidden text element, if it doesn't already exist
-		let target;
-        let targetId = "_hiddenCopyText_";
-        let isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
-        let origSelectionStart, origSelectionEnd;
+		var target;
+        var targetId = "_hiddenCopyText_";
+        var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
+        var origSelectionStart, origSelectionEnd;
         if (isInput) {
             // can just use the original source element for the selection and copy
             target = elem;
@@ -37,7 +37,7 @@ $(document).ready(function () {
             // must use a temporary form element for the selection and copy
             target = document.getElementById(targetId);
             if (!target) {
-                let target = document.createElement("textarea");
+                var target = document.createElement("textarea");
                 target.style.position = "absolute";
                 target.style.left = "-9999px";
                 target.style.top = "0";
@@ -47,12 +47,12 @@ $(document).ready(function () {
             target.textContent = elem.textContent;
         }
         // select the content
-        let currentFocus = document.activeElement;
+        var currentFocus = document.activeElement;
         target.focus();
         target.setSelectionRange(0, target.value.length);
 
         // copy the selection
-        let succeed;
+        var succeed;
         try {
             succeed = document.execCommand("copy");
         } catch(e) {
@@ -99,10 +99,10 @@ $(document).ready(function () {
 	// BEGIN Card type select
 	const checkCardType = function (el) {
 
-		let payment_sys = $(el).val();
-		let $inputs     = $('input#date, input#cw2');
-		let $blocks     = $inputs.parent('div');
-		let $options    = $('select#currency option:not([value="USD"],[value="RUB"])');
+		var payment_sys = $(el).val();
+		var $inputs     = $('input#date, input#cw2');
+		var $blocks     = $inputs.parent('div');
+		var $options    = $('select#currency option:not([value="USD"],[value="RUB"])');
 
 		if (payment_sys === '1') {
 			$inputs.removeAttr('required');
@@ -120,11 +120,11 @@ $(document).ready(function () {
 		checkCardType(this);
 	});
 
-	let payment_sys = $('.card_type input[name="type"]').val();
-	let $inputs     = $('input#date, input#cw2');
-	let $blocks     = $inputs.parent('div');
+	var payment_sys = $('.card_type input[name="type"]').val();
+	var $inputs     = $('input#date, input#cw2');
+	var $blocks     = $inputs.parent('div');
 	// language=JQuery-CSS
-    let $options    = $('select#currency option:not([value="USD"],[value="RUB"])');
+    var $options    = $('select#currency option:not([value="USD"],[value="RUB"])');
 
 	if (payment_sys === '1') {
 		$inputs.removeAttr('required');
@@ -135,7 +135,7 @@ $(document).ready(function () {
 
 
 	// BEGIN Chosen-JS Init
-	$('.chosen-js-select').chosen();
+	$('.chosen-js-select').select2();
 	// END Chosen-JS Init
 
 
@@ -153,13 +153,13 @@ $(document).ready(function () {
 
 	// BEGIN Post request function BEGIN
 	// const post = function(path, method, parameters) {
-	// 	let $form = $("<form></form>");
+	// 	var $form = $("<form></form>");
     //
 	// 	$form.attr("method", method);
 	// 	$form.attr("action", path);
     //
 	// 	$.each(parameters, function(key, value) {
-	// 		let $field = $("<input/>");
+	// 		var $field = $("<input/>");
     //
 	// 		$field.attr("type", "hidden");
 	// 		$field.attr("name", key);
@@ -189,8 +189,8 @@ $(document).ready(function () {
 					return ($('#ui-datepicker-div').html().indexOf('ui-datepicker-close ui-state-default ui-priority-primary ui-corner-all ui-state-hover') > -1);
 				}
 				if (isDonePressed()){
-					let month = $("#ui-datepicker-div").find(".ui-datepicker-month :selected").val();
-					let year = $("#ui-datepicker-div").find(".ui-datepicker-year :selected").val();
+					var month = $("#ui-datepicker-div").find(".ui-datepicker-month :selected").val();
+					var year = $("#ui-datepicker-div").find(".ui-datepicker-year :selected").val();
 					$(this).datepicker('setDate', new Date(year, month, 1)).trigger('change');
 					$('.date-picker').focusout()//Added to remove focus from datepicker input box on selecting date
 				}
@@ -231,7 +231,7 @@ $(document).ready(function () {
 
 	// BEGIN Make N decimals for money value BEGIN
 	$('.money_input').on('blur', function () {
-		let money = $(this).val();
+		var money = $(this).val();
 		if (money !== "") {
 			money = Number.parseFloat(money);
 			money = (money).toFixed(2);
@@ -240,7 +240,7 @@ $(document).ready(function () {
 	});
 
 	$('.money_input2').on('blur', function () {
-		let money = $(this).val();
+		var money = $(this).val();
 		if (money !== "") {
 			money = Number.parseFloat(money);
 			money = (money).toFixed(6);
@@ -254,7 +254,7 @@ $(document).ready(function () {
 	const NBU_rate = 'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json';
 
 	const checkExchangeRate = function() {
-		let currency = $('#card').find('option:selected').attr('title');
+		var currency = $('#card').find('option:selected').attr('title');
 		if (currency === 'USD') {
 			$('#rate').val(1);
 		} else {
@@ -273,7 +273,7 @@ $(document).ready(function () {
 
 			if (currency === 'EUR') {
 				$.getJSON(NBU_rate, function(result){
-					let USD = 1, EUR = 1;
+					var USD = 1, EUR = 1;
 					$.each(result, function(i, field){
 						if (field.r030 === 840) {
 							USD = field.rate;
@@ -290,7 +290,7 @@ $(document).ready(function () {
 
 			if (currency === 'RUB') {
 				$.getJSON(NBU_rate, function(result){
-					let USD = 1, RUB = 1;
+					var USD = 1, RUB = 1;
 					$.each(result, function(i, field){
 						if (field.r030 === 840) {
 							USD = field.rate;
@@ -313,7 +313,7 @@ $(document).ready(function () {
 	checkExchangeRate();
 	
 	$('select#acc_currency').on('change', function () {
-		let currency = $(this).val();
+		var currency = $(this).val();
 		if (currency === 'USD') {
 			$('#rate').val(1);
 		} else {
@@ -332,7 +332,7 @@ $(document).ready(function () {
 
 			if (currency === 'EUR') {
 				$.getJSON(NBU_rate, function(result){
-					let USD = 1, EUR = 1;
+					var USD = 1, EUR = 1;
 					$.each(result, function(i, field){
 						if (field.r030 === 840) {
 							USD = field.rate;
@@ -349,7 +349,7 @@ $(document).ready(function () {
 
 			if (currency === 'RUB') {
 				$.getJSON(NBU_rate, function(result){
-					let USD = 1, RUB = 1;
+					var USD = 1, RUB = 1;
 					$.each(result, function(i, field){
 						if (field.r030 === 840) {
 							USD = field.rate;
@@ -370,8 +370,8 @@ $(document).ready(function () {
 
 
 	// BEGIN Multiple checkbox selection BEGIN
-    // let $chkboxes = $('.shift_select');
-    // let lastChecked = null;
+    // var $chkboxes = $('.shift_select');
+    // var lastChecked = null;
 
     // $chkboxes.click(function(e) {
     //     if(!lastChecked) {
@@ -380,8 +380,8 @@ $(document).ready(function () {
     //     }
 
     //     if(e.shiftKey) {
-    //         let start = $chkboxes.index(this);
-    //         let end = $chkboxes.index(lastChecked);
+    //         var start = $chkboxes.index(this);
+    //         var end = $chkboxes.index(lastChecked);
 
     //         $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
 
@@ -395,8 +395,8 @@ $(document).ready(function () {
 	// BEGIN Select all checkboxes in table BEGIN
 	const selectManyCheckboxes = function () {
 
-		let form = $(this).closest('form');
-		let all_checkbxs = form.find("input[type='checkbox']");
+		var form = $(this).closest('form');
+		var all_checkbxs = form.find("input[type='checkbox']");
 
 		if ( $(this).prop('checked') === false ) {
 			all_checkbxs.prop('checked', false);
@@ -427,11 +427,11 @@ $(document).ready(function () {
 	// BEGIN Delete resource request BEGIN
 	$('.js-form').on('click', '.remove-btn', function (e) {
 		e.preventDefault();
-		let url = $(this).attr('href');
-		let form = $('.js-form').attr({
+		var url = $(this).attr('href');
+		var form = $('.js-form').attr({
 			'action':url
 		});
-		let deleteInput = $('<input>').attr({
+		var deleteInput = $('<input>').attr({
 			'type' : 'hidden',
 			'name' : '_method',
 			'value' : 'delete'
@@ -446,7 +446,7 @@ $(document).ready(function () {
 	// BEGIN Delete resource request BEGIN
 	$('.js-submit').on('click', function (e) {
 		e.preventDefault();
-		let form = $('.js-form');
+		var form = $('.js-form');
 		form.submit();
 	});
 	// END Delete resource request END

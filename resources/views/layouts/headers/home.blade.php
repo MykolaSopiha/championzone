@@ -18,17 +18,17 @@
                 </div>
                 <ul class="account-nav__list" id="menu">
                     @if ( Auth::user()->status != 'accountant' && Auth::user()->status != 'farmer' )
-                        <li><a href="{{url('home/')}}">Главная</a></li>
+                        <li><a href="{{route('home')}}">Главная</a></li>
                     @endif
 
-                    <li><a href="{{url('home/cards')}}">Карты</a></li>
+                    <li><a href="{{route('home.cards.index')}}">Карты</a></li>
 
                     @if ( Auth::user()->status === 'admin' )
-                        <li><a href="{{url('home/users')}}">Пользователи</a></li>
-                        <li><a href="{{url('home/teams')}}">Команды</a></li>
+                        <li><a href="{{route('home.users.index')}}">Пользователи</a></li>
+                        <li><a href="{{route('home.teams.index')}}">Команды</a></li>
                     @endif
 
-                    @if ( Auth::user()->status === 'admin' || Auth::user()->status != 'accountant')
+                    @if ( Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
                         <li><a href="{{url('home/costs')}}">Расходы</a></li>
                     @endif
 

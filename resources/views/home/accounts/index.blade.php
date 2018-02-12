@@ -117,7 +117,7 @@
                 <!-- begin items__list -->
                 <div class="items__list">
                     <h2>Список аккаунтов</h2>
-                    
+
                     <form class="js-form" action="{{url('/home/accounts/')}}" method="post">
                         <input id="token" type="hidden" name="_token" value="{{csrf_token()}}">
                         <!-- begin table -->
@@ -137,13 +137,13 @@
                                 <tbody>
                                     @foreach ($accounts as $a)
                                     <tr>
-                                        <td>{{$a->user_name}}</td>
+                                        <td>{{$a->user->name}}</td>
                                         <td>@if (strlen($a->info) > 50) {{substr($a->info, 0, 40)."..."}} @else {{$a->info}} @endif</td>
                                         <td>{{$a->price/100}}</td>
                                         <td>{{$a->currency}}</td>
                                         @if (Auth::user()->status === 'admin')
                                         <td>
-                                            <a href="#" data-info="{{htmlspecialchars($a->info)}}">
+                                            <a class="info-btn" href="#" data-info="{{htmlspecialchars($a->info)}}">
                                                 <i class="fa fa-search" aria-hidden="true"></i>
                                             </a>
                                             <a href="{{url('/home/accounts')}}/{{$a->id}}">
@@ -180,7 +180,7 @@
                 <div class="modal-content">
                     <div class="modal-header" style="padding:35px 50px;">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4>Перевести деньги на карту:</h4>
+                        <h4>Информация об аккаунте:</h4>
                     </div>
                     <div class="modal-body text-center" style="padding:20px"></div>
                     <div class="modal-footer">
@@ -198,13 +198,23 @@
 
 @section('scripts_end')
 <script>
-    $('.js-account-table').DataTable({
-        "lengthMenu": [ 10, 25, 50, 75, 100, 200, 500 ],
-        "responsive": true,
-        "columnDefs": [
-            {"targets": [4], "orderable": false},
-            {"targets": [4], "searchable": false}
-        ]
+    $('.js-account-table').ready(function () {
+
+        $('.info-btn').click(function () {
+            let info = $(this).data('info');
+            let modalBody = $('#myModal').find('.modal-body');
+            modalBody.html(info)
+            $('#myModal').modal('show');
+        });
+
+        $('.js-account-table').DataTable({
+            "lengthMenu": [ 10, 25, 50, 75, 100, 200, 500 ],
+            "responsive": true,
+            "columnDefs": [
+                {"targets": [4], "orderable": false},
+                {"targets": [4], "searchable": false}
+            ]
+        });
     });
 </script>
 @endsection

@@ -124,7 +124,7 @@ class HomeController extends Controller
             $total_RUB += $RUB;
         }
 
-        return view('home/statistics', compact('statistics', 'total', 'total_RUB', 'users', 'cards', 'get_req') );
+        return view('home.statistics.index', compact('statistics', 'total', 'total_RUB', 'users', 'cards', 'get_req') );
     }
 
     public function balance()

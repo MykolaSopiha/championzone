@@ -16,14 +16,18 @@ class Card extends Model
         'type',
         'user_id',
         'status',
-        'info'
+        'info',
+        'wallet'
     ];
 
     protected $encrypted = [
         'code',
-        'cw2'
+        'cw2',
+        'wallet'
     ];
 
+
+    // Relationships BEGIN
     public function cost() {
         return $this->hasMany('App\Cost', 'card_id', 'id');
     }
@@ -36,20 +40,14 @@ class Card extends Model
     {
         return $this->belongsTo('App\User');
     }
+    // Relationships END
 
-//    public function getCodeAttribute($value)
-//    {
-//        return decrypt($value);
-//    }
-//
-//    public function getCw2Attribute($value)
-//    {
-//        return decrypt($value);
-//    }
 
+    // Mutators BEGIN
     public function setCodeAttribute($value)
     {
         $this->attributes['code'] = encrypt($value);
+        $this->attributes['code_hash'] = sha1($value.env('APP_SALT'));
     }
 
     public function setCw2Attribute($value)
@@ -61,9 +59,23 @@ class Card extends Model
     {
         $this->attributes['wallet'] = encrypt($value);
     }
+    // Mutators END
 
-//    public function setCodeHashAttribute($value)
-//    {
-//        $this->attributes['code_hash'] = sha1($value.env('APP_SALT'));
-//    }
+
+    // Accessors BEGIN
+    public function getCodeAttribute($value)
+    {
+        return decrypt($value);
+    }
+
+    public function getCw2Attribute($value)
+    {
+        return decrypt($value);
+    }
+
+    public function getWalletAttribute($value)
+    {
+        return decrypt($value);
+    }
+    // Accessors END
 }

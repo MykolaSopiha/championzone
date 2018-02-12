@@ -32,7 +32,7 @@ class CostController extends Controller
         $users = User::all();
         $costs = Cost::all();
         $costtypes = CostType::all();
-        return view('home/costs', compact('costs', 'costtypes', 'users'));
+        return view('home.costs.index', compact('costs', 'costtypes', 'users'));
     }
 
     /**
@@ -52,7 +52,7 @@ class CostController extends Controller
 
         $cost_types = CostType::all();
 
-        return view('home.costtypes', compact('cost_types'));
+        return view('home.costs.types', compact('cost_types'));
     }
 
     public function saveType(Request $request)
@@ -68,7 +68,7 @@ class CostController extends Controller
 
         CostType::create($data);
 
-        return redirect('home/costtypes');
+        return back()->with(['success' => 'Cost type saved!']);
     }
 
     public function deleteType($id)
@@ -77,7 +77,7 @@ class CostController extends Controller
             return redirect('home/costs');
 
         CostType::findOrFail($id)->delete();
-        return redirect('home/costtypes');
+        return redirect('home/cost/types');
     }
 
     /**

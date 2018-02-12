@@ -29,7 +29,7 @@ class TeamController extends Controller
     {
         $users = User::all();
         $teams = Team::all();
-        return view('home.teams', compact('users','teams'));
+        return view('home.teams.index', compact('users','teams'));
     }
 
     /**
@@ -67,7 +67,8 @@ class TeamController extends Controller
      */
     public function show($id)
     {
-        //
+        $users = User::where('team_id', $id);
+        return view('home.teams.view', compact('users'));
     }
 
     /**

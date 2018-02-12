@@ -47,7 +47,7 @@
 
             <!-- begin items -->
             <div class="items">
-                
+
                 @if (Auth::user()->status != 'mediabuyer')
                 <!-- begin items__add -->
                 <div class="items__add">
@@ -168,7 +168,7 @@
                                     <option value="">Все пользователи</option>
                                     <option value="0" @if (isset($_GET['user_id']) && $_GET['user_id'] == '0') selected @endif>Назначить пользователя</option>
                                     @foreach ($users as $user)
-                                        <option value="{{$user['id']}}" @if (isset($_GET['user_id']) && $user['id'] == $_GET['user_id']) selected @endif>{{$user['first_name']." ".$user['last_name']." ".$user['name']}}</option>
+                                        <option value="{{$user->id}}" @if (isset($_GET['user_id']) && $user->id == $_GET['user_id']) selected @endif>{{$user->first_name." ".$user->last_name." ".$user->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -178,7 +178,7 @@
                                 <label for="card">Код</label><br>
                                 <select name="id" id="card" class="chosen-js-select form-control">
                                     <option value="">Все карты</option>
-                                    @foreach ($cards as $card)<option value="{{$card->id}}" @if (isset($_GET['id']) && $card->id == $_GET['id']) selected @endif>...{{substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4)}}</option>
+                                    @foreach ($cards as $card)<option value="{{$card->id}}" @if (isset($_GET['id']) && $card->id == $_GET['id']) selected @endif>...{{substr($card->code, -8, -4)." ".substr($card->code, -4)}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -372,7 +372,7 @@
                     // END Select card type
                 }
             });
-            
+
         });
     </script>
 @endsection

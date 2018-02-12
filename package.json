@@ -14,7 +14,8 @@
     "laravel-elixir": "^5.0.0",
     "laravel-elixir-livereload": "^1.1.6",
     "laravel-elixir-svgstore": "^1.0.3",
-    "laravel-elixir-webpack": "^1.0.1"
+    "laravel-elixir-webpack": "^1.0.1",
+    "select2": "^4.0.6-rc.1"
   },
   "dependencies": {
     "jquery-ui-bundle": "^1.12.1"

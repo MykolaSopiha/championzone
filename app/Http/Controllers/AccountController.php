@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use App\Account;
 use DB;
@@ -25,22 +25,15 @@ class AccountController extends Controller
     public function index()
     {
         $conditions = [];
+
         if (Auth::user()->status != 'admin') {
             $conditions[] = ['user_id', Auth::user()->id];
         }
 
+        $users = User::where($conditions)->get();
+        $accounts = Account::all();
 
-        $users = DB::select('select id, name, first_name, last_name from users');
-
-
-        $accounts = DB::table('accounts')
-            ->where($conditions)
-            ->join('users', 'accounts.user_id', '=', 'users.id')
-            ->select('accounts.*', 'users.name as user_name')
-            ->get();
-
-
-        return view('home.accounts', compact('users', 'accounts'));
+        return view('home.accounts.index', compact('users', 'accounts'));
     }
 
     /**
@@ -61,7 +54,6 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
-
         $this->validate($request, [
             'info'      => 'required',
             'user'      => 'required|numeric|min:1',
@@ -71,7 +63,6 @@ class AccountController extends Controller
         ], [
            'user.numeric' => 'The user id is incorrect.' 
         ]);
-
 
         $account = new Account();
         $account->fill([
@@ -83,8 +74,7 @@ class AccountController extends Controller
         ]);
         $account->save();
 
-
-        return redirect('/home/accounts');
+        return back()->with(['Account saved!']);
     }
 
     /**
@@ -98,7 +88,7 @@ class AccountController extends Controller
         $account = DB::table('accounts')->where('id', $id)->first();
         $users   = DB::select('select id, name from users');
 
-        return view('home.showaccount', compact('account', 'users'));
+        return view('home.accounts.edit', compact('account', 'users'));
     }
 
     /**
