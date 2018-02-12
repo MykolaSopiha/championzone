@@ -77,7 +77,7 @@
                                         <td>{{$cost_type->name}}</td>
                                         <td>{{$cost_type->description}}</td>
                                         <td>
-                                            <a href="{{route('home:costtypes.delete', [$cost_type->id])}}">
+                                            <a href="{{route('home:cost.types.delete', [$cost_type->id])}}">
                                                 <i class="fa fa-times" aria-hidden="true"></i>
                                             </a>
                                         </td>

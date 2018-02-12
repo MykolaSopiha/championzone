@@ -135,7 +135,7 @@ $(document).ready(function () {
 
 
 	// BEGIN Chosen-JS Init
-	$('.chosen-js-select').select2();
+	$('.chosen-js-select').chosen();
 	// END Chosen-JS Init
 
 

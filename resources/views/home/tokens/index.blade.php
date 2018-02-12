@@ -76,7 +76,10 @@
                         <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
                             <label for="user_id">Пользователь</label>
                             <select name="user_id" id="user_id" class="chosen-js-select" required>
-                                @foreach ($users as $user)<option value="{{$user->id}}" @if ($user->id == Auth::user()->id) selected @endif>{{$user->first_name." ".$user->last_name." ".$user->name}}</option>
+                                @foreach ($users as $user)
+                                    <option value="{{$user->id}}" @if ($user->id == Auth::user()->id) selected @endif>
+                                        {{$user->first_name." ".$user->last_name." ".$user->name}}
+                                    </option>
                                 @endforeach
                             </select>
                             @if ($errors->has('card'))

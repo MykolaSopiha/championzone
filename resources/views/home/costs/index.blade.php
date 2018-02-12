@@ -162,7 +162,7 @@
                                             <td>{{$cost->value}} ({{$cost->currency}})</td>
                                             <td>{{$cost->info}}</td>
                                             <td>{{$cost->user->name}}</td>
-                                            <td><a href="{{route('home:home.costs.destroy', $cost->id)}}" class="remove-btn"><i class="fa fa-times" aria-hidden="true"></i></a></td>
+                                            <td><a href="{{route('home.costs.destroy', $cost->id)}}" class="remove-btn"><i class="fa fa-times" aria-hidden="true"></i></a></td>
                                         </tr>
                                     @endforeach
                                 </tbody>
