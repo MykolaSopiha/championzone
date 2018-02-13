@@ -68,9 +68,9 @@ class APIController extends Controller
                 $myTeam[] = $user->id;
             }
 
-            $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam);
+            $cards = DB::table('cards')->whereIn('cards.user_id', $myTeam)->orderBy('id', 'desc');
         } else {
-            $cards = DB::table('cards')->where($conditions);
+            $cards = DB::table('cards')->where($conditions)->orderBy('id', 'desc');
         }
 
 

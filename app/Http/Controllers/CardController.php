@@ -242,8 +242,6 @@ class CardController extends Controller
         return view('home.cards.multiple', compact('errors', 'users') );
     }
 
-
-
     public function multiple_action(Request $request)
     {
         if (!is_null($request->card)) {
@@ -344,11 +342,6 @@ class CardController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $salt = env('APP_SALT');
-
-        $data = $request->except(['_token', '_method']);
-        $data['code_hash'] = sha1($request["code"].$salt);
-
         $rules = [
             'name' => 'max:255',
             'type' => 'required|numeric|min:0',
@@ -357,15 +350,11 @@ class CardController extends Controller
             'date' => 'required|date',
         ];
 
-        $data['code'] = encrypt($request['code']);
-        $data['cw2']  = encrypt($request['cw2']);
-        $data['wallet']  = encrypt($request['wallet']);
-        // $data['date'] = date( "Y-m-d", strtotime($request['date']));
+        $this->validate($request, $rules);
 
-        Card::findOrFail($id)->update($data);
-//        DB::table('cards')->where('id', $id)->update($data);
+        Card::findOrFail($id)->update($request->all());
 
-        return redirect('/home/cards'.'/'.$id);
+        return back()->with('Card updated!');
     }
 
     /**
@@ -377,65 +366,6 @@ class CardController extends Controller
     public function destroy($id)
     {
         Card::findOrFail($id)->delete();
-
-        return redirect('/home/cards');
-    }
-
-
-    public function setWallets() {
-        return view('home.wallets');
-    }
-
-
-    public function addWallets(Request $request) {
-
-        $text  = preg_replace('/[ ]{2,}|[\t]|[\r]/', ' ', trim($request->text));
-        $strings = explode("\n", $text);
-
-        $errors = [];
-
-        foreach ($strings as $str) {
-
-            $word = explode(' ', $str);
-            $errors[$str] = [];
-
-
-            // Validation BEGIN
-            if (strlen($word[0]) != 15) {
-                $errors[$str][] = 'Wallet code is incorrect!';
-            }
-
-            if (strlen($word[1]) != 16) {
-                if (strlen($word[1].$word[2].$word[3].$word[4]) == 16) {
-                    $word[1] = $word[1].$word[2].$word[3].$word[4];
-                } else {
-                    $errors[$str][] = 'Card code is incorrect!';
-                }
-            }
-
-            if (!is_numeric($word[0])) {
-                $errors[$str][] = 'Wallet code is not numeric!';
-            }
-
-            if (!is_numeric($word[1])) {
-                $errors[$str][] = 'Card code is not numeric!';
-            }
-
-            if (DB::table('cards')->where('code_hash', sha1($word[1].env('APP_SALT')))->count() == 0) {
-                $errors[$str][] = 'Card not found!';
-            }
-            // Validation END
-
-
-            foreach ($errors as &$err) {
-                if (empty($err)) {
-                    DB::table('cards')->where('code_hash', sha1($word[1].env('APP_SALT')))->update(['wallet' => $word[0]]);
-                    $err = 'done!';
-                }
-
-            }
-
-        }
-        return dd($errors);
+        return back()->with('Card deleted!');
     }
 }
