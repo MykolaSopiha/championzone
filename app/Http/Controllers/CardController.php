@@ -347,7 +347,6 @@ class CardController extends Controller
             'type' => 'required|numeric|min:0',
             'code' => 'required|max:255',
             'cw2'  => 'required|max:255',
-            'date' => 'required|date',
         ];
 
         $this->validate($request, $rules);
