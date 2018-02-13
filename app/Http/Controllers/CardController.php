@@ -354,7 +354,7 @@ class CardController extends Controller
 
         Card::findOrFail($id)->update($request->all());
 
-        return back()->with('Card updated!');
+        return back()->with(['success' => 'Card updated!']);
     }
 
     /**
@@ -366,6 +366,6 @@ class CardController extends Controller
     public function destroy($id)
     {
         Card::findOrFail($id)->delete();
-        return back()->with('Card deleted!');
+        return back()->with(['success' => 'Card deleted!']);
     }
 }
