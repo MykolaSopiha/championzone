@@ -116,7 +116,7 @@
                                 <tr>
                                     <td>{{$team->id}}</td>
                                     <td>{{$team->name}}</td>
-                                    <td>{{$team->leader->name}}</td>
+                                    <td>{{$team->leader->first_name." ".$team->leader->last_name." ".$team->leader->name}}</td>
                                     <td>{{count($team->user)}}</td>
                                     <td style="text-align: right;">
                                         <a href="{{route('home.teams.show', $team->id)}}" class="btn btn-primary">Учасники</a>
