@@ -102,7 +102,7 @@ class HomeController extends Controller
                 ->select('tokens.*', 'users.name as user_name')
                 ->get();
         } elseif (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
-            $tokens = Token::all();
+            $tokens = Token::where($conditions)->get();
         } else {
             $tokens = DB::table('tokens')->where($conditions)
                 ->join('users', 'tokens.user_id', '=', 'users.id')
