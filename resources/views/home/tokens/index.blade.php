@@ -6,34 +6,9 @@
         .dropdown-menu {
             min-width: 0 !important
         }
-
-        .chosen-js .chosen-container {
-            font-size: 18px !important;
-            width: 100% !important;
-        }
-
-        .chosen-js .chosen-single {
-            height: 70px !important;
-            line-height: 70px !important;
-            background: none !important;
-            text-align: center
-        }
-
         #tokens_ssp_table tfoot {
             display: table-header-group;
         }
-
-        .chosen-single {
-            height: 34px !important;
-            line-height: 34px !important;
-            background: none !important;
-            min-width: 150px;
-        }
-
-        .chosen-container {
-            min-width: 150px;
-        }
-
         .transfer_dest, .has_wallet {
             color: blue;
             cursor: pointer;
@@ -79,9 +54,9 @@
                     @endif
 
                     @if (Auth::user()->status == 'accountant' || Auth::user()->status == 'admin' || Auth::user()->TeamLead())
-                        <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                        <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }} big-select">
                             <label for="user_id">Пользователь</label>
-                            <select name="user_id" id="user_id" class="chosen-js-select" required>
+                            <select name="user_id" id="user_id" class="js-select" required>
                                 @foreach ($users as $user)
                                     <option value="{{$user->id}}" @if ($user->id == Auth::user()->id) selected @endif>
                                         {{$user->first_name." ".$user->last_name." ".$user->name}}
@@ -94,9 +69,9 @@
                         </div>
                     @endif
 
-                    <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                    <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }} big-select">
                         <label for="card">Карта</label>
-                        <select name="card_id" id="card" class="chosen-js-select">
+                        <select name="card_id" id="card" class="js-select">
                             @foreach ($cards as $card)
                                 <option value="{{ $card->id }}" title="{{ $card->currency }}">
                                     ...{{ substr($card->code, -8, -4)." ".substr($card->code, -4) }}
@@ -120,9 +95,9 @@
                         @endif
                     </div>
 
-                    <div class="chosen-js second_card form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                    <div class="second_card form__item{{ $errors->has('card') ? ' form__item--error' : '' }} big-select">
                         <label for="card">Куда перевести?</label>
-                        <select name="card2_id" id="card2" class="chosen-js-select">
+                        <select name="card2_id" id="card2" class="js-select" style="width: 100%;">
                             @foreach ($cards as $card)
                                 <option value="{{ $card->id }}" title="{{ $card->currency }}">
                                     ...{{ substr($card->code, -8, -4)." ".substr($card->code, -4) }}
@@ -193,9 +168,9 @@
                         </div>
 
                         @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->TeamLead())
-                            <div class="form-group">
+                            <div class="form-group small-select">
                                 <label for="user">Пользователь</label><br>
-                                <select name="user_id" id="user" class="chosen-js-select form-control">
+                                <select name="user_id" id="user" class="js-select form-control">
                                     <option value="">Все пользователи</option>
                                     @foreach ($users as $user)
                                         <option value="{{$user->id}}"
@@ -205,9 +180,9 @@
                             </div>
                         @endif
 
-                        <div class="form-group" style="max-width: 400px">
+                        <div class="form-group small-select" style="max-width: 400px">
                             <label for="card">Карта</label><br>
-                            <select name="card_id" id="card" class="chosen-js-select form-control">
+                            <select name="card_id" id="card" class="js-select form-control">
                                 <option value="">Все карты</option>
                                 @foreach ($cards as $card)
                                     <option value="{{$card->id}}"

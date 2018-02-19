@@ -65,12 +65,3 @@ Route::group(['prefix' => 'api'], function () {
 
     Route::get('token_notify', 'APIController@checkTokens');
 });
-
-Route::get('/wallets', 'CardController@setWallets');
-Route::post('/wallets', 'CardController@addWallets');
-
-Route::get('/setroleslist', 'UserController@setroleslist');
-Route::get('/setrole', 'UserController@setrole');
-
-
-Route::get('/bugfix/wallet-encrypt', 'BugFixController@index');

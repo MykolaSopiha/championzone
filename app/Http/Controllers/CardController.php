@@ -132,116 +132,6 @@ class CardController extends Controller
         return redirect('/home/cards');
     }
 
-    public function multiplepage() {
-        $users = User::select('id', 'name', 'first_name', 'last_name')->get();
-        return view('home.cards.multiple', compact('users'));
-    }
-
-    public function multipleadd(Request $request) {
-
-        $salt = env('APP_SALT');
-
-        function isDate($value) {
-            if (!$value) {
-                return false;
-            }
-            try {
-                new \DateTime($value);
-                return true;
-            } catch (\Exception $e) {
-                return false;
-            }
-        }
-
-        $text  = preg_replace('/[ ]{2,}|[\t]|[\r]/', ' ', trim($request->cards));
-        $lines = explode("\n", $text);
-        $errors = [];
-
-        foreach ($lines as $line) {
-
-            $word = explode(' ', $line);
-            $index = substr($line, 0, 16);
-            $errors[$index] = [];
-            
-
-            // CHECK CARD CODE begin
-            if (is_numeric($word[0])) {
-                if (strlen($word[0]) === 16) {
-                    $code = $word[0];
-                } elseif ( $line[4] == ' ' && $line[9] == ' ' && $line[14] == ' ' ) {
-                    $code = "".$word[0]."".$word[1]."".$word[2]."".$word[3];
-                    $word = explode( ' ', $code.substr($line, 19) );
-                    //return $code.substr($line, 19);
-                } else {
-                    $errors[$index][] = "Code length isn't 16 digits!";
-                }
-            } else {
-                $errors[$index][] = "Code isn't numeric!";
-            }
-            // CHECK CARD CODE end
-            
-
-            // CHECK CARD DATE begin
-            if ($word[1][2] == '/' || $word[1][2] == '\\' || $word[1][2] == '-' || $word[1][2] == '.') {
-                $date_check = '01/'.$word[1][0].$word[1][1].'/'.substr($word[1], 3);
-                if ( isDate( $date_check ) === true ) {
-                    $date = date( "Y-m-d", strtotime( $date_check ) );
-                } else {
-                    $errors[$index][] = "Date format is incorrect!";
-                }
-            } else {
-                return false;
-            }
-            // CHECK CARD DATE end
-
-
-            // CHECK CARD CW2 begin
-            if (is_numeric($word[2])) {
-                if (strlen($word[2]) === 3) {
-                    $cw2 = $word[2];
-                } else {
-                    $errors[$index][] = "CW2 length isn't 3 digits!";
-                }
-            } else {
-                $errors[$index][] = "CW2 isn't numeric!";
-            }
-            // CHECK CARD CW2 end
-
-            // return $code.' '.$date.' '.$word[2].' === '.$line;
-            // return strpos($line, $word[2]);
-            $info = substr($line, strpos($line, $word[2]) );
-            $info = substr($info, strlen($word[2])+1);
-            $info = trim($info);
-
-
-            if ( empty($errors[$index]) ) {
-
-                //EVERYTHING IS OK
-                $card = new Card();
-                if (DB::table('cards')->where('code_hash', '=', sha1($code.$salt))->count() == 0) {
-                    $card->fill([
-                        'date'      => $date,
-                        'code'      => $code,
-                        'cw2'       => $cw2,
-                        'currency'  => 'RUB',
-                        'user_id'   => $request->card_user,
-                        'info'      => $info
-                    ]);
-                }
-                $card->save();
-
-                $errors[$index] = '';
-
-            } else {
-                $errors[$index]['idx'] = $index;                
-            }
-
-        }
-
-        $users = DB::table('users')->get();
-        return view('home.cards.multiple', compact('errors', 'users') );
-    }
-
     public function multiple_action(Request $request)
     {
         if (!is_null($request->card)) {
@@ -276,7 +166,6 @@ class CardController extends Controller
         
         return redirect('/home/cards');
     }
-
 
 
     /**

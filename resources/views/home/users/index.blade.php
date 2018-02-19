@@ -21,8 +21,6 @@
                             <td>Логин</td>
                             <td>Имя</td>
                             <td>Фамилия</td>
-                            <td>TerraLeads ID</td>
-                            <td>Баланс, USD</td>
                             <td>Статус</td>
                             <td>Зарегистрирован</td>
                             <td></td>
@@ -78,15 +76,13 @@
                     {data: 'name'},
                     {data: 'first_name'},
                     {data: 'last_name'},
-                    {data: 'terra_id'},
-                    {data: 'balance', searchable: false},
                     {data: 'status'},
                     {data: 'created_at'},
                     {data: 'edit', searchable: false}
                 ],
                 "columnDefs" : [
-                    {"targets": [8], "searchable": false},
-                    {"targets": [8], "orderable": false}
+                    {"targets": [6], "searchable": false},
+                    {"targets": [6], "orderable": false}
                 ],
                 "drawCallback" : function () {
                     $('.delete-user').click(function (e) {

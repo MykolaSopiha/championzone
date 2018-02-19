@@ -1,21 +1,6 @@
 @extends('layouts.app')
 
 
-@section('styles')
-    <style>
-        .chosen-container {
-            font-size: 18px !important
-        }
-        .chosen-single {
-            height: 70px !important;
-            line-height: 70px !important;
-            background: none !important;
-            text-align: center
-        }
-    </style>
-@endsection
-
-
 @section('content')
     <!-- begin header -->
     @section('page-name') Статистика @endsection
@@ -42,9 +27,9 @@
                         </header>
 
                         @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->TeamLead())
-                        <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
+                        <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }} big-select">
                             <label for="user">Пользователь</label><br>
-                            <select name="user" id="user" class="chosen-js-select">
+                            <select name="user" id="user" class="js-select">
                                 <option value="">Вce пользователи</option>
                                 @foreach ($users as $user)
                                     @if (isset($_REQUEST['user']) && $_REQUEST['user'] == $user->id)
@@ -69,9 +54,9 @@
                         @endif
 
 
-                        <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                        <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }} big-select">
                             <label for="card">Карта</label><br>
-                            <select name="card" id="card" class="chosen-js-select">
+                            <select name="card" id="card" class="js-select">
                                 <option value="">Выберите карту</option>
                                 @foreach ($cards as $card)
                                     @if (isset($_REQUEST['card']) && $_REQUEST['card'] == $card->id)

@@ -1,21 +1,6 @@
 @extends('layouts.app')
 
 
-@section('styles')
-<style>
-    .chosen-container {
-        font-size: 18px !important
-    }
-    .chosen-single {
-        height: 70px !important;
-        line-height: 70px !important;
-        background: none !important;
-        text-align: center
-    }
-</style>
-@endsection
-
-
 @section('content')
 
     <!-- begin header -->
@@ -60,7 +45,7 @@
 
                         <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}">
                             <label for="acc_currency">Валюта</label>
-                            <select name="currency" id="acc_currency" class="chosen-js-select">
+                            <select name="currency" id="acc_currency">
                                 <option value="USD">USD</option>
                                 <option value="EUR">EUR</option>
                                 <option value="RUB">RUB</option>
@@ -85,9 +70,9 @@
                             </button>
                         </div>
 
-                        <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
+                        <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }} big-select">
                             <label for="user">Пользователь</label>
-                            <select name="user" id="user" class="chosen-js-select">
+                            <select name="user" id="user" class="js-select">
                                 @foreach ($users as $user)
                                     @if ($user->first_name == "" || $user->last_name == "")
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -141,13 +126,13 @@
                                         <td>{{$a->currency}}</td>
                                         @if (Auth::user()->status === 'admin')
                                         <td>
-                                            <a class="info-btn" href="#" data-info="{{htmlspecialchars($a->info)}}">
+                                            <a class="info-btn btn btn-link " href="#" data-info="{{htmlspecialchars($a->info)}}">
                                                 <i class="fa fa-search" aria-hidden="true"></i>
                                             </a>
-                                            <a href="{{url('/home/accounts')}}/{{$a->id}}">
+                                            <a class="btn btn-link" href="{{url('/home/accounts')}}/{{$a->id}}">
                                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                                             </a>
-                                            <a class="remove-btn" href="{{url('/home/accounts/')}}/{{$a->id}}">
+                                            <a class="btn btn-link remove-btn" href="{{url('/home/accounts/')}}/{{$a->id}}">
                                                 <i class='remove fa fa-times fa-lg' title='Удалить' aria-hidden='true'></i>
                                             </a>
 

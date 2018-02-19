@@ -26,7 +26,7 @@ class TokenController extends Controller
         $this->middleware('auth');
 
         $currencies = config('assets.currencies');
-        $statuses   = config('assets.token_statuses');
+        $statuses = config('assets.token_statuses');
 
         View::share(compact('statuses', 'currencies'));
     }
@@ -75,7 +75,7 @@ class TokenController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -93,9 +93,9 @@ class TokenController extends Controller
         if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
             $request['date'] = date("Y-m-d", strtotime($request["date"]));
         } elseif (Auth::user()->TeamLead()) {
-            $request['date']    = date("Y-m-d");
+            $request['date'] = date("Y-m-d");
         } else {
-            $request['date']    = date("Y-m-d");
+            $request['date'] = date("Y-m-d");
             $request['user_id'] = intval(Auth::user()->id);
         }
 
@@ -109,17 +109,17 @@ class TokenController extends Controller
         ];
 
         $data = [
-            'value'     => intval(round($request["value"], 2)*100),
-            'currency'  => $token_card->currency,
+            'value' => intval(round($request["value"], 2) * 100),
+            'currency' => $token_card->currency,
             'card_code' => $token_card->code,
-            'date'      => $request['date'],
-            'user_id'   => $request['user_id'],
-            'card_id'   => $request["card_id"],
-            'rate'      => $request['rate'],
-            'action'    => $request['action'],
-            'ask'       => $request['ask'],
-            'ans'       => $request['ans'],
-            'status'    => 'active'
+            'date' => $request['date'],
+            'user_id' => $request['user_id'],
+            'card_id' => $request["card_id"],
+            'rate' => $request['rate'],
+            'action' => $request['action'],
+            'ask' => $request['ask'],
+            'ans' => $request['ans'],
+            'status' => 'active'
         ];
 
         if ($request['action'] == 'transfer') {
@@ -148,7 +148,7 @@ class TokenController extends Controller
         $user = DB::table('users')->select('name', 'first_name', 'last_name')->where('id', $request['user_id'])->first();
 
         $actions_RU = [
-            'deposit'  => 'Пополнить',
+            'deposit' => 'Пополнить',
             'withdraw' => 'Списать',
             'transfer' => 'Перевести'
         ];
@@ -170,7 +170,7 @@ class TokenController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -180,15 +180,15 @@ class TokenController extends Controller
         if (Auth::user()->id == $token->user_id || Auth::user()->status == 'accountant' || Auth::user()->status == 'admin' || Auth::user()->TeamLead()) {
 
             $token->card_code = decrypt($token->card_code);
-            $token->value = $token->value/100; 
-            $card  = DB::table('cards')->where('id', $token->card_id)->first();
+            $token->value = $token->value / 100;
+            $card = DB::table('cards')->where('id', $token->card_id)->first();
             $cards = DB::table('cards')->select('id', 'code', 'name', 'currency')->get();
             $statuses = [
                 'active',
                 'confirmed',
                 'trash'
             ];
-            return view( 'home.tokens.edit', compact('token', 'card', 'cards', 'statuses') );
+            return view('home.tokens.edit', compact('token', 'card', 'cards', 'statuses'));
         } else {
             return redirect()->route('home.tokens.index');
         }
@@ -198,7 +198,7 @@ class TokenController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -207,38 +207,38 @@ class TokenController extends Controller
         $token = $token[0];
 
         if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || ($token->user_id === Auth::user()->id))
-        if (isset($_GET['status'])) {
+            if (isset($_GET['status'])) {
 
-            $status = $_GET['status'];
-            
-            switch ($status) {
-                case 'active':
-                    $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'active']);
-                    break;
-                case 'confirmed':
-                    $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'confirmed']);
-                    break;
-                case 'trash':
-                    $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'trash']);
-                    break;
-                default:
-                    # code...
-                    break;
+                $status = $_GET['status'];
+
+                switch ($status) {
+                    case 'active':
+                        $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'active']);
+                        break;
+                    case 'confirmed':
+                        $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'confirmed']);
+                        break;
+                    case 'trash':
+                        $token = DB::table('tokens')->where('id', $id)->limit(1)->update(['status' => 'trash']);
+                        break;
+                    default:
+                        # code...
+                        break;
+                }
             }
-        }
         return redirect('/home/tokens');
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $request["value"] = intval(round($request["value"], 2)*100);
+        $request["value"] = intval(round($request["value"], 2) * 100);
 
         $from_card = DB::table('cards')
             ->select('code')
@@ -263,12 +263,12 @@ class TokenController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        if ( is_array($id) ) {
+        if (is_array($id)) {
             foreach ($id as $i) {
                 DB::table('tokens')->where([
                     ['id', $i],

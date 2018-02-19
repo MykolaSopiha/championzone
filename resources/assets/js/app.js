@@ -2,12 +2,10 @@ window.$ = window.jQuery = require('jquery');
 window.$ = $.extend(require('jquery-ui-bundle'));
 require('datatables');
 require('bootstrap-sass');
-require('chosen-js');
 require('select2');
 
 
 $(document).ready(function () {
-
 
 	// BEGIN Menu
 	const menu_list = $('#menu');
@@ -18,7 +16,6 @@ $(document).ready(function () {
 		menu_icon.toggleClass('open');
 	});
 	// END Menu
-
 
 
     // BEGIN copy to clipboard on click
@@ -135,7 +132,7 @@ $(document).ready(function () {
 
 
 	// BEGIN Chosen-JS Init
-	$('.chosen-js-select').chosen();
+	$('.js-select').select2();
 	// END Chosen-JS Init
 
 
@@ -148,32 +145,6 @@ $(document).ready(function () {
 		$('body').addClass('no-touch');
 	}
 	// END Turn off hover effects on touch screens. END
-
-
-
-	// BEGIN Post request function BEGIN
-	// const post = function(path, method, parameters) {
-	// 	var $form = $("<form></form>");
-    //
-	// 	$form.attr("method", method);
-	// 	$form.attr("action", path);
-    //
-	// 	$.each(parameters, function(key, value) {
-	// 		var $field = $("<input/>");
-    //
-	// 		$field.attr("type", "hidden");
-	// 		$field.attr("name", key);
-	// 		$field.attr("value", value);
-    //
-	// 		$form.append($field);
-	// 	});
-    //
-	// 	// The form needs to be a part of the document in
-	// 	// order for us to be able to submit it.
-	// 	$(document.body).append($form);
-	// 	$form.submit();
-	// };
-	// END Post request function END
 
 
 	// BEGIN Initialization of datepicker BEGIN
@@ -369,29 +340,6 @@ $(document).ready(function () {
 	// END Current exchange rate END
 
 
-	// BEGIN Multiple checkbox selection BEGIN
-    // var $chkboxes = $('.shift_select');
-    // var lastChecked = null;
-
-    // $chkboxes.click(function(e) {
-    //     if(!lastChecked) {
-    //         lastChecked = this;
-    //         return;
-    //     }
-
-    //     if(e.shiftKey) {
-    //         var start = $chkboxes.index(this);
-    //         var end = $chkboxes.index(lastChecked);
-
-    //         $chkboxes.slice(Math.min(start,end), Math.max(start,end)+ 1).prop('checked', lastChecked.checked);
-
-    //     }
-
-    //     lastChecked = this;
-    // });
-	// END Multiple checkbox selection END
-
-
 	// BEGIN Select all checkboxes in table BEGIN
 	const selectManyCheckboxes = function () {
 
@@ -420,10 +368,6 @@ $(document).ready(function () {
 	// END tables
 
 
-	// BEGIN tables
-	// $('.modal_token').modal();
-	// END tables
-
 	// BEGIN Delete resource request BEGIN
 	$('.js-form').on('click', '.remove-btn', function (e) {
 		e.preventDefault();
@@ -442,7 +386,6 @@ $(document).ready(function () {
 	// END Delete resource request END
 
 
-
 	// BEGIN Delete resource request BEGIN
 	$('.js-submit').on('click', function (e) {
 		e.preventDefault();
@@ -450,7 +393,6 @@ $(document).ready(function () {
 		form.submit();
 	});
 	// END Delete resource request END
-
 
 
 	// BEGIN Multiple assignment of cards  BEGIN

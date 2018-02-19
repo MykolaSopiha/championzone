@@ -10,7 +10,7 @@
 @import 'libs/mixins'
 @import 'node_modules/bootstrap-sass/assets/stylesheets/bootstrap'
 @import 'node_modules/jquery-ui-bundle/jquery-ui.min'
-@import 'node_modules/chosen-js/chosen.min'
+@import 'node_modules/select2/dist/css/select2.min'
 @import 'node_modules/datatables/media/css/jquery.dataTables.min'
 // ----------- LIBRARIES end -----------
 
@@ -443,3 +443,25 @@
 		+r($tablet)
 			grid-template-columns: 1fr
 //------------- MOTIVATION TABLE end -------------
+
+
+
+// ----------- SELECT2 begin -----------
+.big-select
+	.select2-selection
+		min-height: 70px !important
+		text-align: center
+		font-size: 18px
+		border-radius: 10px
+	.select2-selection__rendered
+		line-height: 70px !important
+
+.small-select
+	.select2-selection
+		min-height: 34px !important
+		text-align: center
+		font-size: 14px
+		border-radius: 4px
+	.select2-selection__rendered
+		line-height: 34px !important
+// ----------- SELECT2 end -----------

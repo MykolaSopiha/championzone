@@ -53,7 +53,7 @@
                 </div>
 
                 @if (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant')
-                <div class="form__item{{ $errors->has('code_hash') ? ' form__item--error' : '' }}">
+                <div class="form__item{{ $errors->has('wallet') ? ' form__item--error' : '' }}">
                     <label for="wallet">Номер кошелька</label>
                     <input id="wallet" type="text" name="wallet" value="{{$card->wallet}}" placeholder="16 digits only">
                     @if ($errors->has('wallet'))
@@ -82,16 +82,16 @@
                     @endif
                 </div>
 
-                <div id="card_user" class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
+                <div id="card_user" class="form__item{{ $errors->has('user_id') ? ' form__item--error' : '' }} big-select">
                     <label for="user">Пользователь</label>
-                    <select name="user_id" id="user">
+                    <select name="user_id" id="user" class="js-select">
                         <option value="">Без пользователя</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}" {{ ($card->user_id == $user->id) ? 'selected' : ''}}>{{ $user->name }}</option>
                         @endforeach
                     </select>
-                    @if ($errors->has('date'))
-                        <p>{{ $errors->first('user') }}</p>
+                    @if ($errors->has('user_id'))
+                        <p>{{ $errors->first('user_id') }}</p>
                     @endif
                 </div>
 

@@ -9,27 +9,6 @@
         #all_cards tfoot {
             display: table-header-group;
         }
-        .chosen-single {
-            height: 70px !important;
-            line-height: 70px !important;
-            background: none !important;
-            min-width: 150px;
-            font-size: 18px;
-            text-align: center;
-            border-radius: 10px !important;
-        }
-        .chosen-container {
-            min-width: 150px;
-        }
-        .filter .chosen-single {
-            height: 34px !important;
-            line-height: 34px !important;
-            background: none !important;
-            min-width: 150px;
-            font-size: 14px;
-            text-align: left;
-            borer-radius: 4px !important;
-        }
     </style>
 @endsection
 
@@ -58,7 +37,6 @@
 
                         <header class="form__header">
                             <h2>Добавить карту</h2>
-                            <a href="{{url('home/multiple')}}">Добавить несколько карт</a>
                         </header>
 
                         <div class="form__item{{ $errors->has('name') ? ' form__item--error' : '' }}">
@@ -72,9 +50,9 @@
                         <div class="form__item{{ $errors->has('type') ? ' form__item--error' : '' }}">
                             <label>Тип</label>
                             <div class="card_type">
-                                <input type="radio" name="type" value="0" required>Яндекс.Деньги<br>
-                                <input type="radio" name="type" value="1" required>QIWI<br>
-                                <input type="radio" name="type" value="2" required>Пластиковая карта
+                                <input type="radio" name="type" value="0" required>&nbsp;Яндекс.Деньги<br>
+                                <input type="radio" name="type" value="1" required>&nbsp;QIWI<br>
+                                <input type="radio" name="type" value="2" required>&nbsp;Пластиковая карта
                             </div>
                             @if ($errors->has('type'))
                                 <p>{{ $errors->first('type') }}</p>
@@ -126,9 +104,9 @@
                             @endif
                         </div>
 
-                        <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }}">
-                            <label for="user">Пользователь</label>
-                            <select name="user" id="user" class="chosen-js-select">
+                        <div class="form__item{{ $errors->has('user') ? ' form__item--error' : '' }} big-select">
+                            <label for="user2">Пользователь</label>
+                            <select name="user" id="user2" class="js-select">
                                 @foreach ($users as $user)
                                     @if ($user->first_name == "" || $user->last_name == "")
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -163,9 +141,9 @@
                         <form class="form-inline" method="get">
 
                             @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
-                            <div class="form-group" style="max-width: 300px">
+                            <div class="form-group small-select" style="max-width: 300px">
                                 <label for="user">Пользователь</label><br>
-                                <select name="user_id" id="user" class="chosen-js-select form-control">
+                                <select name="user_id" id="user" class="js-select form-control">
                                     <option value="">Все пользователи</option>
                                     <option value="0" @if (isset($_GET['user_id']) && $_GET['user_id'] == '0') selected @endif>Назначить пользователя</option>
                                     @foreach ($users as $user)
@@ -175,9 +153,9 @@
                             </div>
                             @endif
 
-                            <div class="form-group" style="max-width: 400px">
+                            <div class="form-group small-select" style="max-width: 400px">
                                 <label for="card">Код</label><br>
-                                <select name="id" id="card" class="chosen-js-select form-control">
+                                <select name="id" id="card" class="js-select form-control">
                                     <option value="">Все карты</option>
                                     @foreach ($cards as $card)<option value="{{$card->id}}" @if (isset($_GET['id']) && $card->id == $_GET['id']) selected @endif>...{{substr($card->code, -8, -4)." ".substr($card->code, -4)}}</option>
                                     @endforeach

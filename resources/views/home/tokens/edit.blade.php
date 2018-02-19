@@ -1,22 +1,6 @@
 @extends('layouts.app')
 
 
-@section('styles')
-<style>
-    .chosen-single {
-        height: 34px !important;
-        line-height: 34px !important;
-        background: none !important;
-        text-align: center
-    }
-    .chosen-container {
-        font-size: 14px !important;
-        width: 100% !important;
-    }
-</style>
-@endsection
-
-
 <!-- begin content -->
 @section('content')
 
@@ -103,10 +87,10 @@
                             </div>
                         @endif
 
-                        <div class="chosen-js form-group form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                        <div class="form-group form__item{{ $errors->has('card') ? ' form__item--error' : '' }} small-select">
                             <label for="card_id" class="col-sm-4 control-label">Карта: </label>
                             <div class="col-sm-8">
-                                <select name="card_id" id="card" class="form-control chosen-js-select">
+                                <select name="card_id" id="card" class="form-control js-select">
                                     @foreach ($cards as $card)<option value="{{ $card->id }}" @if ($token->card_id == $card->id) selected @endif title="{{ $card->currency }}">...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
                                     @endforeach
                                 </select>
@@ -130,10 +114,10 @@
                             @endif
                         </div>
 
-                        <div class="chosen-js second_card form-group form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                        <div class="second_card form-group form__item{{ $errors->has('card') ? ' form__item--error' : '' }} small-select">
                             <label for="card2_id" class="col-sm-4 control-label">Куда перевести?</label>
                             <div class="col-sm-8">
-                                <select name="card2_id" id="card2_id" class="form-control chosen-js-select">
+                                <select name="card2_id" id="card2_id" class="form-control js-select" style="width: 100%;">
                                     @foreach ($cards as $card)<option value="{{ $card->id }}" @if ($token->card2_id == $card->id) selected @endif title="{{ $card->currency }}">...{{ substr(decrypt($card->code), -8, -4)." ".substr(decrypt($card->code), -4) }} ({{ $card->currency }}) {{ $card->name }}</option>
                                     @endforeach
                                 </select>

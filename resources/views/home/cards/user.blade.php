@@ -22,8 +22,8 @@
 
 				<input type="hidden" name="_method" value="put">
 
-				<div class="form__item">
-					<select name="user" id="user">
+				<div class="form__item big-select">
+					<select name="user" id="user" class="js-select">
 						@foreach ($users as $user)
 							@if ( $user->id === $card->user_id )
 								<option value="{{ $user->id }}" selected>{{ $user->name }}</option>

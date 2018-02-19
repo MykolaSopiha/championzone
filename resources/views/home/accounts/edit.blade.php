@@ -1,21 +1,6 @@
 @extends('layouts.app')
 
 
-@section('styles')
-<style>
-    .chosen-container {
-        font-size: 18px !important
-    }
-    .chosen-single {
-        height: 70px !important;
-        line-height: 70px !important;
-        background: none !important;
-        text-align: center
-    }
-</style>
-@endsection
-
-
 @section('content')
 
 	<!-- begin header -->
@@ -48,8 +33,8 @@
                     @endif
                 </div>
 
-				<div class="form__item">
-					<select name="user_id" class="chosen-js-select" id="user_id">
+				<div class="form__item big-select">
+					<select name="user_id" class="js-select" id="user_id">
 						@foreach ($users as $user)
 							@if ( $user->id === $account->user_id )
 								<option value="{{ $user->id }}" selected>{{ $user->name }}</option>
@@ -79,29 +64,12 @@
                     @endif
                 </div>
 
-		        <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}">
+		        <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}  big-select">
                     <label for="acc_currency">Валюта</label>
-                    <select name="currency" id="acc_currency" class="chosen-js-select">
-						@if ( $account->currency == 'USD')
-                        	<option value="USD" selected>USD</option>
-						@else
-							<option value="USD">USD</option>
-						@endif
-						@if ( $account->currency == 'EUR')
-                        	<option value="EUR" selected>EUR</option>
-						@else
-							<option value="EUR">EUR</option>
-						@endif
-                        @if ( $account->currency == 'RUB')
-                        	<option value="RUB" selected>RUB</option>
-						@else
-							<option value="RUB">RUB</option>
-						@endif
-						@if ( $account->currency == 'UAH')
-                        	<option value="UAH" selected>UAH</option>
-						@else
-							<option value="UAH">UAH</option>
-						@endif
+                    <select name="currency" id="acc_currency" class="js-select">
+						@foreach($currencies as $currency)
+							<option value="{{$currency}}" {{($currency == $account->currency)? "selected" : ""}}>{{$currency}}</option>
+						@endforeach
                     </select>
                     @if ($errors->has('currency'))
                         <p>{{ $errors->first('currency') }}</p>

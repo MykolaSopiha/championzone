@@ -83,7 +83,7 @@ class CostController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -91,16 +91,16 @@ class CostController extends Controller
         $data = $request->except('_token');
 
         $this->validate($request, [
-            'date'     => 'required|date',
-            'card_id'  => 'sometimes|numeric|min:1',
-            'user_id'  => 'sometimes|numeric|min:1',
-            'value'    => 'required|numeric',
-            'rate'     => 'required|numeric'
+            'date' => 'required|date',
+            'card_id' => 'sometimes|numeric|min:1',
+            'user_id' => 'sometimes|numeric|min:1',
+            'value' => 'required|numeric',
+            'rate' => 'required|numeric'
         ]);
 
         $data['card_id'] = (is_null($request["card_id"])) ? 0 : $request["card_id"];
         $data['user_id'] = (is_null($request["user_id"])) ? Auth::user()->id : $request["user_id"];
-        $data['value'] = intval(round($data['value'], 2)*100);
+        $data['value'] = intval(round($data['value'], 2) * 100);
 
         Cost::create($data);
 
@@ -110,7 +110,7 @@ class CostController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -121,7 +121,7 @@ class CostController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -132,8 +132,8 @@ class CostController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -144,7 +144,7 @@ class CostController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

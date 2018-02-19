@@ -63,13 +63,6 @@
                                         <p>{{ $errors->first('birthday') }}</p>
                                     @endif
                                 </div>
-                                <div class="form-group{{ $errors->has('terra_id') ? ' has-error' : '' }}">
-                                    <label for="terra_id">Terra Leads ID</label>
-                                    <input id="terra_id" class="form-control" type="text" name="terra_id" value="{{$user->terra_id}}">
-                                    @if ($errors->has('terra_id'))
-                                        <p>{{ $errors->first('terra_id') }}</p>
-                                    @endif
-                                </div>
 
                                 <div class="form-group">
                                     <label for="status">Account Status:</label>
