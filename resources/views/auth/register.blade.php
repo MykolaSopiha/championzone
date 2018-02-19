@@ -55,14 +55,6 @@
                 @endif
             </div>
 
-<!--             <div class="form__item {{ $errors->has('terra_id') ? 'form__item--error' : '' }}">
-                <label for="terra_id">TerraLeads ID</label>
-                <input id="terra_id" type="text" name="terra_id" value="{{ old('terra_id') }}" placeholder="Enter your terra leads id" required>
-                @if ($errors->has('terra_id'))
-                    <p>{{ $errors->first('terra_id') }}</p>
-                @endif
-            </div> -->
-
             <div class="submit">
                 <button type="submit"><i class="fa fa-btn fa-user"></i> Регистрация</button>
             </div>

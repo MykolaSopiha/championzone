@@ -6,7 +6,6 @@
   },
   "devDependencies": {
     "bootstrap-sass": "^3.3.7",
-    "chosen-js": "^1.8.2",
     "datatables": "^1.10.13",
     "gulp": "^3.9.1",
     "jquery": "^3.2.1",

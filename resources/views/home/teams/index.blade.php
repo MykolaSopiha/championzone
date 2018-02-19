@@ -9,36 +9,12 @@
         #all_cards tfoot {
             display: table-header-group;
         }
-
-        .chosen-single {
-            height: 70px !important;
-            line-height: 70px !important;
-            background: none !important;
-            min-width: 150px;
-            font-size: 18px;
-            text-align: center;
-            border-radius: 10px !important;
-        }
-
-        .chosen-container {
-            min-width: 150px;
-        }
-
-        .filter .chosen-single {
-            height: 34px !important;
-            line-height: 34px !important;
-            background: none !important;
-            min-width: 150px;
-            font-size: 14px;
-            text-align: left;
-            border-radius: 4px !important;
-        }
     </style>
 @endsection
 
 
 @section('content')
-<!-- begin header -->
+    <!-- begin header -->
 @section('page-name') Команды @endsection
 @include('layouts.headers.home')
 <!-- end header -->
@@ -68,9 +44,9 @@
                         @endif
                     </div>
 
-                    <div class="form__item{{ $errors->has('team_lead_id') ? ' form__item--error' : '' }}">
+                    <div class="form__item{{ $errors->has('team_lead_id') ? ' form__item--error' : '' }} big-select">
                         <label for="team_lead">Лидер команды</label>
-                        <select name="team_lead_id" id="team_lead" class="chosen-js-select">
+                        <select name="team_lead_id" id="team_lead" class="js-select">
                             @foreach ($users as $user)
                                 @if ($user->first_name == "" || $user->last_name == "")
                                     <option value="{{ $user->id }}">{{ $user->name }}</option>

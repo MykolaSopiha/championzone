@@ -87,8 +87,9 @@ class AccountController extends Controller
     {
         $account = DB::table('accounts')->where('id', $id)->first();
         $users   = DB::select('select id, name from users');
+        $currencies = config('assets.currencies');
 
-        return view('home.accounts.edit', compact('account', 'users'));
+        return view('home.accounts.edit', compact('account', 'users', 'currencies'));
     }
 
     /**

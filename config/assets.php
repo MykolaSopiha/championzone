@@ -3,10 +3,10 @@
 return [
 
     'currencies' => [
-        'RUB',
         'USD',
+        'EUR',
+        'RUB',
         'UAH',
-        'EUR'
     ],
 
     'card_types' => [

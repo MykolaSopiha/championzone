@@ -42,17 +42,18 @@ class UserController extends Controller
 
     public function store(Request $request, $id)
     {
+        $request['terra_id'] = ($request['terra_id'] == "") ? null : intval($request['terra_id']);
+
         $rules = [
-            'name' => 'required|max:255|unique:users,id,' . Auth::user()->id,
-            'first_name' => 'sometimes|max:255',
-            'last_name' => 'sometimes|max:255',
-            'terra_id' => 'sometimes|numeric|min:0',
-            'birthday' => 'sometimes|date',
+            'name' => 'max:255|unique:users,name,'.$request['name'],
+            'first_name' => 'max:255',
+            'last_name' => 'max:255',
+            'terra_id' => 'numeric|min:0|unique:users,terra_id,'.$request['terra_id'],
+            'birthday' => 'date',
         ];
 
         $this->validate($request, $rules);
         User::findOrFail($id)->update($request->all());
-
         return back()->with('Data stored!');
     }
 
@@ -61,37 +62,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $teams = Team::all();
         return view('home.users.edit', compact('user', 'teams'));
-    }
-
-    public function setroleslist()
-    {
-        $roles = [
-            'admin',
-            'mediabuyer',
-            'accountant',
-            'farmer'
-        ];
-
-        foreach ($roles as $role) {
-            if (DB::table('roles')->where('name', $role)->count() == 0)
-                DB::table('roles')->insert(['name' => $role, 'description' => '']);
-        }
-
-        return 'hi';
-    }
-
-    public function setrole()
-    {
-        $users = User::all();
-
-        foreach ($users as $user) {
-            DB::table('role_user')->insert([
-                'user_id' => $user->id,
-                'role_id' => Role::select('name', 'id')->where('name', '=', $user->status)->first()->id
-            ]);
-        }
-
-        return 'hi';
     }
 
     public function delete($id)

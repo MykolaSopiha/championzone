@@ -1,36 +1,6 @@
 @extends('layouts.app')
 
 
-@section('styles')
-    <style>
-        .chosen-single {
-            height: 70px !important;
-            line-height: 70px !important;
-            background: none !important;
-            min-width: 150px;
-            font-size: 18px;
-            text-align: center;
-            border-radius: 10px !important;
-        }
-        .chosen-container {
-            min-width: 150px;
-        }
-        .filter .chosen-single {
-            height: 34px !important;
-            line-height: 34px !important;
-            background: none !important;
-            min-width: 150px;
-            font-size: 14px;
-            text-align: left;
-            borer-radius: 4px !important;
-        }
-    </style>
-@endsection
-
-
-
-
-
 @section('content')
 
     <!-- begin header -->
@@ -59,9 +29,9 @@
                         </header>
 
                         @if (Auth::user()->status == 'accountant')
-                        <div class="form__item{{ $errors->has('user_id') ? ' form__item--error' : '' }}">
+                        <div class="form__item{{ $errors->has('user_id') ? ' form__item--error' : '' }} big-select">
                             <label for="user">Пользователь</label>
-                            <select name="user_id" id="user" class="chosen-js-select">
+                            <select name="user_id" id="user" class="js-select">
                                 @foreach ($users as $user)
                                     @if ($user->first_name == "" || $user->last_name == "")
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -84,9 +54,9 @@
                             @endif
                         </div>
 
-                        <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }}">
+                        <div class="form__item{{ $errors->has('currency') ? ' form__item--error' : '' }} big-select">
                             <label for="cost_type_id">Статья расходов</label>
-                            <select name="cost_type_id" id="cost_type_id">
+                            <select name="cost_type_id" id="cost_type_id" class="js-select">
                                 @foreach ($costtypes as $costtype)
                                     <option value="{{$costtype->id}}" title="{{$costtype->description}}">{{$costtype->name}}</option>
                                 @endforeach

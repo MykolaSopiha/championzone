@@ -19,6 +19,7 @@ Route::auth();
 
 Route::get('/home', ['uses' => 'HomeController@index', 'as' => 'home']);
 
+
 // Resource BEGIN
 Route::group(['prefix' => 'home'], function () {
     Route::resource('tokens', 'TokenController');
@@ -52,10 +53,9 @@ Route::group(['prefix' => 'home', 'as' => 'home:'], function () {
         Route::get('types/{id}/delete', ['uses' => 'CostController@deleteType', 'as' => 'delete']);
     });
 
-    Route::get('multiple', 'CardController@multiplepage');
-    Route::post('multiple', 'CardController@multipleadd');
     Route::post('cards/multiple_action', 'CardController@multiple_action');
 });
+
 
 Route::group(['prefix' => 'api'], function () {
     Route::get('test', 'APIController@test');
@@ -65,12 +65,3 @@ Route::group(['prefix' => 'api'], function () {
 
     Route::get('token_notify', 'APIController@checkTokens');
 });
-
-Route::get('/wallets', 'CardController@setWallets');
-Route::post('/wallets', 'CardController@addWallets');
-
-Route::get('/setroleslist', 'UserController@setroleslist');
-Route::get('/setrole', 'UserController@setrole');
-
-
-Route::get('/bugfix/wallet-encrypt', 'BugFixController@index');

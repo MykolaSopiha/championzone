@@ -45,7 +45,7 @@
 
 @section('content')
 
-<!-- begin header -->
+    <!-- begin header -->
 @section('page-name') Токены @endsection
 @include('layouts.headers.home')
 <!-- end header -->
@@ -79,9 +79,9 @@
                     @endif
 
                     @if (Auth::user()->status == 'accountant' || Auth::user()->status == 'admin' || Auth::user()->TeamLead())
-                        <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                        <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }} big-select">
                             <label for="user_id">Пользователь</label>
-                            <select name="user_id" id="user_id" class="chosen-js-select" required>
+                            <select name="user_id" id="user_id" class="js-select">
                                 @foreach ($users as $user)
                                     <option value="{{$user->id}}" @if ($user->id == Auth::user()->id) selected @endif>
                                         {{$user->first_name." ".$user->last_name." ".$user->name}}
@@ -94,13 +94,14 @@
                         </div>
                     @endif
 
-                    <div class="chosen-js form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                    <div class="form__item{{ $errors->has('card') ? ' form__item--error' : '' }} big-select">
                         <label for="card">Карта</label>
-                        <select name="card_id" id="card" class="chosen-js-select">
+                        <select name="card_id" id="card" class="js-select">
                             @foreach ($cards as $card)
-                                <option value="{{ $card->id }}" title="{{ $card->currency }}">
-                                    ...{{ substr($card->code, -8, -4)." ".substr($card->code, -4) }}
-                                    ({{ $card->currency }}) {{ $card->name }}</option>
+                                <option value="{{$card->id}}" title="{{$card->currency}}">
+                                    ... {{substr($card->code, -8, -4)." ".substr($card->code, -4)}} ({{$card->currency}}
+                                    ) {{$card->name}}
+                                </option>
                             @endforeach
                         </select>
                         @if ($errors->has('card'))
@@ -120,9 +121,9 @@
                         @endif
                     </div>
 
-                    <div class="chosen-js second_card form__item{{ $errors->has('card') ? ' form__item--error' : '' }}">
+                    <div class="second_card form__item{{ $errors->has('card') ? ' form__item--error' : '' }} big-select">
                         <label for="card">Куда перевести?</label>
-                        <select name="card2_id" id="card2" class="chosen-js-select">
+                        <select name="card2_id" id="card2" class="js-select" style="width: 100%;">
                             @foreach ($cards as $card)
                                 <option value="{{ $card->id }}" title="{{ $card->currency }}">
                                     ...{{ substr($card->code, -8, -4)." ".substr($card->code, -4) }}
@@ -159,7 +160,7 @@
 
                     <div class="form__item{{ $errors->has('ask') ? ' form__item--error' : '' }}">
                         <label for="ask">Описание</label><br>
-                        <textarea name="ask" id="ask" cols="50" rows="5"
+                        <textarea name="ask" id="ask" cols="50" rows="5" style="width: 100%;"
                                   placeholder="краткий комментарий. не обязательно"></textarea>
                         @if ($errors->has('value'))
                             <p>{{ $errors->first('value') }}</p>
@@ -193,9 +194,9 @@
                         </div>
 
                         @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->TeamLead())
-                            <div class="form-group">
+                            <div class="form-group small-select">
                                 <label for="user">Пользователь</label><br>
-                                <select name="user_id" id="user" class="chosen-js-select form-control">
+                                <select name="user_id" id="user" class="js-select form-control">
                                     <option value="">Все пользователи</option>
                                     @foreach ($users as $user)
                                         <option value="{{$user->id}}"
@@ -205,9 +206,9 @@
                             </div>
                         @endif
 
-                        <div class="form-group" style="max-width: 400px">
-                            <label for="card">Карта</label><br>
-                            <select name="card_id" id="card" class="chosen-js-select form-control">
+                        <div class="form-group small-select" style="max-width: 400px">
+                            <label for="filter_card">Карта</label><br>
+                            <select name="card_id" id="filter_card" class="js-select form-control">
                                 <option value="">Все карты</option>
                                 @foreach ($cards as $card)
                                     <option value="{{$card->id}}"
@@ -432,7 +433,7 @@
             var tokens_count = null;
             let checkTokensUrl = "{{url('/api/token_notify')}}?user_id={{Auth::user()->id}}&user_status={{Auth::user()->status}}";
 
-                    @if ($user = Auth::user())
+            @if ($user = Auth::user())
             const checkTokens = () => {
                     $.ajax({
                         url: checkTokensUrl,
