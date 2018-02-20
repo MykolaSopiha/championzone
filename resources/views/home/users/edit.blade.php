@@ -42,6 +42,13 @@
                                         <p>{{ $errors->first('name') }}</p>
                                     @endif
                                 </div>
+                                <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                                    <label for="email">E-mail:</label>
+                                    <input id="email" class="form-control" type="text" name="email" value="{{$user->email}}">
+                                    @if ($errors->has('email'))
+                                        <p>{{ $errors->first('email') }}</p>
+                                    @endif
+                                </div>
                                 <div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }}">
                                     <label for="first_name">Имя</label>
                                     <input id="first_name" class="form-control" type="text" name="first_name" value="{{$user->first_name}}" required>
