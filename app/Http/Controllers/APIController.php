@@ -85,10 +85,17 @@ class APIController extends Controller
             return "<input type='checkbox' class='shift_select' name='card[" . $card->id . "]'>";
         }, 0)->editColumn('user_id', function ($card) {
             $user = DB::table('users')->where('id', $card->user_id)->first();
+
+            if ($user->first_name == "" && $user->last_name == "") {
+                $name = $user->name;
+            } else {
+                $name = $user->first_name." ".$user->last_name;
+            }
+
             if (empty($user)) {
                 return "<a href='" . url('home/cards') . "/" . $card->id . "'>" . 'Назначить пользователя' . "</a>";
             } else {
-                return "<a href='" . url('home/cards') . "/" . $card->id . "'>" . $user->name . "</a>";
+                return "<a href='" . url('home/cards') . "/" . $card->id . "'>" . $name . "</a>";
             }
         })->editColumn('date', function ($card) {
             return $card->date = substr($card->date, 0, 4) . "-" . substr($card->date, -2);
@@ -153,7 +160,11 @@ class APIController extends Controller
         return DataTables::queryBuilder($tokens)->orderBy('id', 'desc')
             ->addColumn('user_name', function ($token) {
                 $user = DB::table('users')->where('id', $token->user_id)->limit(1)->get();
-                return $user[0]->name;
+                if ($user[0]->first_name == "" && $user[0]->last_name == "") {
+                    return $user[0]->name;
+                } else {
+                    return $user[0]->first_name." ".$user[0]->last_name;
+                }
             })
             ->editColumn('card_code', function ($token) {
                 $code = decrypt($token->card_code);
