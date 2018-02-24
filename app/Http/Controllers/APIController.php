@@ -86,15 +86,16 @@ class APIController extends Controller
         }, 0)->editColumn('user_id', function ($card) {
             $user = DB::table('users')->where('id', $card->user_id)->first();
 
-            if ($user->first_name == "" && $user->last_name == "") {
-                $name = $user->name;
-            } else {
-                $name = $user->first_name." ".$user->last_name;
-            }
+            
 
             if (empty($user)) {
                 return "<a href='" . url('home/cards') . "/" . $card->id . "'>" . 'Назначить пользователя' . "</a>";
             } else {
+                if ($user->first_name == "" && $user->last_name == "") {
+                    $name = $user->name;
+                } else {
+                    $name = $user->first_name." ".$user->last_name;
+                }
                 return "<a href='" . url('home/cards') . "/" . $card->id . "'>" . $name . "</a>";
             }
         })->editColumn('date', function ($card) {
