@@ -112,18 +112,24 @@ class HomeController extends Controller
 
 //        return dd($myTeam, $conditions);
 
-        $fee = 1.1; // transaction fee ~10%
+        $fee = 0.1; // transaction fee ~10%
         $total = 0;
         $total_RUB = 0;
 
         foreach ($tokens as $token) {
-            $USD = $fee * $token->value * $token->rate / 100;
-            $RUB = ($token->currency == 'RUB') ? $fee * $token->value / 100 : 0;
+            $USD = (1 + $fee) * $token->value * $token->rate / 100;
+            $RUB = ($token->currency == 'RUB') ? (1 + $fee) * $token->value / 100 : 0;
 
             if ($token->action !== 'deposit') {
                 $USD *= -1;
                 $RUB *= -1;
             }
+
+            if ($token->action !== 'deposit') {
+                $USD *= -$fee*$USD;
+                $RUB *= -$fee*$RUB;
+            }
+
             if (isset($statistics[$token->date])) {
                 $statistics[$token->date]['cost'] += $USD;
                 $statistics[$token->date]['cost_RUB'] += $RUB;

@@ -96,7 +96,7 @@
                     </div>
 
                     <div class="second_card form__item{{ $errors->has('card') ? ' form__item--error' : '' }} big-select">
-                        <label for="card">Куда перевести?</label>
+                        <label for="card2">Куда перевести?</label>
                         <select name="card2_id" id="card2" class="js-select" style="width: 100%;">
                             @foreach ($cards as $card)
                                 <option value="{{ $card->id }}" title="{{ $card->currency }}">
@@ -181,8 +181,8 @@
                         @endif
 
                         <div class="form-group small-select" style="max-width: 400px">
-                            <label for="card">Карта</label><br>
-                            <select name="card_id" id="card" class="js-select form-control">
+                            <label for="card3">Карта</label><br>
+                            <select name="card_id" id="card3" class="js-select form-control">
                                 <option value="">Все карты</option>
                                 @foreach ($cards as $card)
                                     <option value="{{$card->id}}"
