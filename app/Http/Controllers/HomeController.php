@@ -110,8 +110,6 @@ class HomeController extends Controller
                 ->get();
         }
 
-//        return dd($myTeam, $conditions);
-
         $fee = 0.1; // transaction fee ~10%
         $total = 0;
         $total_RUB = 0;
