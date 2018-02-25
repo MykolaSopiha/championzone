@@ -115,17 +115,22 @@ class HomeController extends Controller
         $total_RUB = 0;
 
         foreach ($tokens as $token) {
-            $USD = (1 + $fee) * $token->value * $token->rate / 100;
-            $RUB = ($token->currency == 'RUB') ? (1 + $fee) * $token->value / 100 : 0;
+            $USD = $token->value * $token->rate / 100;
+            $RUB = ($token->currency == 'RUB') ? $token->value / 100 : 0;
 
-            if ($token->action !== 'deposit') {
-                $USD *= -1;
-                $RUB *= -1;
+            if ($token->action == 'deposit') {
+                $USD *= (1 + $fee);
+                $RUB *= (1 + $fee);
             }
 
-            if ($token->action !== 'transfer') {
-                $USD *= -$fee;
-                $RUB *= -$fee;
+            if ($token->action == 'withdraw') {
+                $USD *= -(1 + $fee);
+                $RUB *= -(1 + $fee);
+            }
+
+            if ($token->action == 'transfer') {
+                $USD *= $fee;
+                $RUB *= $fee;
             }
 
             if (isset($statistics[$token->date])) {
