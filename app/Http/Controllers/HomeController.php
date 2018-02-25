@@ -125,9 +125,9 @@ class HomeController extends Controller
                 $RUB *= -1;
             }
 
-            if ($token->action !== 'deposit') {
-                $USD *= -$fee*$USD;
-                $RUB *= -$fee*$RUB;
+            if ($token->action !== 'transfer') {
+                $USD *= -$fee;
+                $RUB *= -$fee;
             }
 
             if (isset($statistics[$token->date])) {
