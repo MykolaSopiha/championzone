@@ -19,7 +19,8 @@ class Token extends Model
         'action',
         'ask',
         'ans',
-        'status'
+        'status',
+        'bookkeeping_id',
     ];
 
     public function user()
@@ -30,6 +31,11 @@ class Token extends Model
     public function card()
     {
         return $this->belongsTo('App\Card', 'id', 'card_id');
+    }
+
+    public function bookkeeping()
+    {
+        return $this->belongsTo('App\Bookkeeping', 'bookkeeping_id', 'id');
     }
 
 }

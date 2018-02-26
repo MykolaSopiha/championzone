@@ -17,7 +17,8 @@ class Card extends Model
         'user_id',
         'status',
         'info',
-        'wallet'
+        'wallet',
+        'bookkeeping_id',
     ];
 
     protected $encrypted = [
@@ -39,6 +40,11 @@ class Card extends Model
     public function user()
     {
         return $this->belongsTo('App\User');
+    }
+
+    public function bookkeeping()
+    {
+        return $this->belongsTo('App\Bookkeeping', 'bookkeeping_id', 'id');
     }
     // Relationships END
 

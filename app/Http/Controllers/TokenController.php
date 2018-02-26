@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Bookkeeping;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
@@ -59,7 +60,8 @@ class TokenController extends Controller
             $cards = Card::whereIn('cards.user_id', $myTeam)->get();
         }
 
-        return view('home.tokens.index', compact('cards', 'users', 'statuses', 'currencies'));
+        $bks = Bookkeeping::all();
+        return view('home.tokens.index', compact('cards', 'users', 'statuses', 'currencies', 'bks'));
     }
 
     /**
@@ -108,6 +110,8 @@ class TokenController extends Controller
             'user_id' => 'required|numeric|min:1',
         ];
 
+        $card = DB::table('cards')->where('id', $request["card_id"])->first();
+
         $data = [
             'value' => intval(round($request["value"], 2) * 100),
             'currency' => $token_card->currency,
@@ -119,7 +123,8 @@ class TokenController extends Controller
             'action' => $request['action'],
             'ask' => $request['ask'],
             'ans' => $request['ans'],
-            'status' => 'active'
+            'status' => 'active',
+            'bookkeeping_id' => $card->bookkeeping_id,
         ];
 
         if ($request['action'] == 'transfer') {

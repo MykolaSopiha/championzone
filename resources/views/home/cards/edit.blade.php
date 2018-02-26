@@ -24,6 +24,20 @@
                     <h2>Карта ID: {{$card->id}}</h2>
                 </header>
 
+                <div class="form__item{{ $errors->has('bookkeeping_id') ? ' form__item--error' : '' }} big-select">
+                    <label for="bookkeeping_id">Бухгалтерия</label><br>
+                    <select name="bookkeeping_id" class="js-select">
+                        @foreach ($bks as $bk)
+                            <option value="{{ $bk->id }}" {{($card->bookkeeping_id == $bk->id) ? "selected" : ""}}>
+                                {{$bk->name}}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if ($errors->has('card'))
+                        <p>{{ $errors->first('card') }}</p>
+                    @endif
+                </div>
+
                 <div class="form__item{{ $errors->has('name') ? ' form__item--error' : '' }}">
                     <label for="name">Название</label>
                     <input id="name" type="text" name="name" value="{{ $card->name }}" placeholder="Чемпионская">

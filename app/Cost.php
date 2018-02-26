@@ -6,7 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cost extends Model
 {
-    protected $fillable = ['date', 'card_id', 'user_id', 'value', 'currency', 'rate', 'info', 'cost_type_id'];
+    protected $fillable = [
+        'date',
+        'card_id',
+        'user_id',
+        'value',
+        'currency',
+        'rate',
+        'info',
+        'cost_type_id',
+        'bookkeeping_id',
+    ];
 
     public function card()
     {
@@ -16,6 +26,11 @@ class Cost extends Model
     public function user()
     {
         return $this->belongsTo('App\User', 'user_id', 'id');
+    }
+
+    public function bookkeeping()
+    {
+        return $this->belongsTo('App\Bookkeeping', 'bookkeeping_id', 'id');
     }
 
     public function costType()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Bookkeeping;
 use App\Token;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -43,9 +44,14 @@ class HomeController extends Controller
         if (Auth::user()->status === 'farmer')
             return redirect('/home');
 
+        $bks = Bookkeeping::all();
+
         $get_req = "&";
         if ($request->user != "") {
             $get_req .= "user_id=" . $request->user;
+        }
+        if ($request->bookkeeping_id != "") {
+            $get_req .= "bookkeeping_id=" . $request->bookkeeping_id;
         }
         if ($request->card != "") {
             $get_req .= "card_id=" . $request->card;
@@ -67,6 +73,9 @@ class HomeController extends Controller
 
         if ($request->card != '')
             $conditions[] = ['card_id', '=', $request->card];
+
+        if ($request->bookkeeping_id != '')
+            $conditions[] = ['bookkeeping_id', '=', $request->bookkeeping_id];
 
         if ($request->user != '')
             $conditions[] = ['user_id', '=', $request->user];
@@ -148,7 +157,7 @@ class HomeController extends Controller
             $total_RUB += $RUB;
         }
 
-        return view('home.statistics.index', compact('statistics', 'total', 'total_RUB', 'users', 'cards', 'get_req'));
+        return view('home.statistics.index', compact('statistics', 'total', 'total_RUB', 'users', 'cards', 'get_req', 'bks'));
     }
 
     public function balance()

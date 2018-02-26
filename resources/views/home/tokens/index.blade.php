@@ -6,9 +6,11 @@
         .dropdown-menu {
             min-width: 0 !important
         }
+
         #tokens_ssp_table tfoot {
             display: table-header-group;
         }
+
         .transfer_dest, .has_wallet {
             color: blue;
             cursor: pointer;
@@ -20,13 +22,13 @@
 
 @section('content')
 
-<!-- begin header -->
+    <!-- begin header -->
 @section('page-name') Токены @endsection
 @include('layouts.headers.home')
 <!-- end header -->
 
 <!-- begin main -->
-<main class="main" role="main">
+<main class="main" role="main" style="max-width: 1600px">
     <div class="main-inner">
 
         <!-- begin items -->
@@ -159,13 +161,23 @@
 
                         <div class="form-group">
                             <label for="filter_date">Дата</label><br>
-                            @if (isset($_GET['date']))
-                                <input type="text" name="date" value="{{$_GET['date']}}" class="form-control"
-                                       id="filter_date">
-                            @else
-                                <input type="text" name="date" class="form-control" id="filter_date">
-                            @endif
+                            <input type="text" name="date" value="{{(isset($_GET['date'])) ? $_GET['date'] : ""}}"
+                                   class="form-control" id="filter_date">
                         </div>
+
+                        @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
+                            <div class="form-group" style="max-width: 400px">
+                                <label for="bookkeeping_id">Бухгалтерия</label><br>
+                                <select name="bookkeeping_id" id="bookkeeping_id" class="form-control"
+                                        style="min-width: 100px">
+                                    <option value="">Все</option>
+                                    @foreach ($bks as $bk)
+                                        <option value="{{$bk->id}}"
+                                                {{(isset($_GET['bookkeeping_id']) && $_GET['bookkeeping_id'] == $bk->id) ? "selected" : ""}}>{{$bk->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
 
                         @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->TeamLead())
                             <div class="form-group small-select">
@@ -238,6 +250,7 @@
                                     <td>Действие</td>
                                     <td>Описание</td>
                                     <td>Отзыв</td>
+                                    <td>Бухгалтерия</td>
                                     <td>Статус</td>
                                     <td></td>
                                 </tr>
@@ -334,9 +347,9 @@
 
             if (!user_status) {
                 columnDefs_json = {
-                    "targets": [1],
+                    "targets": [1, 9],
                     "visible": false,
-                    "searchable": true
+                    "searchable": false
                 };
             }
 
@@ -364,6 +377,7 @@
                     {data: 'action'},
                     {data: 'ask'},
                     {data: 'ans'},
+                    {data: 'bookkeeping'},
                     {data: 'status'},
                     {data: 'tools'}
                 ],

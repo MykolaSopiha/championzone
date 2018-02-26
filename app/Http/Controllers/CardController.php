@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Bookkeeping;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -33,6 +34,7 @@ class CardController extends Controller
     public function index()
     {
         $users = User::select('id', 'name', 'first_name', 'last_name')->where('status', '<>', 'deleted')->get();
+        $bks = Bookkeeping::all();
 
         if (Auth::user()->status == "mediabuyer" && !Auth::user()->TeamLead()) {
             $cards = Card::where('user_id', Auth::user()->id)->get();
@@ -48,7 +50,7 @@ class CardController extends Controller
             $cards = Card::all();
         }
 
-        return view('home.cards.index', compact('users', 'cards', 'types', 'currencies'));
+        return view('home.cards.index', compact('users', 'cards', 'types', 'currencies', 'bks'));
     }
 
 
@@ -111,7 +113,8 @@ class CardController extends Controller
             'currency'  => $request["currency"],
             'user_id'   => $request["user"],
             'status'    => 'active',
-            'type'      => intval($request["type"])
+            'type'      => intval($request["type"]),
+            'bookkeeping_id' => inval($request['bookkeeping_id']),
         ];
 
         $QIWI_data = [
@@ -178,12 +181,13 @@ class CardController extends Controller
     {
         $card  = Card::find($id);
         $users = User::all();
+        $bks = Bookkeeping::all();
 
         if (Auth::user()->TeamLead() && Auth::user()->status != 'admin') {
             $users = User::where('team_id', Auth::user()->team_id)->get();
         }
 
-        return view('home.cards.edit', compact('card','users', 'currencies') );
+        return view('home.cards.edit', compact('card','users', 'currencies', 'bks') );
     }
 
     /**
@@ -236,6 +240,7 @@ class CardController extends Controller
             'type' => 'required|numeric|min:0',
             'code' => 'required|max:255',
             'cw2'  => 'required|max:255',
+            'bookkeeping_id' => 'required|exists:bookkeepings,id'
         ];
 
         $this->validate($request, $rules);

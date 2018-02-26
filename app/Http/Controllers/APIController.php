@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Bookkeeping;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -35,7 +36,6 @@ class APIController extends Controller
 
     public function getCards(Request $request)
     {
-
         // storing  request (ie, get/post) global array to a variable
         $requestData = $_REQUEST;
 
@@ -73,7 +73,6 @@ class APIController extends Controller
             $cards = DB::table('cards')->where($conditions)->orderBy('id', 'desc');
         }
 
-
         return DataTables::queryBuilder($cards)->editColumn('code', function ($card) {
             $code = decrypt($card->code);
             if (Auth::user()->status == 'mediabuyer') {
@@ -81,12 +80,13 @@ class APIController extends Controller
             } else {
                 return "<a href='" . url('/home/cards') . "/" . $card->id . "'>" . substr($code, 0, 4) . " " . substr($code, 4, 4) . " " . substr($code, 8, 4) . " " . substr($code, 12, 4) . " (" . decrypt($card->cw2) . ")" . "</a>";
             }
+        })->addColumn('bookkeeping', function ($card) {
+            return "<span class=\"label label-primary\">{$card->name}</span>";
         })->addColumn('check', function ($card) {
             return "<input type='checkbox' class='shift_select' name='card[" . $card->id . "]'>";
         }, 0)->editColumn('user_id', function ($card) {
             $user = DB::table('users')->where('id', $card->user_id)->first();
 
-            
 
             if (empty($user)) {
                 return "<a href='" . url('home/cards') . "/" . $card->id . "'>" . 'Назначить пользователя' . "</a>";
@@ -94,7 +94,7 @@ class APIController extends Controller
                 if ($user->first_name == "" && $user->last_name == "") {
                     $name = $user->name;
                 } else {
-                    $name = $user->first_name." ".$user->last_name;
+                    $name = $user->first_name . " " . $user->last_name;
                 }
                 return "<a href='" . url('home/cards') . "/" . $card->id . "'>" . $name . "</a>";
             }
@@ -152,22 +152,21 @@ class APIController extends Controller
                 $myTeam[] = $user->id;
             }
 
-            $tokens = DB::table('tokens')->where($conditions)->whereIn('tokens.user_id', $myTeam);
+            $tokens = Token::where($conditions)->whereIn('tokens.user_id', $myTeam);
         } else {
-            $tokens = DB::table('tokens')->where($conditions);
+            $tokens = Token::where($conditions);
         }
 
 
-        return DataTables::queryBuilder($tokens)->orderBy('id', 'desc')
+        return DataTables::of($tokens)->orderBy('id', 'desc')
             ->addColumn('user_name', function ($token) {
                 $user = DB::table('users')->where('id', $token->user_id)->limit(1)->get();
                 if ($user[0]->first_name == "" && $user[0]->last_name == "") {
                     return $user[0]->name;
                 } else {
-                    return $user[0]->first_name." ".$user[0]->last_name;
+                    return $user[0]->first_name . " " . $user[0]->last_name;
                 }
-            })
-            ->editColumn('card_code', function ($token) {
+            })->editColumn('card_code', function ($token) {
                 $code = decrypt($token->card_code);
                 $code = substr($code, 0, 4) . "&nbsp;" . substr($code, 4, 4) . "&nbsp;" . substr($code, 8, 4) . "&nbsp;" . substr($code, 12);
 
@@ -178,14 +177,13 @@ class APIController extends Controller
                     }
                 }
                 return $code;
-            })
-            ->editColumn('value', function ($token) {
+            })->addColumn('bookkeeping', function ($token) {
+                return "<span class=\"label label-primary\">{$token->bookkeeping->name}</span>";
+            })->editColumn('value', function ($token) {
                 return number_format(floatval($token->value / 100), 2, ".", "");
-            })
-            ->editColumn('rate', function ($token) {
+            })->editColumn('rate', function ($token) {
                 return number_format(floatval($token->rate), 5, ".", "");
-            })
-            ->editColumn('action', function ($token) {
+            })->editColumn('action', function ($token) {
                 $actions_RU = [
                     'deposit' => 'Пополнить',
                     'withdraw' => 'Списать',
@@ -199,8 +197,7 @@ class APIController extends Controller
                 }
 
                 return $action;
-            })
-            ->editColumn('status', function ($token) {
+            })->editColumn('status', function ($token) {
                 if (Auth::user()->status !== 'accountant' && Auth::user()->status !== 'admin') {
                     return "<p class='token_status'>" . $token->status . "</p>";
                 } else {
@@ -219,8 +216,7 @@ class APIController extends Controller
 	                                </ul>
 	                            </div>';
                 }
-            })
-            ->addColumn('tools', function ($token) {
+            })->addColumn('tools', function ($token) {
                 if ($token->status == 'active' || Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') {
                     return '<td>
 								<a href="' . url('home/tokens') . '/' . $token->id . '">
@@ -233,21 +229,19 @@ class APIController extends Controller
                 } else {
                     return '--';
                 }
-            })
-            ->make(true);
-
+            })->make(true);
     }
 
     public function checkTokens(Request $request)
     {
-        $coditions = [];
-        $coditions[] = ['status', 'active'];
+        $conditions = [];
+        $conditions[] = ['status', 'active'];
 
         if ($request->user_status != "farmer" && isset($request->user_id)) {
             if ($request->user_status == 'mediabuyer') {
                 $coditions[] = ['user_id', $request->user_id];
             }
-            return DB::table('tokens')->where($coditions)->count();
+            return DB::table('tokens')->where($conditions)->count();
         }
         return 0;
     }

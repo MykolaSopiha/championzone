@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Bookkeeping;
 use App\Card;
 use App\CostType;
 use App\User;
@@ -32,7 +33,8 @@ class CostController extends Controller
         $users = User::all();
         $costs = Cost::all();
         $costtypes = CostType::all();
-        return view('home.costs.index', compact('costs', 'costtypes', 'users'));
+        $bks = Bookkeeping::all();
+        return view('home.costs.index', compact('costs', 'costtypes', 'users', 'bks'));
     }
 
     /**
@@ -95,7 +97,8 @@ class CostController extends Controller
             'card_id' => 'sometimes|numeric|min:1',
             'user_id' => 'sometimes|numeric|min:1',
             'value' => 'required|numeric',
-            'rate' => 'required|numeric'
+            'rate' => 'required|numeric',
+            'bookkeeping_id' => 'required|numeric|exists:bookkeepings,id'
         ]);
 
         $data['card_id'] = (is_null($request["card_id"])) ? 0 : $request["card_id"];
@@ -104,7 +107,7 @@ class CostController extends Controller
 
         Cost::create($data);
 
-        return redirect()->route('home:home.costs.index');
+        return redirect('home/costs');
     }
 
     /**

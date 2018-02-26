@@ -35,6 +35,14 @@ Route::group(['prefix' => 'home'], function () {
         Route::post('/{id}', ['uses' => 'UserController@store', 'as' => 'save']);
         Route::get('/ssp', ['uses' => 'UserController@ssp', 'as' => 'ssp']);
     });
+
+    Route::group(['prefix' => 'bookkeepings', 'as' => 'home.bookkeepings.'], function () {
+        Route::get('/', ['uses' => 'BookkeepingController@index', 'as' => 'index']);
+        Route::post('/store', ['uses' => 'BookkeepingController@store', 'as' => 'store']);
+        Route::get('/{id}/edit', ['uses' => 'BookkeepingController@edit', 'as' => 'edit']);
+        Route::post('/{id}/update', ['uses' => 'BookkeepingController@update', 'as' => 'update']);
+        Route::get('/{id}/delete', ['uses' => 'BookkeepingController@delete', 'as' => 'delete']);
+    });
 });
 // Resource END
 

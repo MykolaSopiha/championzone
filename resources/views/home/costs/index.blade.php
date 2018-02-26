@@ -46,6 +46,20 @@
                         </div>
                         @endif
 
+                        <div class="form__item{{ $errors->has('bookkeeping_id') ? ' form__item--error' : '' }} big-select">
+                            <label for="bookkeeping_id">Бухгалтерия</label><br>
+                            <select name="bookkeeping_id" class="js-select">
+                                @foreach ($bks as $bk)
+                                    <option value="{{ $bk->id }}" {{(isset($_REQUEST['bookkeeping_id']) && $_REQUEST['bookkeeping_id'] == $bk->id) ? "selected" : ""}}>
+                                        {{$bk->name}}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('card'))
+                                <p>{{ $errors->first('card') }}</p>
+                            @endif
+                        </div>
+
                         <div class="form__item{{ $errors->has('date') ? ' form__item--error' : '' }}">
                             <label for="date">Дата</label>
                             <input id="date" class="pick_date" type="text" name="date" placeholder="Введите дату" required>
@@ -119,6 +133,7 @@
                                         <td>Назначение</td>
                                         <td>Объем</td>
                                         <td>Описание</td>
+                                        <td>Бухгалтерия</td>
                                         <td>Пользователь</td>
                                         <td></td>
                                     </tr>
@@ -131,6 +146,7 @@
                                             <td>{{$cost->costType->name}}</td>
                                             <td>{{$cost->value}} ({{$cost->currency}})</td>
                                             <td>{{$cost->info}}</td>
+                                            <td>{{$cost->bookkeeping->name}}</td>
                                             <td>{{$cost->user->name}}</td>
                                             <td><a href="{{route('home.costs.destroy', $cost->id)}}" class="remove-btn"><i class="fa fa-times" aria-hidden="true"></i></a></td>
                                         </tr>
