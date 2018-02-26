@@ -114,7 +114,7 @@ class CardController extends Controller
             'user_id'   => $request["user"],
             'status'    => 'active',
             'type'      => intval($request["type"]),
-            'bookkeeping_id' => inval($request['bookkeeping_id']),
+            'bookkeeping_id' => intval($request['bookkeeping_id']),
         ];
 
         $QIWI_data = [
