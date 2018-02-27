@@ -250,8 +250,8 @@
                                     <td>Действие</td>
                                     <td>Описание</td>
                                     <td>Отзыв</td>
-                                    <td>Бухгалтерия</td>
                                     <td>Статус</td>
+                                    <td>Бухгалтерия</td>
                                     <td></td>
                                 </tr>
                                 </thead>
@@ -347,7 +347,7 @@
 
             if (!user_status) {
                 columnDefs_json = {
-                    "targets": [1, 9],
+                    "targets": [1, 10],
                     "visible": false,
                     "searchable": false
                 };
@@ -377,8 +377,8 @@
                     {data: 'action'},
                     {data: 'ask'},
                     {data: 'ans'},
-                    {data: 'bookkeeping'},
                     {data: 'status'},
+                    {data: 'bookkeeping'},
                     {data: 'tools'}
                 ],
                 "columnDefs": [columnDefs_json],
@@ -421,7 +421,7 @@
             var tokens_count = null;
             let checkTokensUrl = "{{url('/api/token_notify')}}?user_id={{Auth::user()->id}}&user_status={{Auth::user()->status}}";
 
-                    @if ($user = Auth::user())
+            @if ($user = Auth::user())
             const checkTokens = () => {
                     $.ajax({
                         url: checkTokensUrl,
