@@ -342,7 +342,7 @@
                 }
             });
 
-            let user_status = {{(Auth::user()->status == 'admin' || Auth::user()->status == 'accountant' || Auth::user()->TeamLead()) ? "true" : "false"}};
+            let user_status = {{(Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') ? "true" : "false"}};
             let columnDefs_json = {};
 
             if (!user_status) {
