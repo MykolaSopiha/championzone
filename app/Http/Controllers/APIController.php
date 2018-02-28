@@ -239,43 +239,11 @@ class APIController extends Controller
 
         if ($request->user_status != "farmer" && isset($request->user_id)) {
             if ($request->user_status == 'mediabuyer') {
-                $coditions[] = ['user_id', $request->user_id];
+                $conditions[] = ['user_id', $request->user_id];
             }
             return DB::table('tokens')->where($conditions)->count();
         }
+
         return 0;
-    }
-
-    public function createLead(Request $request)
-    {
-
-        if (!isset($_POST['name']) || !isset($_POST['phone']))
-            if (isset($_SERVER['HTTP_REFERER']))
-                header("Location: " . $_SERVER['HTTP_REFERER']);
-            else
-                header("Location: /");
-
-        $data = json_decode(array_keys(json_decode($_POST['result'], true))[0]);
-
-        $lead = new Lead();
-        $lead->fill([
-            'offer_id' => $data->offer_id,
-            'stream_id' => $data->stream_id,
-            'user_id' => $data->user_id,
-            'name' => $data->name,
-            'phone' => $data->phone,
-            'tz' => $data->tz,
-            'address' => $data->address,
-            'country' => $data->country,
-            'utm_source' => $data->utm_source,
-            'utm_medium' => $data->utm_medium,
-            'utm_campaign' => $data->utm_campaign,
-            'utm_term' => $data->utm_term,
-            'utm_content' => $data->utm_content,
-            'check_sum' => $data->check_sum
-        ]);
-        // $card->save();
-        return 500;
-
     }
 }
