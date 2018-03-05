@@ -38,6 +38,15 @@
                             @endif
                         </div>
 
+                        <div class="form__item{{ $errors->has('label') ? ' form__item--error' : '' }}">
+                            <label for="label">Метка</label>
+                            <input id="label" type="text" name="label" value="{{ old('label') }}"
+                                   placeholder="чемп">
+                            @if (!$errors->has('label'))
+                                <p class="text-warning">{{ $errors->first('label') }}</p>
+                            @endif
+                        </div>
+
                         <div class="form__item{{ $errors->has('description') ? ' form__item--error' : '' }}">
                             <label for="description">Информация</label>
                             <textarea id="description" cols="800" rows="10" name="description"
@@ -69,7 +78,9 @@
                             <tr>
                                 <th>#</th>
                                 <th>Название</th>
+                                <th>Метка</th>
                                 <th>Информация</th>
+                                <th>Основная</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -78,7 +89,15 @@
                                 <tr>
                                     <td>{{$bk->id}}</td>
                                     <td>{{$bk->name}}</td>
+                                    <td>{{$bk->label}}</td>
                                     <td>{{$bk->description}}</td>
+                                    <td>
+                                        @if ($bk->main)
+                                            <span class="text text-info">основная</span>
+                                        @else
+                                            <a href="{{ route('home.bookkeepings.makeMain', $bk->id) }}">сделать основной</a>
+                                        @endif
+                                    </td>
                                     <td style="text-align: right;">
                                         <a class="btn btn-link" href="{{route('home.bookkeepings.edit', $bk->id)}}">
                                             <i class="fa fa-pencil fa-lg"></i>

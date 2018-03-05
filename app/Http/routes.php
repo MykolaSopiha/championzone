@@ -40,6 +40,7 @@ Route::group(['prefix' => 'home'], function () {
         Route::get('/', ['uses' => 'BookkeepingController@index', 'as' => 'index']);
         Route::post('/store', ['uses' => 'BookkeepingController@store', 'as' => 'store']);
         Route::get('/{id}/edit', ['uses' => 'BookkeepingController@edit', 'as' => 'edit']);
+        Route::get('/{id}/makeMain', ['uses' => 'BookkeepingController@makeMain', 'as' => 'makeMain']);
         Route::post('/{id}/update', ['uses' => 'BookkeepingController@update', 'as' => 'update']);
         Route::get('/{id}/delete', ['uses' => 'BookkeepingController@delete', 'as' => 'delete']);
     });

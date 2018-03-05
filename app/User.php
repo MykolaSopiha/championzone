@@ -27,7 +27,8 @@ class User extends Authenticatable
         'password',
         'terra_id',
         'status',
-        'team_id'
+        'team_id',
+        'bk_select',
     ];
 
     /**

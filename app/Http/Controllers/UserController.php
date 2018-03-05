@@ -50,6 +50,8 @@ class UserController extends Controller
             'birthday' => 'sometimes|date',
         ];
 
+        $request['bk_select'] = (isset($request['bk_select'])) ? true : false;
+
         $this->validate($request, $rules);
         User::findOrFail($id)->update($request->all());
 

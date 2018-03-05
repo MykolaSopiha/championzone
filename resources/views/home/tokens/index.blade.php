@@ -143,6 +143,19 @@
                         @endif
                     </div>
 
+                    @if (Auth::user()->status == 'accountant' || Auth::user()->status == 'admin' || Auth::user()->bk_select)
+                        <div class="form__item{{ $errors->has('bookkeeping_id') ? ' form__item--error' : '' }}">
+                            @foreach($bks as $bk)
+                                <input type="radio" name="bookkeeping_id"
+                                       value="{{ $bk->id }}" {{ ($bk->main) ? "checked" : "" }}>&nbsp;{{ $bk->label }}
+                                <br>
+                            @endforeach
+                            @if ($errors->has('bookkeeping_id'))
+                                <p>{{ $errors->first('bookkeeping_id') }}</p>
+                            @endif
+                        </div>
+                    @endif
+
                     <div class="form__item">
                         <button type="submit">
                             <i class="fa fa-floppy-o" aria-hidden="true"></i> Сохранить
@@ -421,7 +434,7 @@
             var tokens_count = null;
             let checkTokensUrl = "{{url('/api/token_notify')}}?user_id={{Auth::user()->id}}&user_status={{Auth::user()->status}}";
 
-            @if ($user = Auth::user())
+                    @if ($user = Auth::user())
             const checkTokens = () => {
                     $.ajax({
                         url: checkTokensUrl,

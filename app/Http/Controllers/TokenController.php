@@ -124,7 +124,7 @@ class TokenController extends Controller
             'ask' => $request['ask'],
             'ans' => $request['ans'],
             'status' => 'active',
-            'bookkeeping_id' => $card->bookkeeping_id,
+            'bookkeeping_id' => (isset($request['bookkeeping_id'])) ? $request['bookkeeping_id'] : Bookkeeping::getMain()->id,
         ];
 
         if ($request['action'] == 'transfer') {
@@ -181,6 +181,7 @@ class TokenController extends Controller
     public function show($id)
     {
         $token = DB::table('tokens')->where('id', $id)->first();
+        $bks = Bookkeeping::all();
 
         if (Auth::user()->id == $token->user_id || Auth::user()->status == 'accountant' || Auth::user()->status == 'admin' || Auth::user()->TeamLead()) {
 
@@ -193,7 +194,7 @@ class TokenController extends Controller
                 'confirmed',
                 'trash'
             ];
-            return view('home.tokens.edit', compact('token', 'card', 'cards', 'statuses'));
+            return view('home.tokens.edit', compact('token', 'card', 'cards', 'statuses', 'bks'));
         } else {
             return redirect()->route('home.tokens.index');
         }

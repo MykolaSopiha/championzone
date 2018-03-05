@@ -31,6 +31,14 @@
                     @endif
                 </div>
 
+                <div class="form__item{{ $errors->has('label') ? ' form__item--error' : '' }}">
+                    <label for="label">Название</label>
+                    <input id="label" type="text" name="label" value="{{ $bookkeeping->label }}" placeholder="чемп">
+                    @if (!$errors->has('label'))
+                        <p class="text-warning">{{ $errors->first('label') }}</p>
+                    @endif
+                </div>
+
                 <div class="form__item{{ $errors->has('description') ? ' form__item--error' : '' }}">
                     <label for="description">Информация</label>
                     <textarea id="description" cols="800" rows="10" name="description"

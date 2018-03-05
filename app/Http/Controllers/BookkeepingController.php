@@ -34,6 +34,12 @@ class BookkeepingController extends Controller
         return view('home.bookkeepings.edit', compact('bookkeeping'));
     }
 
+    public function makeMain($id)
+    {
+        Bookkeeping::findOrFail($id)->makeMain();
+        return back()->with(['success' => 'Bookkeeping became main!']);
+    }
+
     public function update(Request $request, $id)
     {
         Bookkeeping::findOrFail($id)->update($request->all());
