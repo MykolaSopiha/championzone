@@ -91,7 +91,7 @@
                             <div class="form-group">
                                 <label for="team">Команда:</label>
                                 @if ($user->TeamLead())
-                                    <span>{{Auth::user()->team->name}} - Team Lead</span>
+                                    <span>{{$user->team->name}} - Team Lead</span>
                                 @else
                                     <select name="team_id" id="team" class="form-control">
                                         <option value="">Выберите команду</option>
