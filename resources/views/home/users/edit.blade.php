@@ -105,12 +105,14 @@
                                 @endif
                             </div>
 
+                            @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
                             <div class="form-group{{ $errors->has('bk_select') ? ' has-error' : '' }}">
                                 <div class="form-check">
                                     <input type="checkbox" class="form-check-input" id="bk_select" name="bk_select" {{ ($user->bk_select) ? "checked" : "" }}>
                                     <label class="form-check-label" for="bk_select">Выбор бухгалтерии</label>
                                 </div>
                             </div>
+                            @endif
 
                         </div>
                     </div>
