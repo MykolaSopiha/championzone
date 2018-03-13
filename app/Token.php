@@ -35,7 +35,7 @@ class Token extends Model
 
     public function bookkeeping()
     {
-        return $this->belongsTo('App\Bookkeeping', 'bookkeeping_id', 'id');
+        return $this->belongsTo('App\Bookkeeping', 'bookkeeping_id', 'id')->withTrashed();
     }
 
 }

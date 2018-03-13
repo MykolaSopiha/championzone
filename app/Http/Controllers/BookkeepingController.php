@@ -48,7 +48,13 @@ class BookkeepingController extends Controller
 
     public function delete($id)
     {
-        Bookkeeping::findOrFail($id)->delete();
-        return back()->with(['success' => 'Bookkeeping deleted!']);
+        $bk = Bookkeeping::findOrFail($id);
+
+        if (!$bk->isMain()) {
+            $bk->delete();
+            return back()->with(['success' => 'Bookkeeping deleted!']);
+        }
+
+        return back()->with(['error' => 'Bookkeeping is main!']);
     }
 }

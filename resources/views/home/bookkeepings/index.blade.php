@@ -102,9 +102,11 @@
                                         <a class="btn btn-link" href="{{route('home.bookkeepings.edit', $bk->id)}}">
                                             <i class="fa fa-pencil fa-lg"></i>
                                         </a>
-                                        <a class="btn btn-link" href="{{route('home.bookkeepings.delete', $bk->id)}}">
-                                            <i class="fa fa-times fa-lg"></i>
-                                        </a>
+                                        @if(!$bk->isMain())
+                                            <a class="btn btn-link" href="{{route('home.bookkeepings.delete', $bk->id)}}">
+                                                <i class="fa fa-times fa-lg"></i>
+                                            </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

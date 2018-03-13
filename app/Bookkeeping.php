@@ -34,4 +34,8 @@ class Bookkeeping extends Model
     {
         return Bookkeeping::where('main', true)->first();
     }
+    public function isMain()
+    {
+        return ($this->main == true);
+    }
 }
