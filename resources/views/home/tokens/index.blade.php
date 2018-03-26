@@ -434,7 +434,7 @@
             var tokens_count = null;
             let checkTokensUrl = "{{url('/api/token_notify')}}?user_id={{Auth::user()->id}}&user_status={{Auth::user()->status}}";
 
-                    @if ($user = Auth::user())
+            @if ($user = Auth::user())
             const checkTokens = () => {
                     $.ajax({
                         url: checkTokensUrl,
@@ -450,6 +450,7 @@
 
                             if (tokens_count < result) {
                                 BEEP("sound1");
+                                $table.draw();
                                 alert("Новый токен!");
                             }
 
@@ -464,7 +465,7 @@
                     });
                 }
             checkTokens();
-            setInterval(checkTokens, 180000);
+            setInterval(checkTokens, {{ (Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') ? "30000" : "180000" }} );
             @endif
         });
     </script>
