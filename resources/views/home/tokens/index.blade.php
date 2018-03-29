@@ -252,6 +252,23 @@
                             @endif
                         </div>
 
+                        @if (Auth::user()->status == 'accountant' || Auth::user()->status == 'admin' || Auth::user()->bk_select)
+                            <div class="form-group">
+                                <label for="bookkeeping_id">Бухгалтерия</label><br>
+                                <select name="bookkeeping_id" class="form-control">
+                                    <option value="">Все</option>
+                                    @foreach ($bks as $bk)
+                                        <option value="{{ $bk->id }}" {{(isset($_REQUEST['bookkeeping_id']) && $_REQUEST['bookkeeping_id'] == $bk->id) ? "selected" : ""}}>
+                                            {{$bk->name}}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('card'))
+                                    <p>{{ $errors->first('card') }}</p>
+                                @endif
+                            </div>
+                        @endif
+
                         <br/>
 
                         <div class="form-group" style="margin-top: 24px">
@@ -368,7 +385,7 @@
                 }
             });
 
-            let user_status = {{(Auth::user()->status == 'admin' || Auth::user()->status == 'accountant') ? "true" : "false"}};
+            let user_status = {{(Auth::user()->status == 'admin' || Auth::user()->status == 'accountant' || Auth::user()->bk_select) ? "true" : "false"}};
             let columnDefs_json = {};
 
             if (!user_status) {

@@ -26,7 +26,7 @@
                         <h2>Фильтр расходов</h2>
                     </header>
 
-                    @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
+                    @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->bk_select)
                         <div class="form__item{{ $errors->has('bookkeeping_id') ? ' form__item--error' : '' }} big-select">
                             <label for="bookkeeping_id">Бухгалтерия</label><br>
                             <select name="bookkeeping_id" class="js-select">
@@ -99,9 +99,15 @@
                         <label for="action">Действие</label><br>
                         <select name="action" id="action" class="js-select">
                             <option value="">Все действия</option>
-                            <option value="deposit" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == 'deposit') ? "selected" : "" }}>Пополнить</option>
-                            <option value="withdraw" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == 'withdraw') ? "selected" : "" }}>Списать</option>
-                            <option value="transfer" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == 'transfer') ? "selected" : "" }}>Перевести</option>
+                            <option value="deposit" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == 'deposit') ? "selected" : "" }}>
+                                Пополнить
+                            </option>
+                            <option value="withdraw" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == 'withdraw') ? "selected" : "" }}>
+                                Списать
+                            </option>
+                            <option value="transfer" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == 'transfer') ? "selected" : "" }}>
+                                Перевести
+                            </option>
                         </select>
                         @if ($errors->has('card'))
                             <p>{{ $errors->first('card') }}</p>
@@ -153,15 +159,17 @@
                         @foreach ($statistics as $s)
                             <tr>
                                 <td>
-                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}{{$get_req}}{{isset($_REQUEST['action']) ? "&action=" . $_REQUEST['action'] : ''}}">{{$s['day']}}</a>
+                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}{{$get_req}}{{isset($_REQUEST['action']) ? "&action=" . $_REQUEST['action'] : ''}}{{isset($_REQUEST['bookkeeping_id']) ? "&bookkeeping_id=" . $_REQUEST['bookkeeping_id'] : ''}}">
+                                        {{$s['day']}}
+                                    </a>
                                 </td>
                                 <td>
-                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}&status=confirmed{{$get_req}}{{isset($_REQUEST['action']) ? "&action=" . $_REQUEST['action'] : ''}}">
+                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}&status=confirmed{{$get_req}}{{isset($_REQUEST['action']) ? "&action=" . $_REQUEST['action'] : ''}}{{isset($_REQUEST['bookkeeping_id']) ? "&bookkeeping_id=" . $_REQUEST['bookkeeping_id'] : ''}}">
                                         {{ number_format($s['cost'], 2, ".", " ") }}
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}&currency=RUB&status=confirmed{{$get_req}}{{isset($_REQUEST['action']) ? "&action=" . $_REQUEST['action'] : ''}}">
+                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}&currency=RUB&status=confirmed{{$get_req}}{{isset($_REQUEST['action']) ? "&action=" . $_REQUEST['action'] : ''}}{{isset($_REQUEST['bookkeeping_id']) ? "&bookkeeping_id=" . $_REQUEST['bookkeeping_id'] : ''}}">
                                         {{ number_format($s['cost_RUB'], 2, ".", " ") }}
                                     </a>
                                 </td>
