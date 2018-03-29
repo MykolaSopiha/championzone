@@ -100,7 +100,7 @@
                         <select name="action" id="action" class="js-select">
                             <option value="">Все действия</option>
                             @foreach ($actions as $action)
-                                <option value="{{ $action[0] }}" {{ ($_REQUEST['action'] == $action[0]) ? "selected" : "" }}>{{ $action[1] }}</option>
+                                <option value="{{ $action[0] }}" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == $action[0]) ? "selected" : "" }}>{{ $action[1] }}</option>
                             @endforeach
                         </select>
                         @if ($errors->has('card'))
