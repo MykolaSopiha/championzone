@@ -28,8 +28,9 @@ class TokenController extends Controller
 
         $currencies = config('assets.currencies');
         $statuses = config('assets.token_statuses');
+        $actions = config('assets.token_actions');
 
-        View::share(compact('statuses', 'currencies'));
+        View::share(compact('statuses', 'currencies', 'actions'));
     }
 
 

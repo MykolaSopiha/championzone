@@ -132,7 +132,11 @@ $(document).ready(function () {
 
 
 	// BEGIN Chosen-JS Init
-	$('.js-select').select2();
+    $('.js-select').each(function (index, element) {
+        $(element).select2({
+            placeholder: $(element).data('placeholder')
+        });
+    });
 	// END Chosen-JS Init
 
 

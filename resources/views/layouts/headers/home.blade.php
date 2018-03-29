@@ -2,9 +2,9 @@
     <div class="header-inner header-inner--home">
 
         <div class="logo">
-            <a href="{{url('/home')}}">
+            <a href="{{ route('home') }}">
                 <svg class="icon icon-world_cup">
-                    <use xlink:href="{{url('/img')}}/sprite.svg#world_cup"></use>
+                    <use xlink:href="{{ asset('img/sprite.svg') . "#world_cup" }}"></use>
                 </svg>
             </a>
         </div>
@@ -51,16 +51,15 @@
         </nav>
 
         <div class="user">
-        <!-- <a href='{{ url("/home/myaccount") }}' class="user__name"> -->
-            <a class="user__name" href="{{ url('/home/users') }}/{{ Auth::user()->id }}">
+            <a class="user__name" href="{{ route('home.users.view', Auth::user()->id) }}">
                 <svg class="icon icon-user">
                     <use xlink:href="{{url('/img')}}/sprite.svg#user"></use>
                 </svg>
                 <span>
-                        @if( Auth::check() )
+                    @if( Auth::check() )
                         {{ Auth::user()->name }}
                     @endif
-                    </span>
+                </span>
             </a>
             <!-- </a> -->
             <p class="user__links">

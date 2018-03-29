@@ -239,7 +239,22 @@
                             </select>
                         </div>
 
-                        <div class="form-group" style="margin-top: 24px; margin-left: 20px">
+                        <div class="form-group">
+                            <label for="action">Действие</label><br>
+                            <select name="action" id="action" class="form-control">
+                                <option value="">Все действия</option>
+                                @foreach ($actions as $action)
+                                    <option value="{{ $action[0] }}" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == $action[0]) ? "selected" : "" }}>{{ $action[1] }}</option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('card'))
+                                <p>{{ $errors->first('card') }}</p>
+                            @endif
+                        </div>
+
+                        <br/>
+
+                        <div class="form-group" style="margin-top: 24px">
                             <button type="submit" class="btn btn-primary">Искать</button>
                             <button type="submit" class="btn btn-default">
                                 <a href="{{url('home/tokens')}}">Сбросить</a>

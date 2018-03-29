@@ -15,7 +15,13 @@ return [
         2 => 'Пластиковая'
     ],
 
-    'token_statuses' => ['active', 'confirmed', 'trash']
+    'token_statuses' => ['active', 'confirmed', 'trash'],
+
+    'token_actions' => [
+        ['deposit', 'Пополнить'],
+        ['withdraw', 'Списать'],
+        ['transfer', 'Перевести'],
+    ],
 
 ];
 

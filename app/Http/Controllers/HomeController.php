@@ -10,6 +10,7 @@ use App\Http\Requests;
 use Auth;
 use DB;
 use App\User;
+use View;
 
 class HomeController extends Controller
 {
@@ -21,6 +22,8 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $actions = config('assets.token_actions');
+        View::share(compact('actions'));
     }
 
     /**
@@ -68,6 +71,11 @@ class HomeController extends Controller
             ['date', '<=', $to],
             ['tokens.status', 'confirmed']
         ];
+
+        if ($request->action != "") {
+            $conditions[] = ['action', $request->action];
+        }
+
         $card_conditions = [];
         $statistics = [];
 

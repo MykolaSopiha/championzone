@@ -27,20 +27,20 @@
                     </header>
 
                     @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
-                    <div class="form__item{{ $errors->has('bookkeeping_id') ? ' form__item--error' : '' }} big-select">
-                        <label for="bookkeeping_id">Бухгалтерия</label><br>
-                        <select name="bookkeeping_id" class="js-select">
-                            <option value="">Все</option>
-                            @foreach ($bks as $bk)
-                                <option value="{{ $bk->id }}" {{(isset($_REQUEST['bookkeeping_id']) && $_REQUEST['bookkeeping_id'] == $bk->id) ? "selected" : ""}}>
-                                    {{$bk->name}}
-                                </option>
-                            @endforeach
-                        </select>
-                        @if ($errors->has('card'))
-                            <p>{{ $errors->first('card') }}</p>
-                        @endif
-                    </div>
+                        <div class="form__item{{ $errors->has('bookkeeping_id') ? ' form__item--error' : '' }} big-select">
+                            <label for="bookkeeping_id">Бухгалтерия</label><br>
+                            <select name="bookkeeping_id" class="js-select">
+                                <option value="">Все</option>
+                                @foreach ($bks as $bk)
+                                    <option value="{{ $bk->id }}" {{(isset($_REQUEST['bookkeeping_id']) && $_REQUEST['bookkeeping_id'] == $bk->id) ? "selected" : ""}}>
+                                        {{$bk->name}}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('card'))
+                                <p>{{ $errors->first('card') }}</p>
+                            @endif
+                        </div>
                     @endif
 
                     @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->TeamLead())
@@ -95,6 +95,19 @@
                         @endif
                     </div>
 
+                    <div class="form__item{{ $errors->has('action') ? ' form__item--error' : '' }} big-select">
+                        <label for="action">Действие</label><br>
+                        <select name="action" id="action" class="js-select">
+                            <option value="">Все действия</option>
+                            @foreach ($actions as $action)
+                                <option value="{{ $action[0] }}" {{ ($_REQUEST['action'] == $action[0]) ? "selected" : "" }}>{{ $action[1] }}</option>
+                            @endforeach
+                        </select>
+                        @if ($errors->has('card'))
+                            <p>{{ $errors->first('card') }}</p>
+                        @endif
+                    </div>
+
                     <label>За период</label>
                     <div class="form__two-columns">
                         <div class="form__item">
@@ -140,12 +153,10 @@
                         @foreach ($statistics as $s)
                             <tr>
                                 <td>
-                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}{{$get_req}}">
-                                        {{$s['day']}}
-                                    </a>
+                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}{{$get_req}}">{{$s['day']}}</a>
                                 </td>
                                 <td>
-                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}&status=confirmed{{$get_req}}">
+                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}&status=confirmed{{$get_req}}{{isset($_REQUEST['action']) ? "&action=" . $_REQUEST['action'] : ''}}">
                                         {{ number_format($s['cost'], 2, ".", " ") }}
                                     </a>
                                 </td>
