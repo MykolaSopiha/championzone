@@ -178,7 +178,7 @@
                                    class="form-control" id="filter_date">
                         </div>
 
-                        @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant')
+                        @if (Auth::user()->status === 'admin' || Auth::user()->status === 'accountant' || Auth::user()->bk_select)
                             <div class="form-group" style="max-width: 400px">
                                 <label for="bookkeeping_id">Бухгалтерия</label><br>
                                 <select name="bookkeeping_id" id="bookkeeping_id" class="form-control"
@@ -251,23 +251,6 @@
                                 <p>{{ $errors->first('card') }}</p>
                             @endif
                         </div>
-
-                        @if (Auth::user()->status == 'accountant' || Auth::user()->status == 'admin' || Auth::user()->bk_select)
-                            <div class="form-group">
-                                <label for="bookkeeping_id">Бухгалтерия</label><br>
-                                <select name="bookkeeping_id" class="form-control">
-                                    <option value="">Все</option>
-                                    @foreach ($bks as $bk)
-                                        <option value="{{ $bk->id }}" {{(isset($_REQUEST['bookkeeping_id']) && $_REQUEST['bookkeeping_id'] == $bk->id) ? "selected" : ""}}>
-                                            {{$bk->name}}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @if ($errors->has('card'))
-                                    <p>{{ $errors->first('card') }}</p>
-                                @endif
-                            </div>
-                        @endif
 
                         <br/>
 
