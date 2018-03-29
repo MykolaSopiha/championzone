@@ -243,9 +243,9 @@
                             <label for="action">Действие</label><br>
                             <select name="action" id="action" class="form-control">
                                 <option value="">Все действия</option>
-                                @foreach ($actions as $action)
-                                    <option value="{{ $action[0] }}" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == $action[0]) ? "selected" : "" }}>{{ $action[1] }}</option>
-                                @endforeach
+                                <option value="deposit" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == 'deposit') ? "selected" : "" }}>Пополнить</option>
+                                <option value="withdraw" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == 'withdraw') ? "selected" : "" }}>Списать</option>
+                                <option value="transfer" {{ (isset($_REQUEST['action']) && $_REQUEST['action'] == 'transfer') ? "selected" : "" }}>Перевести</option>
                             </select>
                             @if ($errors->has('card'))
                                 <p>{{ $errors->first('card') }}</p>
