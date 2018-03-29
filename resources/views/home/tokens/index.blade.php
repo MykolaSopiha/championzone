@@ -256,9 +256,7 @@
 
                         <div class="form-group" style="margin-top: 24px">
                             <button type="submit" class="btn btn-primary">Искать</button>
-                            <button type="submit" class="btn btn-default">
-                                <a href="{{url('home/tokens')}}">Сбросить</a>
-                            </button>
+                            <a href="{{ route('home.tokens.index') }}" class="btn btn-default">Сбросить</a>
                         </div>
                     </form>
                 </div>

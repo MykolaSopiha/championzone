@@ -153,7 +153,7 @@
                         @foreach ($statistics as $s)
                             <tr>
                                 <td>
-                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}{{$get_req}}">{{$s['day']}}</a>
+                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}{{$get_req}}{{isset($_REQUEST['action']) ? "&action=" . $_REQUEST['action'] : ''}}">{{$s['day']}}</a>
                                 </td>
                                 <td>
                                     <a href="{{url('home/tokens/')}}?date={{$s['day']}}&status=confirmed{{$get_req}}{{isset($_REQUEST['action']) ? "&action=" . $_REQUEST['action'] : ''}}">
@@ -161,7 +161,7 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}&currency=RUB&status=confirmed{{$get_req}}">
+                                    <a href="{{url('home/tokens/')}}?date={{$s['day']}}&currency=RUB&status=confirmed{{$get_req}}{{isset($_REQUEST['action']) ? "&action=" . $_REQUEST['action'] : ''}}">
                                         {{ number_format($s['cost_RUB'], 2, ".", " ") }}
                                     </a>
                                 </td>
