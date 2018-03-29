@@ -22,8 +22,6 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $actions = config('assets.token_actions');
-        View::share(compact('actions'));
     }
 
     /**
@@ -165,7 +163,9 @@ class HomeController extends Controller
             $total_RUB += $RUB;
         }
 
-        return view('home.statistics.index', compact('statistics', 'total', 'total_RUB', 'users', 'cards', 'get_req', 'bks'));
+        $actions = config('assets.token_actions');
+
+        return view('home.statistics.index', compact('statistics', 'total', 'total_RUB', 'users', 'cards', 'get_req', 'bks', 'actions'));
     }
 
     public function balance()
