@@ -45,7 +45,7 @@ class HomeController extends Controller
         if (Auth::user()->status === 'farmer')
             return redirect('/home');
 
-        $bks = Bookkeeping::all();
+        $bks = Bookkeeping::withTrashed()->get();
 
         $get_req = "&";
         if ($request->user != "") {
